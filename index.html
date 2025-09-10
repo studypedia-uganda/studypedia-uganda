@@ -453,36 +453,37 @@
                     const data = doc.data();
                     const isOwner = user && data.createdBy === user.uid;
                     htmlContent += `
-                        <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
-                                    <p class="text-gray-400 mb-4">${data.content}</p>
-                                </div>
-                                ${isOwner ? `
-                                    <div class="relative">
-                                        <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
-                                            <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
-                                        </button>
-                                        <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
-                                            <a class="options-menu-item hover:bg-gray-700 rounded-md text-gray-200 edit-option" data-doc-id="${doc.id}">
-                                                <i class="ph-bold ph-pencil"></i>
-                                                <span>Edit</span>
-                                            </a>
-                                            <a class="options-menu-item hover:bg-gray-700 rounded-md text-gray-200 delete-option" data-doc-id="${doc.id}">
-                                                <i class="ph-bold ph-trash"></i>
-                                                <span>Delete</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div class="flex justify-between items-center mt-4">
-                                ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="text-[#61DAFB] hover:underline">Download Resource</a>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
+    <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
+                <p class="text-gray-400">${data.content}</p>
+            </div>
+            ${isOwner ? `
+                <div class="relative">
+                    <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
+                        <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
+                    </button>
+                    <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
+                        <a class="options-menu-item edit-option" data-doc-id="${doc.id}">
+                            <i class="ph-bold ph-pencil"></i>
+                            <span>Edit</span>
+                        </a>
+                        <a class="options-menu-item delete-option" data-doc-id="${doc.id}">
+                            <i class="ph-bold ph-trash"></i>
+                            <span>Delete</span>
+                        </a>
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+        <div class="flex justify-start items-center">
+            ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="py-2 px-4 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300 transform hover:scale-105">
+                <i class="ph-bold ph-download-simple mr-2"></i>Download
+            </a>` : ''}
+        </div>
+    </div>
+`;
                 contentContainer.innerHTML = htmlContent;
                 attachEventListeners(user);
             }, (error) => {
