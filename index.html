@@ -526,13 +526,12 @@
         };
 
         const fetchAndDisplayData = (user) => {
-            // FIX: Modified the query to only fetch resources created by the current user
-            // This prevents a 'Missing or insufficient permissions' error that occurs when
-            // the Firestore security rules are set to only allow users to read their own data.
+            // FIX: The previous code was incorrectly filtering by 'createdBy'
+            // This prevented a logged-in user from seeing all public resources.
+            // The security rules you applied allow all logged-in users to read all documents.
             const q = query(
                 collection(db, "PHARMACY_RESOURCES"),
-                where("category", "==", currentCategory),
-                where("createdBy", "==", user.uid)
+                where("category", "==", currentCategory)
             );
             
             onSnapshot(q, (querySnapshot) => {
@@ -548,6 +547,7 @@
                 let htmlContent = '';
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    // FIX: Ensure the user object exists before checking its uid
                     const isOwner = user && data.createdBy === user.uid;
                     htmlContent += `
                         <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
@@ -610,7 +610,11 @@
                 });
             }
 
+            // FIX: Added a console log to confirm that the event listener is being attached.
+            console.log("Adding event listener to login/signup button.");
             loginSignupBtn.addEventListener('click', () => {
+                // FIX: Added a console log to confirm that the click event is firing.
+                console.log("Login/Signup button clicked.");
                 authModal.style.display = 'flex';
                 displayMessage(' ', false, 'auth');
             });
