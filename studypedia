@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studypedia pharmacy students</title>
+    <!-- Google AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxx" crossorigin="anonymous"></script>
+    <!-- Use Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Phosphor Icons for a clean look -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: #242424;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            color: #61DAFB;
+        }
+
+        .error-message {
+            color: #FF5252;
+            background-color: #331A1A;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            background-color: #1A331A;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .card {
+            background-color: #242424;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-[#121212] font-sans text-gray-200">
+
+    <!-- The root container for the application UI -->
+    <div id="root" class="w-full min-h-screen flex flex-col md:flex-row">
+        <!-- Left Sidebar/Panel -->
+        <div class="md:w-1/4 bg-[#1a1a1a] p-8 flex flex-col items-center justify-between">
+            <div class="w-full">
+                <h1 class="text-4xl font-extrabold text-[#61DAFB] mb-8">Studypedia</h1>
+                <p class="text-sm text-gray-400 mb-8">
+                    Your personal learning companion for students of Uganda!
+                </p>
+                <button id="login-signup-btn" class="w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
+                    Login / Signup
+                </button>
+                <button id="add-resource-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-gray-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
+                    Add Resource
+                </button>
+                <button id="logout-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-red-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
+                    Logout
+                </button>
+                <!-- User details display -->
+                <div id="user-details" class="mt-8 hidden p-4 bg-[#242424] rounded-lg">
+                    <p class="text-sm font-semibold">Logged in as:</p>
+                    <p id="user-email" class="text-sm font-medium break-all"></p>
+                </div>
+            </div>
+            <!-- AdSense ad unit placeholder -->
+            <div class="w-full text-center text-gray-500 text-xs">
+                <p>Google AdSense - Sidebar Ad</p>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col items-center p-8 text-center">
+            <div id="content-display" class="w-full max-w-2xl">
+                <h2 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+                    Welcome to Studypedia
+                </h2>
+                <h3 class="text-3xl md:text-4xl font-semibold text-[#61DAFB] mb-6">
+                    Students of pharmacy uganda!
+                </h3>
+                <p class="text-base md:text-lg text-gray-400 max-w-2xl mb-8">
+                    Find and share study notes, past papers, and educational resources with fellow students.
+                </p>
+                <div id="content-container">
+                    <!-- Dynamic content will be loaded here -->
+                    <p id="loading-message" class="loading">Please log in to view resources.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal">
+            <span id="close-modal-auth" class="close-button">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </span>
+            <h2 id="modal-title" class="text-3xl font-bold mb-6 text-white text-center">Login</h2>
+            <form id="auth-form" class="space-y-4">
+                <div class="input-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="your-email@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
+                </div>
+                <div class="flex items-center justify-between mt-6">
+                    <button type="submit" id="submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Login</button>
+                </div>
+                <div class="text-center mt-4">
+                    <p id="toggle-auth-mode-text" class="text-gray-400">
+                        Don't have an account? <span id="toggle-auth-mode" class="text-link">Sign Up</span>
+                    </p>
+                </div>
+            </form>
+            <div id="message-box-auth" class="mt-4 p-4 rounded-lg hidden">
+                <p id="message-text-auth" class="text-sm"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Resource Modal -->
+    <div id="add-resource-modal" class="modal-overlay">
+        <div class="modal">
+            <span id="close-modal-add" class="close-button">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </span>
+            <h2 class="text-3xl font-bold mb-6 text-white text-center">Add a New Resource</h2>
+            <form id="add-resource-form" class="space-y-4">
+                <div class="input-group">
+                    <label for="resource-title">Title</label>
+                    <input type="text" id="resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="E.g., Anatomy Lecture Notes" required>
+                </div>
+                <div class="input-group">
+                    <label for="resource-content">Description</label>
+                    <textarea id="resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="A brief description of the notes..." required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="resource-url">Download URL</label>
+                    <input type="url" id="resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="E.g., https://example.com/notes.pdf" required>
+                </div>
+                <div class="flex items-center justify-between mt-6">
+                    <button type="submit" id="add-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Add Resource</button>
+                </div>
+            </form>
+            <div id="message-box-add" class="mt-4 p-4 rounded-lg hidden">
+                <p id="message-text-add" class="text-sm"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Resource Modal -->
+    <div id="edit-resource-modal" class="modal-overlay">
+        <div class="modal">
+            <span id="close-modal-edit" class="close-button">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </span>
+            <h2 class="text-3xl font-bold mb-6 text-white text-center">Edit Resource</h2>
+            <form id="edit-resource-form" class="space-y-4">
+                <input type="hidden" id="edit-doc-id">
+                <div class="input-group">
+                    <label for="edit-resource-title">Title</label>
+                    <input type="text" id="edit-resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                </div>
+                <div class="input-group">
+                    <label for="edit-resource-content">Description</label>
+                    <textarea id="edit-resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="edit-resource-url">Download URL</label>
+                    <input type="url" id="edit-resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                </div>
+                <div class="flex items-center justify-between mt-6">
+                    <button type="submit" id="edit-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-green-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Save Changes</button>
+                </div>
+            </form>
+            <div id="message-box-edit" class="mt-4 p-4 rounded-lg hidden">
+                <p id="message-text-edit" class="text-sm"></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
+            authDomain: "studypedia-app.firebaseapp.com",
+            projectId: "studypedia-app",
+            storageBucket: "studypedia-app.firebasestorage.app",
+            messagingSenderId: "793261754970",
+            appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
+            measurementId: "G-6CTGP0MF8Y"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI Element references
+        const loginSignupBtn = document.getElementById('login-signup-btn');
+        const addResourceBtn = document.getElementById('add-resource-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authModal = document.getElementById('auth-modal');
+        const addResourceModal = document.getElementById('add-resource-modal');
+        const editResourceModal = document.getElementById('edit-resource-modal');
+        const closeModalAuthBtn = document.getElementById('close-modal-auth');
+        const closeModalAddBtn = document.getElementById('close-modal-add');
+        const closeModalEditBtn = document.getElementById('close-modal-edit');
+        const authForm = document.getElementById('auth-form');
+        const addResourceForm = document.getElementById('add-resource-form');
+        const editResourceForm = document.getElementById('edit-resource-form');
+        const modalTitle = document.getElementById('modal-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const addResourceSubmitBtn = document.getElementById('add-resource-submit-btn');
+        const editResourceSubmitBtn = document.getElementById('edit-resource-submit-btn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const resourceTitleInput = document.getElementById('resource-title');
+        const resourceContentInput = document.getElementById('resource-content');
+        const resourceUrlInput = document.getElementById('resource-url');
+        const editResourceTitleInput = document.getElementById('edit-resource-title');
+        const editResourceContentInput = document.getElementById('edit-resource-content');
+        const editResourceUrlInput = document.getElementById('edit-resource-url');
+        const editDocIdInput = document.getElementById('edit-doc-id');
+        const messageBoxAuth = document.getElementById('message-box-auth');
+        const messageTextAuth = document.getElementById('message-text-auth');
+        const messageBoxAdd = document.getElementById('message-box-add');
+        const messageTextAdd = document.getElementById('message-text-add');
+        const messageBoxEdit = document.getElementById('message-box-edit');
+        const messageTextEdit = document.getElementById('message-text-edit');
+        const userDetails = document.getElementById('user-details');
+        const userEmail = document.getElementById('user-email');
+        const contentContainer = document.getElementById('content-container');
+        const loadingMessage = document.getElementById('loading-message');
+
+        let isLoginMode = true;
+
+        const displayMessage = (message, isError = true, modalType = 'auth') => {
+            let msgBox, msgText;
+            if (modalType === 'auth') {
+                msgBox = messageBoxAuth;
+                msgText = messageTextAuth;
+            } else if (modalType === 'add') {
+                msgBox = messageBoxAdd;
+                msgText = messageTextAdd;
+            } else if (modalType === 'edit') {
+                msgBox = messageBoxEdit;
+                msgText = messageTextEdit;
+            }
+
+            if (msgBox && msgText) {
+                msgBox.classList.remove('hidden');
+                msgText.textContent = message;
+                msgBox.className = isError ? 'error-message' : 'success-message';
+            }
+        };
+
+        const toggleAuthMode = (event) => {
+            event.preventDefault();
+            isLoginMode = !isLoginMode;
+            const toggleElement = document.getElementById('toggle-auth-mode');
+            if (isLoginMode) {
+                modalTitle.textContent = 'Login';
+                submitBtn.textContent = 'Login';
+                toggleElement.textContent = 'Sign Up';
+            } else {
+                modalTitle.textContent = 'Sign Up';
+                submitBtn.textContent = 'Sign Up';
+                toggleElement.textContent = 'Login';
+            }
+        };
+
+        const attachEditAndDeleteListeners = (user) => {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const docId = button.dataset.docId;
+                    const card = button.closest('.card');
+                    const title = card.querySelector('h3').textContent;
+                    const content = card.querySelector('p').textContent;
+                    const url = card.querySelector('a')?.href || '';
+
+                    editDocIdInput.value = docId;
+                    editResourceTitleInput.value = title;
+                    editResourceContentInput.value = content;
+                    editResourceUrlInput.value = url;
+                    editResourceModal.style.display = 'flex';
+                });
+            });
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const docId = button.dataset.docId;
+                    const confirmed = confirm("Are you sure you want to delete this resource?");
+                    if (confirmed) {
+                        try {
+                            const docRef = doc(db, "DIPLOMA_PHARMACY", docId);
+                            await deleteDoc(docRef);
+                            displayMessage('Resource deleted successfully!', false, 'edit');
+                        } catch (error) {
+                            console.error("Error deleting document: ", error);
+                            displayMessage(`Error deleting resource: ${error.message}`, true, 'edit');
+                        }
+                    }
+                });
+            });
+        };
+
+        const fetchAndDisplayData = (user) => {
+            // Use onSnapshot for real-time updates
+            const q = query(collection(db, "DIPLOMA_PHARMACY"));
+            onSnapshot(q, (querySnapshot) => {
+                if (loadingMessage) {
+                    loadingMessage.classList.add('hidden');
+                }
+
+                if (querySnapshot.empty) {
+                    contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">No resources found. Add your first resource by clicking the "Add Resource" button!</p>';
+                    return;
+                }
+                
+                let htmlContent = '';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const isOwner = user && data.createdBy === user.uid;
+                    htmlContent += `
+                        <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                            <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
+                            <p class="text-gray-400 mb-4">${data.content}</p>
+                            <div class="flex justify-between items-center mt-4">
+                                ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="text-[#61DAFB] hover:underline">Download Resource</a>` : ''}
+                                ${isOwner ? `
+                                    <div class="flex space-x-2">
+                                        <button class="edit-btn text-yellow-500 hover:text-yellow-400" data-doc-id="${doc.id}">
+                                            <i class="ph-bold ph-pencil text-xl"></i>
+                                        </button>
+                                        <button class="delete-btn text-red-500 hover:text-red-400" data-doc-id="${doc.id}">
+                                            <i class="ph-bold ph-trash text-xl"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                contentContainer.innerHTML = htmlContent;
+                attachEditAndDeleteListeners(user);
+            }, (error) => {
+                console.error("Error fetching documents: ", error);
+                contentContainer.innerHTML = `<p class="error-message">Error fetching data: ${error.message}</p>`;
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loginSignupBtn.addEventListener('click', () => {
+                authModal.style.display = 'flex';
+                displayMessage(' ', false, 'auth');
+            });
+
+            addResourceBtn.addEventListener('click', () => {
+                addResourceModal.style.display = 'flex';
+                displayMessage(' ', false, 'add');
+            });
+            
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    console.log("User logged out successfully.");
+                } catch (error) {
+                    console.error("Error logging out: ", error);
+                }
+            });
+
+            closeModalAuthBtn.addEventListener('click', () => {
+                authModal.style.display = 'none';
+            });
+
+            closeModalAddBtn.addEventListener('click', () => {
+                addResourceModal.style.display = 'none';
+                addResourceForm.reset();
+            });
+
+            closeModalEditBtn.addEventListener('click', () => {
+                editResourceModal.style.display = 'none';
+                editResourceForm.reset();
+            });
+
+            document.getElementById('toggle-auth-mode-text').addEventListener('click', (event) => {
+                const span = event.target.closest('span');
+                if (span && span.id === 'toggle-auth-mode') {
+                    toggleAuthMode(event);
+                }
+            });
+
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.textContent = 'Loading...';
+                submitBtn.disabled = true;
+
+                const email = emailInput.value;
+                const password = passwordInput.value;
+
+                try {
+                    if (isLoginMode) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        displayMessage('Login successful!', false, 'auth');
+                    } else {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        displayMessage('Sign-up successful!', false, 'auth');
+                    }
+                    setTimeout(() => authModal.style.display = 'none', 1000);
+                } catch (error) {
+                    displayMessage(`Error: ${error.message}`, true, 'auth');
+                } finally {
+                    submitBtn.textContent = isLoginMode ? 'Login' : 'Sign Up';
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            addResourceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                addResourceSubmitBtn.textContent = 'Adding...';
+                addResourceSubmitBtn.disabled = true;
+                
+                const title = resourceTitleInput.value;
+                const content = resourceContentInput.value;
+                const url = resourceUrlInput.value;
+                const user = auth.currentUser;
+
+                try {
+                    await addDoc(collection(db, "DIPLOMA_PHARMACY"), {
+                        title: title,
+                        content: content,
+                        download_url: url,
+                        createdBy: user.uid,
+                        createdAt: new Date()
+                    });
+                    displayMessage('Resource added successfully!', false, 'add');
+                    addResourceForm.reset();
+                    setTimeout(() => addResourceModal.style.display = 'none', 1500);
+                } catch (error) {
+                    displayMessage(`Error adding resource: ${error.message}`, true, 'add');
+                } finally {
+                    addResourceSubmitBtn.textContent = 'Add Resource';
+                    addResourceSubmitBtn.disabled = false;
+                }
+            });
+
+            editResourceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                editResourceSubmitBtn.textContent = 'Saving...';
+                editResourceSubmitBtn.disabled = true;
+
+                const docId = editDocIdInput.value;
+                const title = editResourceTitleInput.value;
+                const content = editResourceContentInput.value;
+                const url = editResourceUrlInput.value;
+
+                try {
+                    const docRef = doc(db, "DIPLOMA_PHARMACY", docId);
+                    await updateDoc(docRef, {
+                        title: title,
+                        content: content,
+                        download_url: url,
+                        updatedAt: new Date()
+                    });
+                    displayMessage('Resource updated successfully!', false, 'edit');
+                    setTimeout(() => editResourceModal.style.display = 'none', 1500);
+                } catch (error) {
+                    displayMessage(`Error updating resource: ${error.message}`, true, 'edit');
+                } finally {
+                    editResourceSubmitBtn.textContent = 'Save Changes';
+                    editResourceSubmitBtn.disabled = false;
+                }
+            });
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userDetails.classList.remove('hidden');
+                    userEmail.textContent = user.email || 'Anonymous User';
+                    loginSignupBtn.classList.add('hidden');
+                    addResourceBtn.classList.remove('hidden');
+                    logoutBtn.classList.remove('hidden');
+                    
+                    document.getElementById('content-display').classList.remove('flex-1');
+                    document.getElementById('content-display').classList.add('flex-col');
+                    fetchAndDisplayData(user);
+                } else {
+                    userDetails.classList.add('hidden');
+                    loginSignupBtn.classList.remove('hidden');
+                    addResourceBtn.classList.add('hidden');
+                    logoutBtn.classList.add('hidden');
+                    
+                    document.getElementById('content-display').classList.add('flex-1');
+                    document.getElementById('content-display').classList.remove('flex-col');
+                    contentContainer.innerHTML = '<p id="loading-message" class="loading">Please log in to view resources.</p>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
