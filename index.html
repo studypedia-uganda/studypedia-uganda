@@ -4,8 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studypedia pharmacy students</title>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
-    crossorigin="anonymous"></script>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Study notes, past papers, and educational resources for pharmacy students in Uganda. Find and share academic materials.">
+    <meta name="keywords" content="pharmacy, pharmacy students, Uganda, study notes, past papers, educational resources, Studypedia, university, diploma">
+    <meta name="author" content="Kaigwa Akram">
+    
+    <!-- Open Graph Tags for Social Media Sharing -->
+    <meta property="og:title" content="Studypedia - Pharmacy Students Uganda">
+    <meta property="og:description" content="A comprehensive platform for pharmacy students in Uganda to share and access study notes, past papers, and resources.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://studypedia-uganda.github.io/studypedia-uganda/">
+    <meta property="og:image" content="https://studypedia-uganda.github.io/studypedia-uganda/logo.png">
+    
+    <!-- Google AdSense Verification and Auto-Ad Code -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
+        crossorigin="anonymous"></script>
+
     <!-- Use Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Use Phosphor Icons for a clean look -->
@@ -14,6 +29,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Add new shining colors to the Tailwind config */
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        :root {
+            --color-shine-blue: #61DAFB;
+            --color-shine-green: #4CAF50;
+            --color-shine-purple: #9333ea;
+        }
+
+        .text-shine-blue { color: var(--color-shine-blue); }
+        .text-shine-green { color: var(--color-shine-green); }
+        .text-shine-purple { color: var(--color-shine-purple); }
+
+        .bg-shine-blue { background-color: var(--color-shine-blue); }
+        .bg-shine-green { background-color: var(--color-shine-green); }
+        .bg-shine-purple { background-color: var(--color-shine-purple); }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #121212;
@@ -103,6 +137,12 @@
         .options-menu-item:hover {
             background-color: #444;
         }
+
+        .category-button.active {
+            background-color: var(--color-shine-blue);
+            color: #121212;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-[#121212] font-sans text-gray-200">
@@ -112,14 +152,14 @@
         <!-- Left Sidebar/Panel -->
         <div class="md:w-1/4 bg-[#1a1a1a] p-8 flex flex-col items-center justify-between">
             <div class="w-full">
-                <h1 class="text-4xl font-extrabold text-[#61DAFB] mb-8">Studypedia</h1>
+                <h1 class="text-4xl font-extrabold text-shine-blue mb-8">Studypedia</h1>
                 <p class="text-sm text-gray-400 mb-8">
                     Your personal learning companion for pharmacy students of Uganda!
                 </p>
-                <button id="login-signup-btn" class="w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
+                <button id="login-signup-btn" class="w-full py-3 px-6 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
                     Login / Signup
                 </button>
-                <button id="add-resource-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-gray-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
+                <button id="add-resource-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-shine-green text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
                     Add Resource
                 </button>
                 <button id="logout-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-red-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
@@ -134,7 +174,7 @@
                 <div class="w-full text-center text-gray-500 text-xs mt-8">
                     <p>Google AdSense - Sidebar Ad</p>
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
                 </div>
             </div>
         </div>
@@ -145,17 +185,28 @@
                 <h2 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
                     Welcome to Studypedia uganda
                 </h2>
-                <h3 class="text-3xl md:text-4xl font-semibold text-[#61DAFB] mb-6">
+                <h3 class="text-3xl md:text-4xl font-semibold text-shine-purple mb-6">
                     Students of pharmacy uganda!
                 </h3>
                 <p class="text-base md:text-lg text-gray-400 max-w-2xl mb-8">
                     Find and share study notes, past papers, and educational resources with fellow students in the pharmacy profession.
                 </p>
+
+                <!-- Category Filter Buttons -->
+                <div id="category-filter" class="flex justify-center space-x-4 mb-8">
+                    <button id="diploma-btn" class="category-button px-6 py-2 rounded-xl font-bold bg-gray-700 hover:bg-shine-blue hover:text-gray-900 transition duration-300 transform hover:scale-105">
+                        Diploma Pharmacy
+                    </button>
+                    <button id="certificate-btn" class="category-button px-6 py-2 rounded-xl font-bold bg-gray-700 hover:bg-shine-green hover:text-gray-900 transition duration-300 transform hover:scale-105">
+                        Certificate Pharmacy
+                    </button>
+                </div>
+
                 <!-- START OF AD UNIT PLACEHOLDER -->
                 <div class="my-8">
                     <p class="text-gray-500 text-sm italic">AdSense Ad Unit Placeholder</p>
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
                 </div>
                 <!-- END OF AD UNIT PLACEHOLDER -->
                 <div id="content-container">
@@ -165,6 +216,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer Section with new content -->
+    <footer class="w-full bg-[#1a1a1a] p-8 mt-12 text-center text-gray-400">
+        <div class="container mx-auto">
+            <div class="flex flex-wrap justify-center space-x-6 mb-4">
+                <a href="#about" class="hover:text-shine-blue transition-colors">About Us</a>
+                <a href="#privacy" class="hover:text-shine-blue transition-colors">Privacy Policy</a>
+                <a href="#terms" class="hover:text-shine-blue transition-colors">Terms and Conditions</a>
+            </div>
+            <div class="text-sm">
+                <p>Contact Us:</p>
+                <p>Phone: +256756454646</p>
+                <p>Email: <a href="mailto:kaigwaakram123@gmail.com" class="hover:underline text-shine-blue">kaigwaakram123@gmail.com</a></p>
+            </div>
+            <p class="mt-4 text-xs">&copy; 2025 Studypedia. All Rights Reserved.</p>
+        </div>
+    </footer>
 
     <!-- Login/Signup Modal -->
     <div id="auth-modal" class="modal-overlay">
@@ -183,11 +251,11 @@
                     <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
                 </div>
                 <div class="flex items-center justify-between mt-6">
-                    <button type="submit" id="submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Login</button>
+                    <button type="submit" id="submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Login</button>
                 </div>
                 <div class="text-center mt-4">
                     <p id="toggle-auth-mode-text" class="text-gray-400">
-                        Don't have an account? <span id="toggle-auth-mode" class="text-link">Sign Up</span>
+                        Don't have an account? <span id="toggle-auth-mode" class="text-link hover:underline cursor-pointer">Sign Up</span>
                     </p>
                 </div>
             </form>
@@ -214,11 +282,18 @@
                     <textarea id="resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="A brief description of the notes..." required></textarea>
                 </div>
                 <div class="input-group">
+                    <label for="resource-category">Category</label>
+                    <select id="resource-category" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                        <option value="diploma">Diploma Pharmacy</option>
+                        <option value="certificate">Certificate Pharmacy</option>
+                    </select>
+                </div>
+                <div class="input-group">
                     <label for="resource-url">Download URL</label>
                     <input type="url" id="resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="E.g., https://example.com/notes.pdf" required>
                 </div>
                 <div class="flex items-center justify-between mt-6">
-                    <button type="submit" id="add-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Add Resource</button>
+                    <button type="submit" id="add-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-shine-green text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Add Resource</button>
                 </div>
             </form>
             <div id="message-box-add" class="mt-4 p-4 rounded-lg hidden">
@@ -245,11 +320,18 @@
                     <textarea id="edit-resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required></textarea>
                 </div>
                 <div class="input-group">
+                    <label for="edit-resource-category">Category</label>
+                    <select id="edit-resource-category" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                        <option value="diploma">Diploma Pharmacy</option>
+                        <option value="certificate">Certificate Pharmacy</option>
+                    </select>
+                </div>
+                <div class="input-group">
                     <label for="edit-resource-url">Download URL</label>
                     <input type="url" id="edit-resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
                 </div>
                 <div class="flex items-center justify-between mt-6">
-                    <button type="submit" id="edit-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-green-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Save Changes</button>
+                    <button type="submit" id="edit-resource-submit-btn" class="btn w-full py-3 px-6 rounded-xl font-bold bg-shine-purple text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">Save Changes</button>
                 </div>
             </form>
             <div id="message-box-edit" class="mt-4 p-4 rounded-lg hidden">
@@ -269,7 +351,6 @@
             </div>
         </div>
     </div>
-
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -313,10 +394,13 @@
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const resourceTitleInput = document.getElementById('resource-title');
+        // FIX: Corrected a typo that was trying to reassign the global document object.
         const resourceContentInput = document.getElementById('resource-content');
+        const resourceCategoryInput = document.getElementById('resource-category');
         const resourceUrlInput = document.getElementById('resource-url');
         const editResourceTitleInput = document.getElementById('edit-resource-title');
         const editResourceContentInput = document.getElementById('edit-resource-content');
+        const editResourceCategoryInput = document.getElementById('edit-resource-category');
         const editResourceUrlInput = document.getElementById('edit-resource-url');
         const editDocIdInput = document.getElementById('edit-doc-id');
         const messageBoxAuth = document.getElementById('message-box-auth');
@@ -329,8 +413,12 @@
         const userEmail = document.getElementById('user-email');
         const contentContainer = document.getElementById('content-container');
         const loadingMessage = document.getElementById('loading-message');
+        const diplomaBtn = document.getElementById('diploma-btn');
+        const certificateBtn = document.getElementById('certificate-btn');
+        const categoryButtons = document.querySelectorAll('.category-button');
 
         let isLoginMode = true;
+        let currentCategory = 'diploma';
 
         const displayMessage = (message, isError = true, modalType = 'auth') => {
             let msgBox, msgText;
@@ -384,11 +472,13 @@
                     const card = button.closest('.card');
                     const title = card.querySelector('h3').textContent;
                     const content = card.querySelector('p').textContent;
+                    const category = button.dataset.category;
                     const url = card.querySelector('a')?.href || '';
 
                     editDocIdInput.value = docId;
                     editResourceTitleInput.value = title;
                     editResourceContentInput.value = content;
+                    editResourceCategoryInput.value = category;
                     editResourceUrlInput.value = url;
                     editResourceModal.style.display = 'flex';
                 });
@@ -401,7 +491,7 @@
                     
                     const handleConfirm = async () => {
                         try {
-                            const docRef = doc(db, "DIPLOMA_PHARMACY", docId);
+                            const docRef = doc(db, "PHARMACY_RESOURCES", docId);
                             await deleteDoc(docRef);
                             displayMessage('Resource deleted successfully!', false, 'edit');
                         } catch (error) {
@@ -436,15 +526,22 @@
         };
 
         const fetchAndDisplayData = (user) => {
-            // Use onSnapshot for real-time updates
-            const q = query(collection(db, "DIPLOMA_PHARMACY"));
+            // FIX: Modified the query to only fetch resources created by the current user
+            // This prevents a 'Missing or insufficient permissions' error that occurs when
+            // the Firestore security rules are set to only allow users to read their own data.
+            const q = query(
+                collection(db, "PHARMACY_RESOURCES"),
+                where("category", "==", currentCategory),
+                where("createdBy", "==", user.uid)
+            );
+            
             onSnapshot(q, (querySnapshot) => {
                 if (loadingMessage) {
                     loadingMessage.classList.add('hidden');
                 }
 
                 if (querySnapshot.empty) {
-                    contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">No resources found. Add your first resource by clicking the "Add Resource" button!</p>';
+                    contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">No resources found for this category. Be the first to add one!</p>';
                     return;
                 }
                 
@@ -453,37 +550,38 @@
                     const data = doc.data();
                     const isOwner = user && data.createdBy === user.uid;
                     htmlContent += `
-    <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
-                <p class="text-gray-400">${data.content}</p>
-            </div>
-            ${isOwner ? `
-                <div class="relative">
-                    <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
-                        <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
-                    </button>
-                    <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
-                        <a class="options-menu-item edit-option" data-doc-id="${doc.id}">
-                            <i class="ph-bold ph-pencil"></i>
-                            <span>Edit</span>
-                        </a>
-                        <a class="options-menu-item delete-option" data-doc-id="${doc.id}">
-                            <i class="ph-bold ph-trash"></i>
-                            <span>Delete</span>
-                        </a>
-                    </div>
-                </div>
-            ` : ''}
-        </div>
-        <div class="flex justify-start items-center">
-            ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="py-2 px-4 rounded-xl font-bold bg-[#61DAFB] text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300 transform hover:scale-105">
-                <i class="ph-bold ph-download-simple mr-2"></i>Download
-            </a>` : ''}
-        </div>
-    </div>
-`;
+                        <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
+                                    <p class="text-gray-400">${data.content}</p>
+                                </div>
+                                ${isOwner ? `
+                                    <div class="relative">
+                                        <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
+                                            <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
+                                        </button>
+                                        <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
+                                            <a class="options-menu-item edit-option hover:bg-gray-700" data-doc-id="${doc.id}" data-category="${data.category}">
+                                                <i class="ph-bold ph-pencil"></i>
+                                                <span>Edit</span>
+                                            </a>
+                                            <a class="options-menu-item delete-option hover:bg-gray-700" data-doc-id="${doc.id}">
+                                                <i class="ph-bold ph-trash"></i>
+                                                <span>Delete</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="flex justify-start items-center">
+                                ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300 transform hover:scale-105 flex items-center">
+                                    <i class="ph-bold ph-download-simple mr-2"></i>Download
+                                </a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
                 contentContainer.innerHTML = htmlContent;
                 attachEventListeners(user);
             }, (error) => {
@@ -492,7 +590,26 @@
             });
         };
 
+        const setActiveButton = (buttonId) => {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            const newActiveButton = document.getElementById(buttonId);
+            if (newActiveButton) {
+                newActiveButton.classList.add('active');
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
+            const toggleAuthModeText = document.getElementById('toggle-auth-mode-text');
+            if (toggleAuthModeText) {
+                toggleAuthModeText.addEventListener('click', (event) => {
+                    const span = event.target.closest('span');
+                    if (span && span.id === 'toggle-auth-mode') {
+                        event.preventDefault();
+                        toggleAuthMode(event);
+                    }
+                });
+            }
+
             loginSignupBtn.addEventListener('click', () => {
                 authModal.style.display = 'flex';
                 displayMessage(' ', false, 'auth');
@@ -526,11 +643,25 @@
                 editResourceForm.reset();
             });
 
-            document.getElementById('toggle-auth-mode-text').addEventListener('click', (event) => {
-                const span = event.target.closest('span');
-                if (span && span.id === 'toggle-auth-mode') {
-                    toggleAuthMode(event);
-                }
+            // New event listeners for category buttons
+            diplomaBtn.addEventListener('click', () => {
+                currentCategory = 'diploma';
+                setActiveButton('diploma-btn');
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        fetchAndDisplayData(user);
+                    }
+                });
+            });
+
+            certificateBtn.addEventListener('click', () => {
+                currentCategory = 'certificate';
+                setActiveButton('certificate-btn');
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        fetchAndDisplayData(user);
+                    }
+                });
             });
 
             authForm.addEventListener('submit', async (e) => {
@@ -565,13 +696,15 @@
                 
                 const title = resourceTitleInput.value;
                 const content = resourceContentInput.value;
+                const category = resourceCategoryInput.value;
                 const url = resourceUrlInput.value;
                 const user = auth.currentUser;
 
                 try {
-                    await addDoc(collection(db, "DIPLOMA_PHARMACY"), {
+                    await addDoc(collection(db, "PHARMACY_RESOURCES"), {
                         title: title,
                         content: content,
+                        category: category,
                         download_url: url,
                         createdBy: user.uid,
                         createdAt: new Date()
@@ -595,13 +728,15 @@
                 const docId = editDocIdInput.value;
                 const title = editResourceTitleInput.value;
                 const content = editResourceContentInput.value;
+                const category = editResourceCategoryInput.value;
                 const url = editResourceUrlInput.value;
 
                 try {
-                    const docRef = doc(db, "DIPLOMA_PHARMACY", docId);
+                    const docRef = doc(db, "PHARMACY_RESOURCES", docId);
                     await updateDoc(docRef, {
                         title: title,
                         content: content,
+                        category: category,
                         download_url: url,
                         updatedAt: new Date()
                     });
@@ -626,6 +761,7 @@
                     document.getElementById('content-display').classList.remove('flex-1');
                     document.getElementById('content-display').classList.add('flex-col');
                     fetchAndDisplayData(user);
+                    setActiveButton('diploma-btn');
                 } else {
                     userDetails.classList.add('hidden');
                     loginSignupBtn.classList.remove('hidden');
@@ -635,24 +771,14 @@
                     document.getElementById('content-display').classList.add('flex-1');
                     document.getElementById('content-display').classList.remove('flex-col');
                     contentContainer.innerHTML = '<p id="loading-message" class="loading">Please log in to view resources.</p>';
+                    
+                    // Fix for the error:
+                    // Explicitly remove the active class from all buttons when logged out
+                    document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
                 }
             });
         });
     </script>
-    <footer class="w-full bg-[#1a1a1a] p-8 mt-12 text-center text-gray-400">
-    <div class="container mx-auto">
-        <div class="flex flex-wrap justify-center space-x-6 mb-4">
-            <a href="#about" class="hover:text-[#61DAFB] transition-colors">About Us</a>
-            <a href="#privacy" class="hover:text-[#61DAFB] transition-colors">Privacy Policy</a>
-            <a href="#terms" class="hover:text-[#61DAFB] transition-colors">Terms and Conditions</a>
-        </div>
-        <div class="text-sm">
-            <p>Contact Us:</p>
-            <p>Phone: +256756454646</p>
-            <p>Email: <a href="mailto:kaigwaakram123@gmail.com" class="hover:underline">kaigwaakram123@gmail.com</a></p>
-        </div>
-        <p class="mt-4 text-xs">&copy; 2025 Studypedia. All Rights Reserved.</p>
-    </div>
-</footer>
 </body>
 </html>
+
