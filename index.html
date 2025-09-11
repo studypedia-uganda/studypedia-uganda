@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -438,4 +437,120 @@
                         </select>
                         <form id="add-semester-form" class="flex-grow flex gap-2">
                             <input type="text" id="new-semester-name" placeholder="New Semester Name (e.g., Semester 1)" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
-                            <button type="submit" class="py-2 px-4 rounded
+                            <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-green text-gray-900">Add Semester</button>
+                        </form>
+                    </div>
+                    <div id="admin-semesters-list" class="space-y-2 mb-4">
+                        <!-- Semesters dynamically loaded here -->
+                    </div>
+                    <div id="message-box-admin-semester" class="mt-2 p-2 rounded-lg hidden">
+                        <p id="message-text-admin-semester" class="text-sm"></p>
+                    </div>
+                </div>
+
+                <!-- Manage Course Units Section -->
+                <div class="bg-[#333] p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold text-shine-blue mb-4">Manage Course Units</h3>
+                    <div class="flex flex-col md:flex-row gap-4 mb-4">
+                        <select id="admin-course-unit-field-select" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
+                            <option value="">Select Field</option>
+                        </select>
+                        <select id="admin-course-unit-semester-select" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white" disabled>
+                            <option value="">Select Semester</option>
+                        </select>
+                    </div>
+                    <form id="add-course-unit-form" class="flex gap-2 mb-4">
+                        <input type="text" id="new-course-unit-name" placeholder="New Course Unit Name" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
+                        <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-green text-gray-900">Add Course Unit</button>
+                    </form>
+                    <div id="admin-course-units-list" class="space-y-2 mb-4">
+                        <!-- Course units dynamically loaded here -->
+                    </div>
+                    <div id="message-box-admin-course-unit" class="mt-2 p-2 rounded-lg hidden">
+                        <p id="message-text-admin-course-unit" class="text-sm"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
+        authDomain: "studypedia-app.firebaseapp.com",
+        projectId: "studypedia-app",
+        storageBucket: "studypedia-app.firebasestorage.app",
+        messagingSenderId: "793261754970",
+        appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
+        measurementId: "G-6CTGP0MF8Y"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- UI Element References ---
+    const loginSignupBtn = document.getElementById('login-signup-btn');
+    const addResourceBtn = document.getElementById('add-resource-btn');
+    const adminPanelBtn = document.getElementById('admin-panel-btn'); // New
+    const logoutBtn = document.getElementById('logout-btn');
+    const authModal = document.getElementById('auth-modal');
+    const addResourceModal = document.getElementById('add-resource-modal');
+    const editResourceModal = document.getElementById('edit-resource-modal');
+    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+    const adminPanelModal = document.getElementById('admin-panel-modal'); // New
+
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const closeModalAuthBtn = document.getElementById('close-modal-auth');
+    const closeModalAddBtn = document.getElementById('close-modal-add');
+    const closeModalEditBtn = document.getElementById('close-modal-edit');
+    const closeAdminPanelModalBtn = document.getElementById('close-admin-panel-modal'); // New
+
+    const authForm = document.getElementById('auth-form');
+    const addResourceForm = document.getElementById('add-resource-form');
+    const editResourceForm = document.getElementById('edit-resource-form');
+    const modalTitle = document.getElementById('modal-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const addResourceSubmitBtn = document.getElementById('add-resource-submit-btn');
+    const editResourceSubmitBtn = document.getElementById('edit-resource-submit-btn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const userDetails = document.getElementById('user-details');
+    const userEmail = document.getElementById('user-email');
+    const adminStatus = document.getElementById('admin-status'); // New
+    const contentContainer = document.getElementById('content-container');
+    const initialPrompt = document.getElementById('initial-prompt'); // New
+
+    // New navigation elements
+    const fieldsSection = document.getElementById('fields-section');
+    const semestersSection = document.getElementById('semesters-section');
+    const courseUnitsSection = document.getElementById('course-units-section');
+    const loadingFieldsMessage = document.getElementById('loading-fields');
+
+    // New Add Resource Form Selects
+    const resourceFieldSelect = document.getElementById('resource-field');
+    const resourceSemesterSelect = document.getElementById('resource-semester');
+    const resourceCourseUnitSelect = document.getElementById('resource-course-unit');
+    const resourceTitleInput = document.getElementById('resource-title');
+    const resourceContentInput = document.getElementById('resource-content');
+    const resourceUrlInput = document.getElementById('resource-url');
+
+    // New Edit Resource Form Selects
+    const editResourceFieldSelect = document.getElementById('edit-resource-field');
+    const editResourceSemesterSelect = document.getElementById('edit-resource-semester');
+    const editResourceCourseUnitSelect = document.getElementById('edit-resource-course-unit');
+    const editResourceTitleInput = document.getElementById('edit-resource-title');
+    const editResourceContentInput = document.getElementById('edit-resource-content');
+    const editResourceUrlInput = document.getElementById('edit-resource-url');
+    const editDocIdInput = document.getElementById('edit-doc-id');
+
+    const messageBoxAuth = document.getElementById('message-box-auth');
+    const messageTextAuth = document.getElementById('message-text-auth');
+    const messageBoxAdd = document.getElementById('message-box-add');
+    const messageTextAdd =
