@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,6 +77,10 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             position: relative;
         }
+        
+        .modal-lg {
+            max-width: 800px; /* Larger modal for admin tasks */
+        }
 
         .close-button {
             position: absolute;
@@ -143,6 +148,13 @@
             color: #121212;
             transform: scale(1.05);
         }
+
+        .section-button {
+            @apply px-4 py-2 rounded-lg font-bold bg-gray-700 hover:bg-shine-purple hover:text-gray-900 transition duration-300 transform hover:scale-105;
+        }
+        .section-button.active {
+            @apply bg-shine-purple text-gray-900;
+        }
     </style>
 </head>
 <body class="bg-[#121212] font-sans text-gray-200">
@@ -162,6 +174,9 @@
                 <button id="add-resource-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-shine-green text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
                     Add Resource
                 </button>
+                <button id="admin-panel-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-shine-purple text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
+                    Admin Panel
+                </button>
                 <button id="logout-btn" class="w-full py-3 px-6 mt-4 rounded-xl font-bold bg-red-500 text-gray-900 shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 hidden">
                     Logout
                 </button>
@@ -169,6 +184,7 @@
                 <div id="user-details" class="mt-8 hidden p-4 bg-[#242424] rounded-lg">
                     <p class="text-sm font-semibold">Logged in as:</p>
                     <p id="user-email" class="text-sm font-medium break-all"></p>
+                    <p id="admin-status" class="text-xs text-shine-purple mt-2 hidden">Administrator</p>
                 </div>
                 <!-- AdSense ad unit placeholder for the sidebar -->
                 <div class="w-full text-center text-gray-500 text-xs mt-8">
@@ -181,25 +197,37 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col items-center p-8 text-center">
-            <div id="content-display" class="w-full max-w-2xl">
+            <div id="content-display" class="w-full max-w-4xl">
                 <h2 class="text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
-                    Welcome to Studypedia uganda
+                    Welcome to Studypedia Uganda
                 </h2>
                 <h3 class="text-3xl md:text-4xl font-semibold text-shine-purple mb-6">
-                    Students of pharmacy uganda!
+                    Your hub for pharmacy resources!
                 </h3>
-                <p class="text-base md:text-lg text-gray-400 max-w-2xl mb-8">
-                    Find and share study notes, past papers, and educational resources with fellow students in the pharmacy profession.
+                <p class="text-base md:text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+                    Select a field of study, then a semester, and finally a course unit to access valuable learning materials.
                 </p>
 
-                <!-- Category Filter Buttons -->
-                <div id="category-filter" class="flex justify-center space-x-4 mb-8">
-                    <button id="diploma-btn" class="category-button px-6 py-2 rounded-xl font-bold bg-gray-700 hover:bg-shine-blue hover:text-gray-900 transition duration-300 transform hover:scale-105">
-                        Diploma Pharmacy
-                    </button>
-                    <button id="certificate-btn" class="category-button px-6 py-2 rounded-xl font-bold bg-gray-700 hover:bg-shine-green hover:text-gray-900 transition duration-300 transform hover:scale-105">
-                        Certificate Pharmacy
-                    </button>
+                <!-- Dynamic Navigation Controls (Fields, Semesters, Course Units) -->
+                <div id="navigation-controls" class="flex flex-col space-y-4 mb-8">
+                    <!-- Fields Section -->
+                    <div id="fields-section" class="flex flex-wrap justify-center gap-4">
+                        <h4 class="text-xl font-semibold text-white w-full mb-2">Select Field:</h4>
+                        <!-- Field buttons will be dynamically loaded here -->
+                        <p id="loading-fields" class="text-gray-400">Loading fields...</p>
+                    </div>
+
+                    <!-- Semesters Section -->
+                    <div id="semesters-section" class="hidden flex-wrap justify-center gap-4 mt-4">
+                        <h4 class="text-xl font-semibold text-white w-full mb-2">Select Semester:</h4>
+                        <!-- Semester buttons will be dynamically loaded here -->
+                    </div>
+
+                    <!-- Course Units Section -->
+                    <div id="course-units-section" class="hidden flex-wrap justify-center gap-4 mt-4">
+                        <h4 class="text-xl font-semibold text-white w-full mb-2">Select Course Unit:</h4>
+                        <!-- Course Unit buttons will be dynamically loaded here -->
+                    </div>
                 </div>
 
                 <!-- START OF AD UNIT PLACEHOLDER -->
@@ -210,8 +238,8 @@
                 </div>
                 <!-- END OF AD UNIT PLACEHOLDER -->
                 <div id="content-container">
-                    <!-- Dynamic content will be loaded here -->
-                    <p id="loading-message" class="loading">Please log in to view resources.</p>
+                    <!-- Dynamic content (resources) will be loaded here -->
+                    <p id="initial-prompt" class="text-gray-400 font-semibold text-xl">Please select a field, semester, and course unit to view resources.</p>
                 </div>
             </div>
         </div>
@@ -274,19 +302,32 @@
             <h2 class="text-3xl font-bold mb-6 text-white text-center">Add a New Resource</h2>
             <form id="add-resource-form" class="space-y-4">
                 <div class="input-group">
+                    <label for="resource-field">Field</label>
+                    <select id="resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="resource-semester">Semester</label>
+                    <select id="resource-semester" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required disabled>
+                        <option value="">Select a Semester</option>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="resource-course-unit">Course Unit</label>
+                    <select id="resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required disabled>
+                        <option value="">Select a Course Unit</option>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
                     <label for="resource-title">Title</label>
                     <input type="text" id="resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="E.g., Anatomy Lecture Notes" required>
                 </div>
                 <div class="input-group">
                     <label for="resource-content">Description</label>
                     <textarea id="resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="A brief description of the notes..." required></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="resource-category">Category</label>
-                    <select id="resource-category" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
-                        <option value="diploma">Diploma Pharmacy</option>
-                        <option value="certificate">Certificate Pharmacy</option>
-                    </select>
                 </div>
                 <div class="input-group">
                     <label for="resource-url">Download URL</label>
@@ -311,6 +352,26 @@
             <h2 class="text-3xl font-bold mb-6 text-white text-center">Edit Resource</h2>
             <form id="edit-resource-form" class="space-y-4">
                 <input type="hidden" id="edit-doc-id">
+                 <div class="input-group">
+                    <label for="edit-resource-field">Field</label>
+                    <select id="edit-resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="edit-resource-semester">Semester</label>
+                    <select id="edit-resource-semester" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required disabled>
+                        <option value="">Select a Semester</option>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="edit-resource-course-unit">Course Unit</label>
+                    <select id="edit-resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required disabled>
+                        <option value="">Select a Course Unit</option>
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
                 <div class="input-group">
                     <label for="edit-resource-title">Title</label>
                     <input type="text" id="edit-resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
@@ -318,13 +379,6 @@
                 <div class="input-group">
                     <label for="edit-resource-content">Description</label>
                     <textarea id="edit-resource-content" rows="4" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="edit-resource-category">Category</label>
-                    <select id="edit-resource-category" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" required>
-                        <option value="diploma">Diploma Pharmacy</option>
-                        <option value="certificate">Certificate Pharmacy</option>
-                    </select>
                 </div>
                 <div class="input-group">
                     <label for="edit-resource-url">Download URL</label>
@@ -352,437 +406,36 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    <!-- Admin Panel Modal -->
+    <div id="admin-panel-modal" class="modal-overlay">
+        <div class="modal modal-lg">
+            <span id="close-admin-panel-modal" class="close-button">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </span>
+            <h2 class="text-3xl font-bold mb-6 text-white text-center">Admin Panel</h2>
+            <div class="space-y-6">
+                <!-- Manage Fields Section -->
+                <div class="bg-[#333] p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold text-shine-blue mb-4">Manage Fields (Diploma, Certificate, etc.)</h3>
+                    <div id="admin-fields-list" class="space-y-2 mb-4">
+                        <!-- Fields dynamically loaded here -->
+                    </div>
+                    <form id="add-field-form" class="flex gap-2">
+                        <input type="text" id="new-field-name" placeholder="New Field Name" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
+                        <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-green text-gray-900">Add Field</button>
+                    </form>
+                    <div id="message-box-admin-field" class="mt-2 p-2 rounded-lg hidden">
+                        <p id="message-text-admin-field" class="text-sm"></p>
+                    </div>
+                </div>
 
-        // Initialize Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
-            authDomain: "studypedia-app.firebaseapp.com",
-            projectId: "studypedia-app",
-            storageBucket: "studypedia-app.firebasestorage.app",
-            messagingSenderId: "793261754970",
-            appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
-            measurementId: "G-6CTGP0MF8Y"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // UI Element references
-        const loginSignupBtn = document.getElementById('login-signup-btn');
-        const addResourceBtn = document.getElementById('add-resource-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const authModal = document.getElementById('auth-modal');
-        const addResourceModal = document.getElementById('add-resource-modal');
-        const editResourceModal = document.getElementById('edit-resource-modal');
-        const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-        const closeModalAuthBtn = document.getElementById('close-modal-auth');
-        const closeModalAddBtn = document.getElementById('close-modal-add');
-        const closeModalEditBtn = document.getElementById('close-modal-edit');
-        const authForm = document.getElementById('auth-form');
-        const addResourceForm = document.getElementById('add-resource-form');
-        const editResourceForm = document.getElementById('edit-resource-form');
-        const modalTitle = document.getElementById('modal-title');
-        const submitBtn = document.getElementById('submit-btn');
-        const addResourceSubmitBtn = document.getElementById('add-resource-submit-btn');
-        const editResourceSubmitBtn = document.getElementById('edit-resource-submit-btn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const resourceTitleInput = document.getElementById('resource-title');
-        // FIX: Corrected a typo that was trying to reassign the global document object.
-        const resourceContentInput = document.getElementById('resource-content');
-        const resourceCategoryInput = document.getElementById('resource-category');
-        const resourceUrlInput = document.getElementById('resource-url');
-        const editResourceTitleInput = document.getElementById('edit-resource-title');
-        const editResourceContentInput = document.getElementById('edit-resource-content');
-        const editResourceCategoryInput = document.getElementById('edit-resource-category');
-        const editResourceUrlInput = document.getElementById('edit-resource-url');
-        const editDocIdInput = document.getElementById('edit-doc-id');
-        const messageBoxAuth = document.getElementById('message-box-auth');
-        const messageTextAuth = document.getElementById('message-text-auth');
-        const messageBoxAdd = document.getElementById('message-box-add');
-        const messageTextAdd = document.getElementById('message-text-add');
-        const messageBoxEdit = document.getElementById('message-box-edit');
-        const messageTextEdit = document.getElementById('message-text-edit');
-        const userDetails = document.getElementById('user-details');
-        const userEmail = document.getElementById('user-email');
-        const contentContainer = document.getElementById('content-container');
-        const loadingMessage = document.getElementById('loading-message');
-        const diplomaBtn = document.getElementById('diploma-btn');
-        const certificateBtn = document.getElementById('certificate-btn');
-        const categoryButtons = document.querySelectorAll('.category-button');
-
-        let isLoginMode = true;
-        let currentCategory = 'diploma';
-
-        const displayMessage = (message, isError = true, modalType = 'auth') => {
-            let msgBox, msgText;
-            if (modalType === 'auth') {
-                msgBox = messageBoxAuth;
-                msgText = messageTextAuth;
-            } else if (modalType === 'add') {
-                msgBox = messageBoxAdd;
-                msgText = messageTextAdd;
-            } else if (modalType === 'edit') {
-                msgBox = messageBoxEdit;
-                msgText = messageTextEdit;
-            }
-
-            if (msgBox && msgText) {
-                msgBox.classList.remove('hidden');
-                msgText.textContent = message;
-                msgBox.className = isError ? 'error-message' : 'success-message';
-            }
-        };
-
-        const toggleAuthMode = (event) => {
-            event.preventDefault();
-            isLoginMode = !isLoginMode;
-            const toggleElement = document.getElementById('toggle-auth-mode');
-            if (isLoginMode) {
-                modalTitle.textContent = 'Login';
-                submitBtn.textContent = 'Login';
-                toggleElement.textContent = 'Sign Up';
-            } else {
-                modalTitle.textContent = 'Sign Up';
-                submitBtn.textContent = 'Sign Up';
-                toggleElement.textContent = 'Login';
-            }
-        };
-
-        const attachEventListeners = (user) => {
-            document.querySelectorAll('.options-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevents the card click listener from firing
-                    const menu = button.nextElementSibling;
-                    if (menu) {
-                        menu.classList.toggle('hidden');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.edit-option').forEach(button => {
-                button.addEventListener('click', () => {
-                    const docId = button.dataset.docId;
-                    const card = button.closest('.card');
-                    const title = card.querySelector('h3').textContent;
-                    const content = card.querySelector('p').textContent;
-                    const category = button.dataset.category;
-                    const url = card.querySelector('a')?.href || '';
-
-                    editDocIdInput.value = docId;
-                    editResourceTitleInput.value = title;
-                    editResourceContentInput.value = content;
-                    editResourceCategoryInput.value = category;
-                    editResourceUrlInput.value = url;
-                    editResourceModal.style.display = 'flex';
-                });
-            });
-
-            document.querySelectorAll('.delete-option').forEach(button => {
-                button.addEventListener('click', async () => {
-                    const docId = button.dataset.docId;
-                    confirmDeleteModal.style.display = 'flex';
-                    
-                    const handleConfirm = async () => {
-                        try {
-                            const docRef = doc(db, "PHARMACY_RESOURCES", docId);
-                            await deleteDoc(docRef);
-                            displayMessage('Resource deleted successfully!', false, 'edit');
-                        } catch (error) {
-                            console.error("Error deleting document: ", error);
-                            displayMessage(`Error deleting resource: ${error.message}`, true, 'edit');
-                        } finally {
-                            confirmDeleteModal.style.display = 'none';
-                            confirmDeleteBtn.removeEventListener('click', handleConfirm);
-                            cancelDeleteBtn.removeEventListener('click', handleCancel);
-                        }
-                    };
-
-                    const handleCancel = () => {
-                        confirmDeleteModal.style.display = 'none';
-                        confirmDeleteBtn.removeEventListener('click', handleConfirm);
-                        cancelDeleteBtn.removeEventListener('click', handleCancel);
-                    };
-
-                    confirmDeleteBtn.addEventListener('click', handleConfirm);
-                    cancelDeleteBtn.addEventListener('click', handleCancel);
-                });
-            });
-
-            // Close all menus when clicking anywhere else on the document
-            document.addEventListener('click', (e) => {
-                document.querySelectorAll('.options-menu').forEach(menu => {
-                    if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !e.target.closest('.options-btn')) {
-                        menu.classList.add('hidden');
-                    }
-                });
-            });
-        };
-
-        const fetchAndDisplayData = (user) => {
-            // FIX: The previous code was incorrectly filtering by 'createdBy'
-            // This prevented a logged-in user from seeing all public resources.
-            // The security rules you applied allow all logged-in users to read all documents.
-            const q = query(
-                collection(db, "PHARMACY_RESOURCES"),
-                where("category", "==", currentCategory)
-            );
-            
-            onSnapshot(q, (querySnapshot) => {
-                if (loadingMessage) {
-                    loadingMessage.classList.add('hidden');
-                }
-
-                if (querySnapshot.empty) {
-                    contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">No resources found for this category. Be the first to add one!</p>';
-                    return;
-                }
-                
-                let htmlContent = '';
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // FIX: Ensure the user object exists before checking its uid
-                    const isOwner = user && data.createdBy === user.uid;
-                    htmlContent += `
-                        <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
-                                    <p class="text-gray-400">${data.content}</p>
-                                </div>
-                                ${isOwner ? `
-                                    <div class="relative">
-                                        <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
-                                            <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
-                                        </button>
-                                        <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
-                                            <a class="options-menu-item edit-option hover:bg-gray-700" data-doc-id="${doc.id}" data-category="${data.category}">
-                                                <i class="ph-bold ph-pencil"></i>
-                                                <span>Edit</span>
-                                            </a>
-                                            <a class="options-menu-item delete-option hover:bg-gray-700" data-doc-id="${doc.id}">
-                                                <i class="ph-bold ph-trash"></i>
-                                                <span>Delete</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div class="flex justify-start items-center">
-                                ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300 transform hover:scale-105 flex items-center">
-                                    <i class="ph-bold ph-download-simple mr-2"></i>Download
-                                </a>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                contentContainer.innerHTML = htmlContent;
-                attachEventListeners(user);
-            }, (error) => {
-                console.error("Error fetching documents: ", error);
-                contentContainer.innerHTML = `<p class="error-message">Error fetching data: ${error.message}</p>`;
-            });
-        };
-
-        const setActiveButton = (buttonId) => {
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            const newActiveButton = document.getElementById(buttonId);
-            if (newActiveButton) {
-                newActiveButton.classList.add('active');
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleAuthModeText = document.getElementById('toggle-auth-mode-text');
-            if (toggleAuthModeText) {
-                toggleAuthModeText.addEventListener('click', (event) => {
-                    const span = event.target.closest('span');
-                    if (span && span.id === 'toggle-auth-mode') {
-                        event.preventDefault();
-                        toggleAuthMode(event);
-                    }
-                });
-            }
-
-            // FIX: Added a console log to confirm that the event listener is being attached.
-            console.log("Adding event listener to login/signup button.");
-            loginSignupBtn.addEventListener('click', () => {
-                // FIX: Added a console log to confirm that the click event is firing.
-                console.log("Login/Signup button clicked.");
-                authModal.style.display = 'flex';
-                displayMessage(' ', false, 'auth');
-            });
-
-            addResourceBtn.addEventListener('click', () => {
-                addResourceModal.style.display = 'flex';
-                displayMessage(' ', false, 'add');
-            });
-            
-            logoutBtn.addEventListener('click', async () => {
-                try {
-                    await signOut(auth);
-                    console.log("User logged out successfully.");
-                } catch (error) {
-                    console.error("Error logging out: ", error);
-                }
-            });
-
-            closeModalAuthBtn.addEventListener('click', () => {
-                authModal.style.display = 'none';
-            });
-
-            closeModalAddBtn.addEventListener('click', () => {
-                addResourceModal.style.display = 'none';
-                addResourceForm.reset();
-            });
-
-            closeModalEditBtn.addEventListener('click', () => {
-                editResourceModal.style.display = 'none';
-                editResourceForm.reset();
-            });
-
-            // New event listeners for category buttons
-            diplomaBtn.addEventListener('click', () => {
-                currentCategory = 'diploma';
-                setActiveButton('diploma-btn');
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        fetchAndDisplayData(user);
-                    }
-                });
-            });
-
-            certificateBtn.addEventListener('click', () => {
-                currentCategory = 'certificate';
-                setActiveButton('certificate-btn');
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        fetchAndDisplayData(user);
-                    }
-                });
-            });
-
-            authForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                submitBtn.textContent = 'Loading...';
-                submitBtn.disabled = true;
-
-                const email = emailInput.value;
-                const password = passwordInput.value;
-
-                try {
-                    if (isLoginMode) {
-                        await signInWithEmailAndPassword(auth, email, password);
-                        displayMessage('Login successful!', false, 'auth');
-                    } else {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        displayMessage('Sign-up successful!', false, 'auth');
-                    }
-                    setTimeout(() => authModal.style.display = 'none', 1000);
-                } catch (error) {
-                    displayMessage(`Error: ${error.message}`, true, 'auth');
-                } finally {
-                    submitBtn.textContent = isLoginMode ? 'Login' : 'Sign Up';
-                    submitBtn.disabled = false;
-                }
-            });
-            
-            addResourceForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                addResourceSubmitBtn.textContent = 'Adding...';
-                addResourceSubmitBtn.disabled = true;
-                
-                const title = resourceTitleInput.value;
-                const content = resourceContentInput.value;
-                const category = resourceCategoryInput.value;
-                const url = resourceUrlInput.value;
-                const user = auth.currentUser;
-
-                try {
-                    await addDoc(collection(db, "PHARMACY_RESOURCES"), {
-                        title: title,
-                        content: content,
-                        category: category,
-                        download_url: url,
-                        createdBy: user.uid,
-                        createdAt: new Date()
-                    });
-                    displayMessage('Resource added successfully!', false, 'add');
-                    addResourceForm.reset();
-                    setTimeout(() => addResourceModal.style.display = 'none', 1500);
-                } catch (error) {
-                    displayMessage(`Error adding resource: ${error.message}`, true, 'add');
-                } finally {
-                    addResourceSubmitBtn.textContent = 'Add Resource';
-                    addResourceSubmitBtn.disabled = false;
-                }
-            });
-
-            editResourceForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                editResourceSubmitBtn.textContent = 'Saving...';
-                editResourceSubmitBtn.disabled = true;
-
-                const docId = editDocIdInput.value;
-                const title = editResourceTitleInput.value;
-                const content = editResourceContentInput.value;
-                const category = editResourceCategoryInput.value;
-                const url = editResourceUrlInput.value;
-
-                try {
-                    const docRef = doc(db, "PHARMACY_RESOURCES", docId);
-                    await updateDoc(docRef, {
-                        title: title,
-                        content: content,
-                        category: category,
-                        download_url: url,
-                        updatedAt: new Date()
-                    });
-                    displayMessage('Resource updated successfully!', false, 'edit');
-                    setTimeout(() => editResourceModal.style.display = 'none', 1500);
-                } catch (error) {
-                    displayMessage(`Error updating resource: ${error.message}`, true, 'edit');
-                } finally {
-                    editResourceSubmitBtn.textContent = 'Save Changes';
-                    editResourceSubmitBtn.disabled = false;
-                }
-            });
-
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    userDetails.classList.remove('hidden');
-                    userEmail.textContent = user.email || 'Anonymous User';
-                    loginSignupBtn.classList.add('hidden');
-                    addResourceBtn.classList.remove('hidden');
-                    logoutBtn.classList.remove('hidden');
-                    
-                    document.getElementById('content-display').classList.remove('flex-1');
-                    document.getElementById('content-display').classList.add('flex-col');
-                    fetchAndDisplayData(user);
-                    setActiveButton('diploma-btn');
-                } else {
-                    userDetails.classList.add('hidden');
-                    loginSignupBtn.classList.remove('hidden');
-                    addResourceBtn.classList.add('hidden');
-                    logoutBtn.classList.add('hidden');
-                    
-                    document.getElementById('content-display').classList.add('flex-1');
-                    document.getElementById('content-display').classList.remove('flex-col');
-                    contentContainer.innerHTML = '<p id="loading-message" class="loading">Please log in to view resources.</p>';
-                    
-                    // Fix for the error:
-                    // Explicitly remove the active class from all buttons when logged out
-                    document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
-                }
-            });
-        });
-    </script>
-</body>
-</html>
-
+                <!-- Manage Semesters Section -->
+                <div class="bg-[#333] p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold text-shine-purple mb-4">Manage Semesters</h3>
+                    <div class="flex flex-col md:flex-row gap-4 mb-4">
+                        <select id="admin-semester-field-select" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
+                            <option value="">Select Field</option>
+                        </select>
+                        <form id="add-semester-form" class="flex-grow flex gap-2">
+                            <input type="text" id="new-semester-name" placeholder="New Semester Name (e.g., Semester 1)" class="flex-grow py-2 px-4 rounded-lg bg-[#242424] border border-[#555] text-white">
+                            <button type="submit" class="py-2 px-4 rounded
