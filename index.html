@@ -1608,43 +1608,43 @@
                             const id = href.replace('/documents/', '').replace('_notes.pdf', '');
                             const h4 = sub.querySelector('h4');
                             const p = sub.querySelector('p');
-                            if (documents[id] && documents[id].link) {
-                                link.setAttribute('href', documents[id].link);
-                                link.setAttribute('target', '_blank'); // Open in new tab
-                                if (documents[id].name) {
-                                    link.textContent = documents[id].name;
-                                    if (h4) h4.textContent = documents[id].name;
-                                    if (p) p.textContent = 'Click below to download the document.';
-                                }
-                            } else {
-                                // Check if admin
-                                const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
-                                if (isAdmin) {
-                                    link.textContent = 'Add Document';
-                                    link.removeAttribute('href');
-                                    link.removeAttribute('target');
-                                    link.onclick = () => {
-                                        document.getElementById('add-doc-modal').style.display = 'block';
-                                        // Set course
-                                        const section = sub.closest('section');
-                                        const sectionId = section.id;
-                                        const courseMap = {
-                                            'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
-                                            'diploma-pharmacy': 'DIPLOMA_PHARMACY',
-                                            'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
-                                            'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
-                                            'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
-                                            'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
-                                        };
-                                        const course = courseMap[sectionId];
-                                        document.getElementById('doc-course').value = course;
-                                        // Set id
-                                        document.getElementById('doc-id').value = id;
-                                        // Trigger change to update placeholder
-                                        document.getElementById('doc-course').dispatchEvent(new Event('change'));
+                            // Check if admin
+                            const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
+                            if (isAdmin) {
+                                link.textContent = 'Add Document';
+                                link.removeAttribute('href');
+                                link.removeAttribute('target');
+                                link.onclick = () => {
+                                    document.getElementById('add-doc-modal').style.display = 'block';
+                                    // Set course
+                                    const section = sub.closest('section');
+                                    const sectionId = section.id;
+                                    const courseMap = {
+                                        'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
+                                        'diploma-pharmacy': 'DIPLOMA_PHARMACY',
+                                        'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
+                                        'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
+                                        'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
+                                        'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
                                     };
-                                    if (h4) h4.textContent = 'Add Document';
-                                    if (p) p.textContent = 'Click below to add a document.';
+                                    const course = courseMap[sectionId];
+                                    document.getElementById('doc-course').value = course;
+                                    // Set id
+                                    document.getElementById('doc-id').value = id;
+                                    // Trigger change to update placeholder
+                                    document.getElementById('doc-course').dispatchEvent(new Event('change'));
+                                };
+                                if (h4) h4.textContent = documents[id] ? documents[id].name : 'Add Document';
+                                if (p) p.textContent = documents[id] ? 'Click below to add another document.' : 'Click below to add a document.';
+                            } else {
+                                if (documents[id] && documents[id].link) {
+                                    link.setAttribute('href', documents[id].link);
+                                    link.setAttribute('target', '_blank'); // Open in new tab
+                                    if (documents[id].name) {
+                                        link.textContent = documents[id].name;
+                                        if (h4) h4.textContent = documents[id].name;
+                                        if (p) p.textContent = 'Click below to download the document.';
+                                    }
                                 } else {
                                     // For users, hide or change
                                     link.style.display = 'none';
