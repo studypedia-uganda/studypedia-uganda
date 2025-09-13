@@ -624,10 +624,13 @@
             }
 
             .dropdown-content {
-                position: relative;
+                position: absolute;
+                top: 100%;
+                left: 0;
                 width: 100%;
-                box-shadow: none;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
                 background-color: #444;
+                z-index: 1000;
             }
 
             .dropdown:hover .dropdown-content {
@@ -674,7 +677,6 @@
     <div id="admin-menu" style="display: none;">
         <button id="admin-toggle">⋮</button>
         <div id="admin-dropdown" style="display: none;">
-            <button id="add-doc-btn">Add Document</button>
             <button id="edit-doc-btn">Edit Documents</button>
             <button id="delete-doc-btn">Delete Documents</button>
             <button id="manage-fields-btn">Manage Fields</button>
@@ -1608,45 +1610,81 @@
                             const id = href.replace('/documents/', '').replace('_notes.pdf', '');
                             const h4 = sub.querySelector('h4');
                             const p = sub.querySelector('p');
-                            // Check if admin
-                            const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
-                            if (isAdmin) {
-                                link.textContent = 'Add Document';
-                                link.removeAttribute('href');
-                                link.removeAttribute('target');
-                                link.onclick = () => {
-                                    document.getElementById('add-doc-modal').style.display = 'block';
-                                    // Set course
-                                    const section = sub.closest('section');
-                                    const sectionId = section.id;
-                                    const courseMap = {
-                                        'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
-                                        'diploma-pharmacy': 'DIPLOMA_PHARMACY',
-                                        'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
-                                        'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
-                                        'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
-                                        'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
+                            if (documents[id] && documents[id].link) {
+                                // Check if admin
+                                const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
+                                if (isAdmin) {
+                                    link.textContent = 'Add Document';
+                                    link.removeAttribute('href');
+                                    link.removeAttribute('target');
+                                    link.onclick = () => {
+                                        document.getElementById('add-doc-modal').style.display = 'block';
+                                        // Set course
+                                        const section = sub.closest('section');
+                                        const sectionId = section.id;
+                                        const courseMap = {
+                                            'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
+                                            'diploma-pharmacy': 'DIPLOMA_PHARMACY',
+                                            'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
+                                            'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
+                                            'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
+                                            'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
+                                        };
+                                        const course = courseMap[sectionId];
+                                        document.getElementById('doc-course').value = course;
+                                        // Set id
+                                        document.getElementById('doc-id').value = id;
+                                        // Trigger change to update placeholder
+                                        document.getElementById('doc-course').dispatchEvent(new Event('change'));
                                     };
-                                    const course = courseMap[sectionId];
-                                    document.getElementById('doc-course').value = course;
-                                    // Set id
-                                    document.getElementById('doc-id').value = id;
-                                    // Trigger change to update placeholder
-                                    document.getElementById('doc-course').dispatchEvent(new Event('change'));
-                                };
-                                if (h4) h4.textContent = documents[id] ? documents[id].name : 'Add Document';
-                                if (p) p.textContent = documents[id] ? 'Click below to add another document.' : 'Click below to add a document.';
-                            } else {
-                                if (documents[id] && documents[id].link) {
-                                    link.setAttribute('href', documents[id].link);
-                                    link.setAttribute('target', '_blank'); // Open in new tab
-                                    if (documents[id].name) {
-                                        link.textContent = documents[id].name;
-                                        if (h4) h4.textContent = documents[id].name;
-                                        if (p) p.textContent = 'Click below to download the document.';
-                                    }
+                                    if (h4) h4.textContent = documents[id].name;
+                                    if (p) p.textContent = 'Click below to add another document.';
                                 } else {
-                                    // For users, hide or change
+                                    // For logged-in users, allow download
+                                    if (firebase.auth().currentUser) {
+                                        link.setAttribute('href', documents[id].link);
+                                        link.setAttribute('target', '_blank');
+                                        if (p) p.textContent = 'Click below to download the document.';
+                                    } else {
+                                        // For logged-out, show but no download
+                                        link.removeAttribute('href');
+                                        link.onclick = () => { alert('Please login to download documents.'); };
+                                        if (p) p.textContent = 'Login to download the document.';
+                                    }
+                                    link.textContent = documents[id].name;
+                                    if (h4) h4.textContent = documents[id].name;
+                                }
+                            } else {
+                                // No document
+                                const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
+                                if (isAdmin) {
+                                    link.textContent = 'Add Document';
+                                    link.removeAttribute('href');
+                                    link.removeAttribute('target');
+                                    link.onclick = () => {
+                                        document.getElementById('add-doc-modal').style.display = 'block';
+                                        // Set course
+                                        const section = sub.closest('section');
+                                        const sectionId = section.id;
+                                        const courseMap = {
+                                            'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
+                                            'diploma-pharmacy': 'DIPLOMA_PHARMACY',
+                                            'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
+                                            'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
+                                            'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
+                                            'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
+                                        };
+                                        const course = courseMap[sectionId];
+                                        document.getElementById('doc-course').value = course;
+                                        // Set id
+                                        document.getElementById('doc-id').value = id;
+                                        // Trigger change to update placeholder
+                                        document.getElementById('doc-course').dispatchEvent(new Event('change'));
+                                    };
+                                    if (h4) h4.textContent = 'Add Document';
+                                    if (p) p.textContent = 'Click below to add a document.';
+                                } else {
+                                    // For users, hide
                                     link.style.display = 'none';
                                     if (h4) h4.textContent = 'Notes for Tab ' + id.split('_').pop();
                                     if (p) p.textContent = 'No document available.';
@@ -2522,6 +2560,17 @@
                     li.classList.remove('active');
                     if (li.getAttribute('href') && li.getAttribute('href').includes(current)) {
                         li.classList.add('active');
+                    }
+                });
+            });
+
+            // Mobile Dropdown Toggle
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        const content = dropdown.querySelector('.dropdown-content');
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
                     }
                 });
             });
