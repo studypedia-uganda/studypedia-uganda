@@ -477,6 +477,38 @@
             margin-top: 10px;
         }
 
+        #admin-action-boxes {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .action-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            border-radius: 8px;
+            width: 45%;
+        }
+
+        .action-box h4 {
+            margin-bottom: 10px;
+        }
+
+        .action-box button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .action-box button:hover {
+            background: #0056b3;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -646,7 +678,6 @@
             <button id="edit-doc-btn">Edit Documents</button>
             <button id="delete-doc-btn">Delete Documents</button>
             <button id="manage-fields-btn">Manage Fields</button>
-            <button id="edit-tabs-btn">Edit Tab Names</button>
             <button id="refresh-docs-btn">Refresh Documents</button>
         </div>
     </div>
@@ -1395,6 +1426,40 @@
             <div id="fields-list">
                 <p>Loading fields...</p>
             </div>
+            <h3>Edit Tab Names</h3>
+            <select id="tab-course-select">
+                <option value="">Select Course</option>
+                <option value="CERTIFICATE_PHARMACY">Certificate Pharmacy</option>
+                <option value="DIPLOMA_PHARMACY">Diploma Pharmacy</option>
+                <option value="DIPLOMA_CLINICAL_MEDICINE">Diploma Clinical Medicine</option>
+                <option value="CERTIFICATE_MEDICAL_LAB_SCIENCE">Certificate Medical Lab Science</option>
+                <option value="CERTIFICATE_MEDICAL_RECORDS">Certificate Medical Records</option>
+                <option value="DIPLOMA_MEDICAL_RECORDS_MGT">Diploma Medical Records Management</option>
+            </select>
+            <select id="tab-main-select" style="display: none;">
+                <option value="">Select Main Tab</option>
+            </select>
+            <div id="tab-names-container" style="display: none;">
+                <input type="text" id="tab1" placeholder="Tab 1 Name">
+                <input type="text" id="tab2" placeholder="Tab 2 Name">
+                <input type="text" id="tab3" placeholder="Tab 3 Name">
+                <input type="text" id="tab4" placeholder="Tab 4 Name">
+                <input type="text" id="tab5" placeholder="Tab 5 Name">
+                <input type="text" id="tab6" placeholder="Tab 6 Name">
+                <input type="text" id="tab7" placeholder="Tab 7 Name">
+                <input type="text" id="tab8" placeholder="Tab 8 Name">
+                <button id="save-tabs-btn">Rename</button>
+            </div>
+            <div id="admin-action-boxes">
+                <div class="action-box">
+                    <h4>Add Document</h4>
+                    <button id="open-add-doc-btn">Add Document</button>
+                </div>
+                <div class="action-box">
+                    <h4>Edit Documents</h4>
+                    <button id="open-edit-doc-btn">Edit Documents</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1552,11 +1617,40 @@
                                     if (p) p.textContent = 'Click below to download the document.';
                                 }
                             } else {
-                                // Reset to default if no document
-                                link.setAttribute('href', href);
-                                link.textContent = 'Download Document';
-                                if (h4) h4.textContent = h4.textContent.replace(/Notes for/, 'Notes for');
-                                if (p) p.textContent = 'Add your study notes for this section here.';
+                                // Check if admin
+                                const isAdmin = document.getElementById('admin-menu').style.display !== 'none';
+                                if (isAdmin) {
+                                    link.textContent = 'Add Document';
+                                    link.removeAttribute('href');
+                                    link.removeAttribute('target');
+                                    link.onclick = () => {
+                                        document.getElementById('add-doc-modal').style.display = 'block';
+                                        // Set course
+                                        const section = sub.closest('section');
+                                        const sectionId = section.id;
+                                        const courseMap = {
+                                            'certificate-pharmacy': 'CERTIFICATE_PHARMACY',
+                                            'diploma-pharmacy': 'DIPLOMA_PHARMACY',
+                                            'diploma-clinical-medicine': 'DIPLOMA_CLINICAL_MEDICINE',
+                                            'certificate-medical-lab-science': 'CERTIFICATE_MEDICAL_LAB_SCIENCE',
+                                            'certificate-medical-records': 'CERTIFICATE_MEDICAL_RECORDS',
+                                            'diploma-in-medical-records-mgt': 'DIPLOMA_MEDICAL_RECORDS_MGT'
+                                        };
+                                        const course = courseMap[sectionId];
+                                        document.getElementById('doc-course').value = course;
+                                        // Set id
+                                        document.getElementById('doc-id').value = id;
+                                        // Trigger change to update placeholder
+                                        document.getElementById('doc-course').dispatchEvent(new Event('change'));
+                                    };
+                                    if (h4) h4.textContent = 'Add Document';
+                                    if (p) p.textContent = 'Click below to add a document.';
+                                } else {
+                                    // For users, hide or change
+                                    link.style.display = 'none';
+                                    if (h4) h4.textContent = 'Notes for Tab ' + id.split('_').pop();
+                                    if (p) p.textContent = 'No document available.';
+                                }
                             }
                         }
                     });
@@ -1953,6 +2047,139 @@
                     fieldsList.appendChild(item);
                 });
 
+                // Add event listeners for tab editing
+                const tabCourseSelect = document.getElementById('tab-course-select');
+                const tabMainSelect = document.getElementById('tab-main-select');
+                const tabNamesContainer = document.getElementById('tab-names-container');
+                const saveTabsBtn = document.getElementById('save-tabs-btn');
+
+                tabCourseSelect.addEventListener('change', (e) => {
+                    const course = e.target.value;
+                    tabMainSelect.style.display = 'block';
+                    tabMainSelect.innerHTML = '<option value="">Select Main Tab</option>';
+
+                    const courseOptions = {
+                        'CERTIFICATE_PHARMACY': [
+                            { value: '#cpha1_1', text: 'cpha1:1' },
+                            { value: '#cpha1_2', text: 'cpha1:2' },
+                            { value: '#cpha2_1', text: 'cpha2:1' },
+                            { value: '#cpha2_2', text: 'cpha2:2' }
+                        ],
+                        'DIPLOMA_PHARMACY': [
+                            { value: '#diph1_1', text: 'diph1:1' },
+                            { value: '#diph1_2', text: 'diph1:2' },
+                            { value: '#diph2_1', text: 'diph2:1' },
+                            { value: '#diph2_2', text: 'diph2:2' }
+                        ],
+                        'DIPLOMA_CLINICAL_MEDICINE': [
+                            { value: '#dicm1_1', text: 'dicm1:1' },
+                            { value: '#dicm1_2', text: 'dicm1:2' },
+                            { value: '#dicm2_1', text: 'dicm2:1' },
+                            { value: '#dicm2_2', text: 'dicm2:2' }
+                        ],
+                        'CERTIFICATE_MEDICAL_LAB_SCIENCE': [
+                            { value: '#cmls1_1', text: 'cmls1:1' },
+                            { value: '#cmls1_2', text: 'cmls1:2' },
+                            { value: '#cmls2_1', text: 'cmls2:1' },
+                            { value: '#cmls2_2', text: 'cmls2:2' }
+                        ],
+                        'CERTIFICATE_MEDICAL_RECORDS': [
+                            { value: '#cmr1_1', text: 'cmr1:1' },
+                            { value: '#cmr1_2', text: 'cmr1:2' },
+                            { value: '#cmr2_1', text: 'cmr2:1' },
+                            { value: '#cmr2_2', text: 'cmr2:2' }
+                        ],
+                        'DIPLOMA_MEDICAL_RECORDS_MGT': [
+                            { value: '#dmr1_1', text: 'dmr1:1' },
+                            { value: '#dmr1_2', text: 'dmr1:2' },
+                            { value: '#dmr2_1', text: 'dmr2:1' },
+                            { value: '#dmr2_2', text: 'dmr2:2' }
+                        ]
+                    };
+
+                    if (courseOptions[course]) {
+                        courseOptions[course].forEach(opt => {
+                            const option = document.createElement('option');
+                            option.value = opt.value;
+                            option.textContent = opt.text;
+                            tabMainSelect.appendChild(option);
+                        });
+                    }
+                });
+
+                tabMainSelect.addEventListener('change', (e) => {
+                    const mainTab = e.target.value;
+                    tabNamesContainer.style.display = 'block';
+                    const subTabs = document.querySelectorAll(`${mainTab} .nested-tab-nav .tab-button`);
+                    subTabs.forEach((tab, index) => {
+                        const inputId = `tab${index + 1}`;
+                        document.getElementById(inputId).value = tab.textContent;
+                    });
+                });
+
+                saveTabsBtn.addEventListener('click', async () => {
+                    const mainTab = tabMainSelect.value;
+                    const message = document.getElementById('tabs-message');
+
+                    if (!mainTab) {
+                        message.textContent = 'Please select course and main tab first.';
+                        message.style.color = 'red';
+                        setTimeout(() => {
+                            message.textContent = '';
+                        }, 2000);
+                        return;
+                    }
+
+                    const subTabs = document.querySelectorAll(`${mainTab} .nested-tab-nav .tab-button`);
+                    const tabData = {};
+                    subTabs.forEach((tab, index) => {
+                        const inputId = `tab${index + 1}`;
+                        const newName = document.getElementById(inputId).value;
+                        if (newName) {
+                            tab.textContent = newName;
+                            tabData[`tab${index + 1}`] = newName;
+                        } else {
+                            tabData[`tab${index + 1}`] = tab.textContent;
+                        }
+                    });
+
+                    // Save to Firestore
+                    const btn = saveTabsBtn;
+                    btn.textContent = 'Saving...';
+                    btn.disabled = true;
+
+                    try {
+                        await db.collection("TAB_NAMES").doc(mainTab.replace('#', '')).set(tabData);
+                        message.textContent = 'Tab names updated and saved!';
+                        message.style.color = 'green';
+                        btn.textContent = 'Renamed';
+                        setTimeout(() => {
+                            btn.textContent = 'Rename';
+                            btn.disabled = false;
+                        }, 2000);
+                    } catch (error) {
+                        message.textContent = 'Error saving: ' + error.message;
+                        message.style.color = 'red';
+                        btn.textContent = 'Rename';
+                        btn.disabled = false;
+                    }
+
+                    setTimeout(() => {
+                        message.textContent = '';
+                    }, 2000);
+                });
+
+                // Add event listeners for action boxes
+                document.getElementById('open-add-doc-btn').addEventListener('click', () => {
+                    document.getElementById('manage-fields-modal').style.display = 'none';
+                    document.getElementById('add-doc-modal').style.display = 'block';
+                });
+
+                document.getElementById('open-edit-doc-btn').addEventListener('click', () => {
+                    document.getElementById('manage-fields-modal').style.display = 'none';
+                    document.getElementById('edit-doc-modal').style.display = 'block';
+                });
+
                 document.getElementById('manage-fields-modal').style.display = 'block';
                 adminDropdown.style.display = 'none';
             });
@@ -1984,14 +2211,54 @@
                 if (course) {
                     mainSelect.style.display = 'block';
                     mainSelect.innerHTML = '<option value="">Select Main Tab</option>';
-                    const section = document.getElementById(course);
-                    const mainTabs = section.querySelectorAll('.tab-nav .tab-button');
-                    mainTabs.forEach((tab, index) => {
-                        const option = document.createElement('option');
-                        option.value = tab.getAttribute('data-target');
-                        option.textContent = tab.textContent;
-                        mainSelect.appendChild(option);
-                    });
+    
+                    const courseOptions = {
+                        'CERTIFICATE_PHARMACY': [
+                            { value: '#cpha1_1', text: 'cpha1:1' },
+                            { value: '#cpha1_2', text: 'cpha1:2' },
+                            { value: '#cpha2_1', text: 'cpha2:1' },
+                            { value: '#cpha2_2', text: 'cpha2:2' }
+                        ],
+                        'DIPLOMA_PHARMACY': [
+                            { value: '#diph1_1', text: 'diph1:1' },
+                            { value: '#diph1_2', text: 'diph1:2' },
+                            { value: '#diph2_1', text: 'diph2:1' },
+                            { value: '#diph2_2', text: 'diph2:2' }
+                        ],
+                        'DIPLOMA_CLINICAL_MEDICINE': [
+                            { value: '#dicm1_1', text: 'dicm1:1' },
+                            { value: '#dicm1_2', text: 'dicm1:2' },
+                            { value: '#dicm2_1', text: 'dicm2:1' },
+                            { value: '#dicm2_2', text: 'dicm2:2' }
+                        ],
+                        'CERTIFICATE_MEDICAL_LAB_SCIENCE': [
+                            { value: '#cmls1_1', text: 'cmls1:1' },
+                            { value: '#cmls1_2', text: 'cmls1:2' },
+                            { value: '#cmls2_1', text: 'cmls2:1' },
+                            { value: '#cmls2_2', text: 'cmls2:2' }
+                        ],
+                        'CERTIFICATE_MEDICAL_RECORDS': [
+                            { value: '#cmr1_1', text: 'cmr1:1' },
+                            { value: '#cmr1_2', text: 'cmr1:2' },
+                            { value: '#cmr2_1', text: 'cmr2:1' },
+                            { value: '#cmr2_2', text: 'cmr2:2' }
+                        ],
+                        'DIPLOMA_MEDICAL_RECORDS_MGT': [
+                            { value: '#dmr1_1', text: 'dmr1:1' },
+                            { value: '#dmr1_2', text: 'dmr1:2' },
+                            { value: '#dmr2_1', text: 'dmr2:1' },
+                            { value: '#dmr2_2', text: 'dmr2:2' }
+                        ]
+                    };
+            
+                    if (courseOptions[course]) {
+                        courseOptions[course].forEach(opt => {
+                            const option = document.createElement('option');
+                            option.value = opt.value;
+                            option.textContent = opt.text;
+                            mainSelect.appendChild(option);
+                        });
+                    }
                 } else {
                     mainSelect.style.display = 'none';
                     container.style.display = 'none';
