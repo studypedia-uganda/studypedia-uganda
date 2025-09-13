@@ -1,908 +1,1377 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studypedia Uganda</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor.js"></script>
+    <title>Studypedia - Your Medical Learning Hub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        /* Basic Reset and Box Sizing */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --accent-color: #28a745;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --white-color: #ffffff;
+            --heading-font: 'Montserrat', sans-serif;
+            --body-font: 'Open Sans', sans-serif;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--body-font);
+            line-height: 1.7;
+            color: var(--dark-color);
+            background-color: #f0f0f0; /* Default background for safety */
+            background-image: url('https://images.unsplash.com/photo-1596541223130-af4542459e21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTY3NTV8MHwxfHNlYXJjaHw3fHxoZWFsdGh8ZW58MHx8fHwxNjU4ODUxOTc0&ixlib=rb-1.2.1&q=80&w=1920');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Keeps background still during scroll */
+            scroll-behavior: smooth;
         }
-        .bg-shine-blue {
-            background-color: #00bcd4;
+        
+        /* Ensure all main content is on a solid background for readability */
+        header, main, footer, section {
+            background-color: var(--white-color); /* Overwrites the body's background for content */
         }
-        .text-shine-purple {
-            color: #9b59b6;
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--heading-font);
+            margin-bottom: 0.8rem;
+            color: var(--dark-color);
         }
-        .section-button {
-            @apply py-2 px-6 rounded-xl font-semibold bg-[#2a2a2a] text-gray-300 hover:bg-[#4a4a4a] transition duration-300;
+
+        h1 { font-size: 2.8rem; }
+        h2 { font-size: 2.2rem; }
+        h3 { font-size: 1.8rem; }
+        p { margin-bottom: 1rem; }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
-        .section-button.active {
-            @apply bg-shine-blue text-gray-900;
+
+        a:hover {
+            color: #0056b3;
         }
-        .back-btn {
-            @apply p-2 rounded-full bg-[#2a2a2a] text-gray-400 hover:bg-[#4a4a4a] transition duration-300;
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
-        .ad-unit-placeholder {
-            width: 300px;
-            height: 250px;
-            background-color: #2a2a2a;
-            border: 2px dashed #4a4a4a;
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: var(--white-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            color: var(--white-color);
+        }
+        
+        .btn-nav {
+            background: var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            margin-top: 0;
+            transition: background 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            background: #218838;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: var(--dark-color);
+            color: var(--white-color);
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: var(--white-color);
+            margin-bottom: 0;
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+            position: relative;
+        }
+
+        nav a {
+            color: var(--white-color);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            position: relative;
+            display: block;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease-in-out;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        /* Dropdown Navigation Styles */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--dark-color);
+            min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            top: 100%;
+            left: 0;
+            padding: 10px 0;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .dropdown-content a {
+            color: var(--white-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #555;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        /* AdSense Placeholder */
+        .adsense-ad {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #7a7a7a;
-            font-size: 14px;
+            height: 150px;
+            background-color: #e9ecef;
+            border: 1px dashed var(--secondary-color);
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin: 2rem auto;
+            max-width: 728px;
             text-align: center;
         }
-        .modal-overlay {
-            @apply fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50;
+
+        /* Section Styling for the new tabs */
+        .course-section {
+            padding-top: 5rem;
         }
-        .modal-content {
-            @apply bg-[#1e1e1e] p-8 rounded-2xl shadow-2xl max-w-md w-full;
+        
+        /* Tab System Styling (New) */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
         }
-        .modal-close-btn {
-            @apply absolute top-4 right-4 text-gray-500 hover:text-white transition duration-300;
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 15px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            transition: background 0.3s ease;
+            position: relative;
+            outline: none;
         }
-        .error-message {
-            @apply text-red-400 text-sm mt-2;
+
+        .tab-button:hover, .tab-button.active {
+            color: var(--primary-color);
         }
-        .success-message {
-            @apply text-green-400 text-sm mt-2;
+
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
         }
-        .options-menu {
-            z-index: 60; /* Above other content */
+
+        .tab-button.active::after {
+            width: 100%;
         }
-        .options-menu-item {
-            @apply flex items-center px-4 py-2 text-sm text-gray-300 space-x-2 whitespace-nowrap;
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background-color: var(--white-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Nested Tab Styling */
+        .nested-tab-container {
+            margin-top: 2rem;
+        }
+        
+        .nested-tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .nested-tab-nav .tab-button {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .sub-content {
+            display: none;
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Medical_Research_Counsellor.jpg/1920px-Medical_Research_Counsellor.jpg') no-repeat center center/cover;
+            color: var(--white-color);
+            text-align: center;
+            padding: 8rem 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        /* AI Search Bar Styles */
+        .ai-search-container {
+            padding: 5rem 2rem;
+            background-color: var(--white-color);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            margin: 5rem auto;
+        }
+
+        .ai-search-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .ai-search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .ai-search-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .ai-search-buttons .btn {
+            margin-top: 0;
+        }
+
+        .ai-response-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f0f4f7;
+            border-left: 5px solid var(--accent-color);
+            border-radius: 5px;
+            text-align: left;
+            display: none; /* Initially hidden */
+        }
+        
+        .ai-response-container.active {
+            display: block;
+        }
+
+        .ai-response-container h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .ai-response-text {
+            white-space: pre-wrap;
+        }
+
+        .ai-copy-btn {
+            background-color: #fff;
+            color: var(--dark-color);
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .ai-copy-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Contact Section Improvements */
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-item {
+            text-align: center;
+            flex-basis: 200px;
+        }
+
+        .info-item .icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item h3 {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+        }
+
+        /* Other sections and components are unchanged... */
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            .hero h2 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+
+            header .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            header h1 {
+                margin-bottom: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+            
+            nav ul li {
+                margin: 0.5rem 0;
+            }
+            
+            .dropdown {
+                display: block;
+                width: 100%;
+            }
+
+            .dropdown-content {
+                position: relative;
+                width: 100%;
+                box-shadow: none;
+                background-color: #444;
+            }
+
+            .dropdown:hover .dropdown-content {
+                display: none;
+            }
         }
     </style>
 </head>
-<body class="bg-[#121212] text-white font-sans">
+<body>
 
-    <header class="py-4 px-8 flex justify-between items-center bg-[#1e1e1e] shadow-lg">
-        <div class="flex items-center">
-            <h1 class="text-3xl font-bold text-white">Studypedia</h1>
-            <p class="text-gray-400 ml-4">Your personal learning companion for medical students of Uganda!</p>
-        </div>
-        <div class="flex items-center space-x-4">
-            <button id="add-resource-btn" class="hidden py-2 px-4 rounded-xl font-bold bg-[#3a3a3a] text-white hover:bg-[#4a4a4a] transition duration-300">Add Resource</button>
-            <button id="admin-panel-btn" class="hidden py-2 px-4 rounded-xl font-bold bg-[#3a3a3a] text-white hover:bg-[#4a4a4a] transition duration-300">Admin Panel</button>
-            <button id="login-signup-btn" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300">Login / Signup</button>
-            <button id="logout-btn" class="hidden py-2 px-4 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition duration-300">Logout</button>
-            <div id="user-details" class="hidden flex items-center space-x-2">
-                <span id="user-email" class="text-gray-300 text-sm"></span>
-                <span id="admin-status" class="hidden text-xs text-green-400 font-semibold">ADMIN</span>
-            </div>
+    <header>
+        <div class="container">
+            <h1>Studypedia</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#ai-search-section">AI Search</a></li>
+                    <li class="dropdown">
+                        <a href="#">Courses</a>
+                        <ul class="dropdown-content">
+                            <li><a href="#diploma-pharmacy">DIPLOMA PHARMACY</a></li>
+                            <li><a href="#diploma-clinical-medicine">DIPLOMA CLINICAL MEDICINE</a></li>
+                            <li><a href="#certificate-pharmacy">CERTIFICATE PHARMACY</a></li>
+                            <li><a href="#certificate-medical-lab-science">CERTIFICATE MEDICAL LAB SCIENCE</a></li>
+                            <li><a href="#certificate-medical-records">CERTIFICATE MEDICAL RECORDS</a></li>
+                            <li><a href="#diploma-in-medical-records-mgt">DIPLOMA IN MEDICAL RECORDS MGT</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#privacy-policy-section">Privacy Policy</a></li>
+                    <li><a href="#terms-and-conditions-section">T&Cs</a></li>
+                    <li><a href="#" class="btn-nav">Sign Up / Login</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 max-w-7xl">
-        <div class="bg-[#1e1e1e] p-8 rounded-2xl shadow-xl text-center">
-            <h2 class="text-4xl font-bold mb-4 text-white">Welcome to Studypedia Uganda</h2>
-            <p class="text-lg text-shine-purple font-semibold mb-6">Your hub for medical resources!</p>
-            <p class="text-gray-400 max-w-2xl mx-auto">Select a field of study, then a semeseter, and finally a course unit to access valuable learning materials.</p>
+    <div class="hero" id="home">
+        <div class="container">
+            <h2>Unlock Your Learning Potential with Studypedia</h2>
+            <p>Your comprehensive resource for in-depth knowledge, tutorials, and academic support across various subjects.</p>
+        </div>
+    </div>
+
+    <main>
+        <div class="adsense-ad">
+            <p>Ad Space Here - Replace with your AdSense code</p>
         </div>
 
-        <div class="mt-8 space-y-8">
-            <section id="fields-section">
-                <div class="flex items-center space-x-4">
-                    <h3 class="text-2xl font-semibold text-white">Select Field:</h3>
-                    <span id="loading-fields" class="text-gray-400">Loading fields...</span>
-                </div>
-                <div class="flex flex-wrap gap-4 mt-4"></div>
-            </section>
+        <section id="ai-search-section" class="ai-search-container">
+            <h2>AI-Powered Learning Assistant</h2>
+            <p>Ask a question or upload a photo to get instant answers from our AI.</p>
+            <input type="text" id="ai-question-input" class="ai-search-input" placeholder="Type your question here...">
+            <input type="file" id="ai-image-input" accept="image/*" style="display: none;">
+            <div class="ai-search-buttons">
+                <button class="btn" onclick="document.getElementById('ai-image-input').click();">Upload Photo</button>
+                <button class="btn" id="ai-ask-btn">Ask</button>
+            </div>
+            
+            <div id="ai-response-container" class="ai-response-container">
+                <h3>Answer:</h3>
+                <p id="ai-response-text" class="ai-response-text">The AI's answer will appear here. For example, a detailed explanation, a step-by-step solution, or a summary of the topic. The response will be long and comprehensive to show the full functionality.</p>
+                <button class="ai-copy-btn" id="ai-copy-btn">Copy Answer</button>
+            </div>
+        </section>
 
-            <section id="semeseters-section" class="hidden">
-                <div class="flex items-center space-x-4">
-                    <button id="back-to-fields-btn" class="back-btn"><i class="ph-bold ph-arrow-left"></i></button>
-                    <h3 class="text-2xl font-semibold text-white">Select Semeseter:</h3>
-                </div>
-                <div class="flex flex-wrap gap-4 mt-4"></div>
-            </section>
-
-            <section id="course-units-section" class="hidden">
-                <div class="flex items-center space-x-4">
-                    <button id="back-to-semeseters-btn" class="back-btn"><i class="ph-bold ph-arrow-left"></i></button>
-                    <h3 class="text-2xl font-semibold text-white">Select Course Unit:</h3>
-                </div>
-                <div class="flex flex-wrap gap-4 mt-4"></div>
-            </section>
+        <div class="adsense-ad">
+            <p>Ad Space Here - Replace with your AdSense code</p>
         </div>
 
-        <section id="content-section" class="mt-8">
-            <div id="initial-prompt" class="text-center text-gray-500 font-semibold text-xl">
-                <p>Please select a field, semeseter, and course unit to view resources.</p>
-                <div class="ad-unit-placeholder mx-auto mt-4">
-                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1234567890123456" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
-                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        <section id="diploma-pharmacy" class="course-section container">
+            <h2>DIPLOMA IN PHARMACY</h2>
+            <p>This section contains all the study notes, resources, and information for the Diploma in Pharmacy course.</p>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-target="#diph1_1">DIPH1:1</button>
+                <button class="tab-button" data-target="#diph1_2">DIPH1:2</button>
+                <button class="tab-button" data-target="#diph2_1">DIPH2:1</button>
+                <button class="tab-button" data-target="#diph2_2">DIPH2:2</button>
+            </div>
+            
+            <div id="diph1_1" class="tab-content active">
+                <h3>DIPH1:1 Content</h3>
+                <p>This is the main content for DIPH1:1. Navigate through the topics below.</p>
+                
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#diph1_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#diph1_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#diph1_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#diph1_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#diph1_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#diph1_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#diph1_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#diph1_1_sub8">Tab 8</button>
+                    </div>
+                    
+                    <div id="diph1_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
                 </div>
             </div>
-            <div id="content-container" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+            
+            <div id="diph1_2" class="tab-content">
+                <h3>DIPH1:2 Content</h3>
+                <p>This is the main content for DIPH1:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#diph1_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#diph1_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#diph1_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#diph1_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#diph1_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#diph1_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#diph1_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#diph1_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="diph1_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph1_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/diph1_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="diph2_1" class="tab-content">
+                <h3>DIPH2:1 Content</h3>
+                <p>This is the main content for DIPH2:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#diph2_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#diph2_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#diph2_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#diph2_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#diph2_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#diph2_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#diph2_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#diph2_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="diph2_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="diph2_2" class="tab-content">
+                <h3>DIPH2:2 Content</h3>
+                <p>This is the main content for DIPH2:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#diph2_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#diph2_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#diph2_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#diph2_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#diph2_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#diph2_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#diph2_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#diph2_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="diph2_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="diph2_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/diph2_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="diploma-clinical-medicine" class="course-section container">
+            <h2>DIPLOMA IN CLINICAL MEDICINE</h2>
+            <p>This section contains comprehensive study materials and insights for the Diploma in Clinical Medicine.</p>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-target="#dicm1_1">DICM1:1</button>
+                <button class="tab-button" data-target="#dicm1_2">DICM1:2</button>
+                <button class="tab-button" data-target="#dicm2_1">DICM2:1</button>
+                <button class="tab-button" data-target="#dicm2_2">DICM2:2</button>
+            </div>
+            
+            <div id="dicm1_1" class="tab-content active">
+                <h3>DICM1:1 Content</h3>
+                <p>This is the main content for DICM1:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#dicm1_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#dicm1_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="dicm1_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="dicm1_2" class="tab-content">
+                <h3>DICM1:2 Content</h3>
+                <p>This is the main content for DICM1:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#dicm1_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#dicm1_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="dicm1_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm1_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm1_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="dicm2_1" class="tab-content">
+                <h3>DICM2:1 Content</h3>
+                <p>This is the main content for DICM2:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#dicm2_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#dicm2_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="dicm2_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="dicm2_2" class="tab-content">
+                <h3>DICM2:2 Content</h3>
+                <p>This is the main content for DICM2:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#dicm2_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#dicm2_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="dicm2_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="dicm2_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/dicm2_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="certificate-pharmacy" class="course-section container">
+            <h2>CERTIFICATE IN PHARMACY</h2>
+            <p>This is the content hub for the Certificate in Pharmacy. Use the tabs below to navigate through the course modules.</p>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-target="#cpha1_1">cpha1:1</button>
+                <button class="tab-button" data-target="#cpha1_2">cpha1:2</button>
+                <button class="tab-button" data-target="#cpha2_1">cpha2:1</button>
+                <button class="tab-button" data-target="#cpha2_2">cpha2:2</button>
+            </div>
+            
+            <div id="cpha1_1" class="tab-content active">
+                <h3>cpha1:1 Content</h3>
+                <p>This is the main content for cpha1:1. It contains the next level of tabs.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cpha1_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cpha1_1_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha1:1, Tab 1. You can add your medical notes here!</p><a href="/documents/cpha1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha1:1, Tab 2.</p><a href="/documents/cpha1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha1:1, Tab 3.</p><a href="/documents/cpha1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub4" class="sub-content"><h4>Sub-content 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub5" class="sub-content"><h4>Sub-content 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub6" class="sub-content"><h4>Sub-content 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub7" class="sub-content"><h4>Sub-content 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub8" class="sub-content"><h4>Sub-content 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cpha1_2" class="tab-content">
+                <h3>cpha1:2 Content</h3>
+                <p>This is the main content for cpha1:2. It contains the next level of tabs.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cpha1_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cpha1_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cpha1_2_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha1:2, Tab 1.</p><a href="/documents/cpha1_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha1:2, Tab 2.</p><a href="/documents/cpha1_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha1:2, Tab 3.</p><a href="/documents/cpha1_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub4" class="sub-content"><h4>Sub-content 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub5" class="sub-content"><h4>Sub-content 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub6" class="sub-content"><h4>Sub-content 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub7" class="sub-content"><h4>Sub-content 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_2_sub8" class="sub-content"><h4>Sub-content 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cpha2_1" class="tab-content">
+                <h3>cpha2:1 Content</h3>
+                <p>This is the main content for cpha2:1. It contains the next level of tabs.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cpha2_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cpha2_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cpha2_1_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha2:1, Tab 1.</p><a href="/documents/cpha2_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha2:1, Tab 2.</p><a href="/documents/cpha2_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha2:1, Tab 3.</p><a href="/documents/cpha2_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub4" class="sub-content"><h4>Sub-content 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub5" class="sub-content"><h4>Sub-content 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub6" class="sub-content"><h4>Sub-content 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub7" class="sub-content"><h4>Sub-content 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_1_sub8" class="sub-content"><h4>Sub-content 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cpha2_2" class="tab-content">
+                <h3>cpha2:2 Content</h3>
+                <p>This is the main content for cpha2:2. It contains the next level of tabs.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cpha2_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cpha2_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cpha2_2_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha2:2, Tab 1.</p><a href="/documents/cpha2_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha2:2, Tab 2.</p><a href="/documents/cpha2_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha2:2, Tab 3.</p><a href="/documents/cpha2_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub4" class="sub-content"><h4>Sub-content 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub5" class="sub-content"><h4>Sub-content 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub6" class="sub-content"><h4>Sub-content 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub7" class="sub-content"><h4>Sub-content 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha2_2_sub8" class="sub-content"><h4>Sub-content 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha2_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+        </section>
+
+        <section id="certificate-medical-lab-science" class="course-section container">
+            <h2>CERTIFICATE IN MEDICAL LABORATORY SCIENCE</h2>
+            <p>This section contains all study notes for the Certificate in Medical Laboratory Science. You can use the tabs below to navigate through the course modules.</p>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-target="#cmls1_1">CMLS1:1</button>
+                <button class="tab-button" data-target="#cmls1_2">CMLS1:2</button>
+                <button class="tab-button" data-target="#cmls2_1">CMLS2:1</button>
+                <button class="tab-button" data-target="#cmls2_2">CMLS2:2</button>
+            </div>
+            
+            <div id="cmls1_1" class="tab-content active">
+                <h3>CMLS1:1 Content</h3>
+                <p>This is the main content for CMLS1:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmls1_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmls1_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmls1_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmls1_2" class="tab-content">
+                <h3>CMLS1:2 Content</h3>
+                <p>This is the main content for CMLS1:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmls1_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmls1_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmls1_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls1_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls1_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmls2_1" class="tab-content">
+                <h3>CMLS2:1 Content</h3>
+                <p>This is the main content for CMLS2:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmls2_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmls2_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmls2_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmls2_2" class="tab-content">
+                <h3>CMLS2:2 Content</h3>
+                <p>This is the main content for CMLS2:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmls2_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmls2_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmls2_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmls2_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmls2_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="certificate-medical-records" class="course-section container">
+            <h2>CERTIFICATE IN MEDICAL RECORDS</h2>
+            <p>This section is dedicated to the Certificate in Medical Records. You can use the tabs below to navigate through the course modules.</p>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-target="#cmr1_1">CMR1:1</button>
+                <button class="tab-button" data-target="#cmr1_2">CMR1:2</button>
+                <button class="tab-button" data-target="#cmr2_1">CMR2:1</button>
+                <button class="tab-button" data-target="#cmr2_2">CMR2:2</button>
+            </div>
+            
+            <div id="cmr1_1" class="tab-content active">
+                <h3>CMR1:1 Content</h3>
+                <p>This is the main content for CMR1:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmr1_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmr1_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmr1_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmr1_2" class="tab-content">
+                <h3>CMR1:2 Content</h3>
+                <p>This is the main content for CMR1:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmr1_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmr1_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmr1_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr1_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr1_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmr2_1" class="tab-content">
+                <h3>CMR2:1 Content</h3>
+                <p>This is the main content for CMR2:1. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmr2_1_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmr2_1_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmr2_1_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_1_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+            
+            <div id="cmr2_2" class="tab-content">
+                <h3>CMR2:2 Content</h3>
+                <p>This is the main content for CMR2:2. Navigate through the topics below.</p>
+                <div class="nested-tab-container">
+                    <div class="nested-tab-nav">
+                        <button class="tab-button active" data-target="#cmr2_2_sub1">Tab 1</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub2">Tab 2</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub3">Tab 3</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub4">Tab 4</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub5">Tab 5</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub6">Tab 6</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub7">Tab 7</button>
+                        <button class="tab-button" data-target="#cmr2_2_sub8">Tab 8</button>
+                    </div>
+                    <div id="cmr2_2_sub1" class="sub-content active"><h4>Notes for Tab 1</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub2" class="sub-content"><h4>Notes for Tab 2</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub3" class="sub-content"><h4>Notes for Tab 3</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub4" class="sub-content"><h4>Notes for Tab 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub5" class="sub-content"><h4>Notes for Tab 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub6" class="sub-content"><h4>Notes for Tab 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub7" class="sub-content"><h4>Notes for Tab 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cmr2_2_sub8" class="sub-content"><h4>Notes for Tab 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cmr2_2_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact">
+            <div class="container text-center">
+                <h2>Contact Us</h2>
+                <p>Feel free to reach out to us with any questions or feedback. We're here to help!</p>
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt icon"></i>
+                        <h3>Call Us</h3>
+                        <a href="tel:+256756454646">+256 756 454 646</a>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope icon"></i>
+                        <h3>Email</h3>
+                        <a href="mailto:kaigwaakram123@gmail.com">kaigwaakram123@gmail.com</a>
+                    </div>
+                    <div class="info-item">
+                        <i class="fab fa-whatsapp icon"></i>
+                        <h3>WhatsApp</h3>
+                        <a href="https://wa.me/256749846848">+256 749 846 848</a>
+                    </div>
+                    <div class="info-item">
+                        <i class="fab fa-telegram-plane icon"></i>
+                        <h3>Telegram</h3>
+                        <a href="https://t.me/+256706571957">+256 706 571 957</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="privacy-policy-section" class="policy-container">
+            <div class="container text-center">
+                <h2>Privacy Policy</h2>
+                <button id="togglePrivacy" class="btn">View Our Privacy Policy</button>
+                <div id="privacy-content" class="policy-content">
+                    <h3>Studypedia Privacy Policy</h3>
+                    <p><strong>Last Updated:</strong> October 26, 2025</p>
+                    <p>Welcome to Studypedia. We are committed to protecting your privacy and providing a safe online experience. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website.</p>
+                    <h4>1. Information We Collect</h4>
+                    <p>We may collect personal data, derivative data, and financial data that you voluntarily provide when you register with the site, subscribe to services, or make a purchase.</p>
+                    <h4>2. How We Use Your Information</h4>
+                    <p>Your information helps us to create and manage your account, fulfill orders, improve the site's efficiency, and personalize your experience.</p>
+                    <h4>3. Disclosure of Your Information</h4>
+                    <p>We may share your information with third-party service providers who assist us in operating the site. We will not sell or share your information with third parties for marketing purposes without your explicit consent.</p>
+                    <h4>4. Security of Your Information</h4>
+                    <p>We use administrative, technical, and physical security measures to protect your personal information. However, no security measure is completely impenetrable.</p>
+                    <h4>5. Policy for Children</h4>
+                    <p>We do not knowingly solicit information from or market to children under the age of 13. If you believe we have, please contact us.</p>
+                    <h4>6. Changes to This Privacy Policy</h4>
+                    <p>We reserve the right to update this policy at any time. We will notify you of changes by updating the "Last Updated" date on this page.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="terms-and-conditions-section" class="terms-container">
+            <div class="container text-center">
+                <h2>Terms and Conditions</h2>
+                <button id="toggleTerms" class="btn">Read Our Terms and Conditions</button>
+                <div id="terms-content" class="terms-content">
+                    <h3>Terms and Conditions of Use</h3>
+                    <p><strong>Last Updated:</strong> October 26, 2025</p>
+                    <p>By accessing and using Studypedia, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use this website.</p>
+                    <h4>1. Acceptance of Terms</h4>
+                    <p>By accessing this website, you are agreeing to be bound by these Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. The materials contained in this website are protected by applicable copyright and trademark law.</p>
+                    <h4>2. Intellectual Property</h4>
+                    <p>All content on Studypedia, including text, graphics, logos, images, and notes, is the property of Studypedia or its content suppliers and protected by international copyright laws. The use of this content for any purpose other than personal, non-commercial use is strictly prohibited without our prior written consent.</p>
+                    <h4>3. User Conduct</h4>
+                    <p>You agree to use the website only for lawful purposes. You are prohibited from using this site to transmit any unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable material.</p>
+                    <h4>4. Disclaimer of Warranties</h4>
+                    <p>The content provided on this website is for informational and educational purposes only. We make no warranties, expressed or implied, regarding the accuracy, reliability, or completeness of the medical information provided. **The information on this site is not a substitute for professional medical advice, diagnosis, or treatment.** Always seek the advice of a qualified health provider with any questions you may have regarding a medical condition.</p>
+                    <h4>5. Limitation of Liability</h4>
+                    <p>Studypedia and its affiliates will not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our website or services, or for the cost of procurement of substitute goods and services.</p>
+                    <h4>6. Governing Law</h4>
+                    <p>Any claim relating to Studypedia's website shall be governed by the laws of Uganda without regard to its conflict of law provisions.</p>
+                </div>
+            </div>
         </section>
     </main>
 
-    <footer class="bg-[#1e1e1e] py-8 px-4 mt-12">
-        <div class="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
-            <div class="mb-4 md:mb-0">
-                <p>&copy; 2025 Studypedia. All rights reserved.</p>
-            </div>
-            <div class="flex flex-wrap justify-center md:justify-end gap-4">
-                <a href="#privacy-policy" class="hover:text-white transition duration-200">Privacy Policy</a>
-                <a href="#terms-and-conditions" class="hover:text-white transition duration-200">Terms and Conditions</a>
-                <a href="#contact" class="hover:text-white transition duration-200">Contact Us</a>
-            </div>
-        </div>
-        <div class="container mx-auto max-w-7xl mt-4 text-center">
-            <p class="text-gray-400">
-                Contact: <a href="tel:+256749846848" class="hover:text-white transition duration-200">+256 749 846848</a>
-                <a href="https://wa.me/256749846848" target="_blank" class="ml-2 hover:text-green-400 transition duration-200"><i class="ph-bold ph-whatsapp-logo text-lg"></i></a>
-                <a href="https://t.me/256706571957" target="_blank" class="ml-2 hover:text-blue-400 transition duration-200"><i class="ph-bold ph-telegram-logo text-lg"></i></a>
-            </p>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Studypedia. All Rights Reserved.</p>
         </div>
     </footer>
 
-    <div id="auth-modal" class="modal-overlay hidden">
-        <div class="modal-content relative text-white">
-            <button id="close-modal-auth" class="modal-close-btn"><i class="ph-bold ph-x text-2xl"></i></button>
-            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center">Login</h2>
-            <form id="auth-form" class="space-y-4">
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="your_email@example.com" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
-                    <p class="text-xs text-gray-500 mt-1">Password should be 8 characters or more.</p>
-                </div>
-                <div id="message-box-auth" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-auth"></p></div>
-                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300">Login</button>
-                <p class="text-sm text-center text-gray-400">
-                    Don't have an account? <a href="#" id="toggle-auth-mode" class="text-shine-purple hover:underline">Sign Up</a>
-                </p>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Resource Modal -->
-    <div id="add-resource-modal" class="modal-overlay hidden">
-        <div class="modal-content relative text-white">
-            <button id="close-modal-add" class="modal-close-btn"><i class="ph-bold ph-x text-2xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Add Resource</h2>
-            <form id="add-resource-form" class="space-y-4">
-                <select id="resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="resource-semeseter" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <input id="resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Title" required />
-                <textarea id="resource-content" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Description"></textarea>
-                <input id="resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Download URL (optional)" />
-                <div id="message-box-add" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-add"></p></div>
-                <button type="submit" id="add-resource-submit-btn" class="w-full py-3 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300">Add Resource</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Resource Modal -->
-    <div id="edit-resource-modal" class="modal-overlay hidden">
-        <div class="modal-content relative text-white">
-            <button id="close-modal-edit" class="modal-close-btn"><i class="ph-bold ph-x text-2xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Edit Resource</h2>
-            <form id="edit-resource-form" class="space-y-4">
-                <select id="edit-resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="edit-resource-semeseter" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="edit-resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <input id="edit-resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Title" required />
-                <textarea id="edit-resource-content" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Description"></textarea>
-                <input id="edit-resource-url" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Download URL (optional)" />
-                <input type="hidden" id="edit-doc-id" />
-                <div id="message-box-edit" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-edit"></p></div>
-                <button type="submit" id="edit-resource-submit-btn" class="w-full py-3 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300">Save Changes</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Confirm Delete Modal -->
-    <div id="confirm-delete-modal" class="modal-overlay hidden">
-        <div class="modal-content relative text-white text-center">
-            <h2 class="text-2xl font-bold mb-6">Confirm Delete</h2>
-            <p>Are you sure you want to delete this resource?</p>
-            <div class="flex justify-center gap-4 mt-6">
-                <button id="confirm-delete-btn" class="py-2 px-6 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition duration-300">Delete</button>
-                <button id="cancel-delete-btn" class="py-2 px-6 rounded-xl font-bold bg-gray-500 text-white hover:bg-gray-600 transition duration-300">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Panel Modal -->
-    <div id="admin-panel-modal" class="modal-overlay hidden">
-        <div class="modal-content relative text-white max-w-2xl">
-            <button id="close-admin-panel-modal" class="modal-close-btn"><i class="ph-bold ph-x text-2xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Admin Panel</h2>
-            <div>
-                <h3 class="text-xl font-semibold mb-2">Fields</h3>
-                <div id="admin-fields-list" class="mb-4"></div>
-                <form id="add-field-form" class="flex gap-2 mb-4">
-                    <input id="new-field-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New Field Name" required />
-                    <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add Field</button>
-                </form>
-                <div id="message-box-admin-field" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-field"></p></div>
-            </div>
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-2">Semeseters</h3>
-                <select id="admin-semeseter-field-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
-                <form id="add-semeseter-form" class="flex gap-2 mb-4">
-                    <input id="new-semeseter-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New semeseter Name" required />
-                    <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add semeseter</button>
-                </form>
-                <div id="admin-semeseters-list" class="mb-4"></div>
-                <div id="message-box-admin-semeseter" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-semeseter"></p></div>
-            </div>
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-2">Course Units</h3>
-                <select id="admin-course-unit-field-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
-                <select id="admin-course-unit-semeseter-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
-                <form id="add-course-unit-form" class="flex gap-2 mb-4">
-                    <input id="new-course-unit-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New Course Unit Name" required />
-                    <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add Course Unit</button>
-                </form>
-                <div id="admin-course-units-list" class="mb-4"></div>
-                <div id="message-box-admin-course-unit" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-course-unit"></p></div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        // --- Helper Functions (move toggleAuthMode up so it's defined before use) ---
-        let isLoginMode = true;
-        const toggleAuthMode = (event) => {
-            event.preventDefault();
-            isLoginMode = !isLoginMode;
-            const toggleElement = document.getElementById('toggle-auth-mode');
-            const modalTitle = document.getElementById('modal-title');
-            const submitBtn = document.getElementById('submit-btn');
-            const passwordInput = document.getElementById('password');
-            const messageBoxAuth = document.getElementById('message-box-auth');
-            if (isLoginMode) {
-                modalTitle.textContent = 'Login';
-                submitBtn.textContent = 'Login';
-                toggleElement.textContent = 'Sign Up';
-            } else {
-                modalTitle.textContent = 'Sign Up';
-                submitBtn.textContent = 'Sign Up';
-                toggleElement.textContent = 'Login';
-            }
-            document.querySelector('#auth-form .input-group:nth-child(2)').innerHTML = `
-                <label for="password">Password</label>
-                <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
-                <p class="text-xs text-gray-500 mt-1">Password should be 8 characters or more.</p>
-            `;
-            document.getElementById('password').value = '';
-            messageBoxAuth.classList.add('hidden');
-        };
-
-        // Initialize Firebase
+    <script>
+        // --- Firebase Configuration ---
+        // 🚨 IMPORTANT: Replace the following values with your project's configuration from the Firebase console.
         const firebaseConfig = {
-            apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
-            authDomain: "studypedia-app.firebaseapp.com",
-            projectId: "studypedia-app",
-            storageBucket: "studypedia-app.firebasestorage.app",
-            messagingSenderId: "793261754970",
-            appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
-            measurementId: "G-6CTGP0MF8Y"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
 
-        // Add event listener for toggling login/signup mode
-        document.getElementById('toggle-auth-mode').addEventListener('click', toggleAuthMode);
+        // Get a reference to the Firestore service
+        const db = firebase.firestore();
 
-        // --- UI Element References ---
-        const loginSignupBtn = document.getElementById('login-signup-btn');
-        const addResourceBtn = document.getElementById('add-resource-btn');
-        const adminPanelBtn = document.getElementById('admin-panel-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const authModal = document.getElementById('auth-modal');
-        const addResourceModal = document.getElementById('add-resource-modal');
-        const editResourceModal = document.getElementById('edit-resource-modal');
-        const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-        const adminPanelModal = document.getElementById('admin-panel-modal');
-
-        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-        const closeModalAuthBtn = document.getElementById('close-modal-auth');
-        const closeModalAddBtn = document.getElementById('close-modal-add');
-        const closeModalEditBtn = document.getElementById('close-modal-edit');
-        const closeAdminPanelModalBtn = document.getElementById('close-admin-panel-modal');
-
-        const authForm = document.getElementById('auth-form');
-        const addResourceForm = document.getElementById('add-resource-form');
-        const editResourceForm = document.getElementById('edit-resource-form');
-        const modalTitle = document.getElementById('modal-title');
-        const submitBtn = document.getElementById('submit-btn');
-        const addResourceSubmitBtn = document.getElementById('add-resource-submit-btn');
-        const editResourceSubmitBtn = document.getElementById('edit-resource-submit-btn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const userDetails = document.getElementById('user-details');
-        const userEmail = document.getElementById('user-email');
-        const adminStatus = document.getElementById('admin-status');
-        const contentContainer = document.getElementById('content-container');
-        const initialPrompt = document.getElementById('initial-prompt');
-
-        const fieldsSection = document.getElementById('fields-section');
-        const semesetersSection = document.getElementById('semeseters-section');
-        const courseUnitsSection = document.getElementById('course-units-section');
-        const loadingFieldsMessage = document.getElementById('loading-fields');
-        const backToFieldsBtn = document.getElementById('back-to-fields-btn');
-        const backTosemesetersBtn = document.getElementById('back-to-semeseters-btn');
-
-        const resourceFieldSelect = document.getElementById('resource-field');
-        const resourcesemeseterSelect = document.getElementById('resource-semeseter');
-        const resourceCourseUnitSelect = document.getElementById('resource-course-unit');
-        const resourceTitleInput = document.getElementById('resource-title');
-        const resourceContentInput = document.getElementById('resource-content');
-        const resourceUrlInput = document.getElementById('resource-url');
-
-        const editResourceFieldSelect = document.getElementById('edit-resource-field');
-        const editResourcesemeseterSelect = document.getElementById('edit-resource-semeseter');
-        const editResourceCourseUnitSelect = document.getElementById('edit-resource-course-unit');
-        const editResourceTitleInput = document.getElementById('edit-resource-title');
-        const editResourceContentInput = document.getElementById('edit-resource-content');
-        const editResourceUrlInput = document.getElementById('edit-resource-url');
-        const editDocIdInput = document.getElementById('edit-doc-id');
-
-        const messageBoxAuth = document.getElementById('message-box-auth');
-        const messageTextAuth = document.getElementById('message-text-auth');
-        const messageBoxAdd = document.getElementById('message-box-add');
-        const messageTextAdd = document.getElementById('message-text-add');
-        const messageBoxEdit = document.getElementById('message-box-edit');
-        const messageTextEdit = document.getElementById('message-text-edit');
-
-        const adminFieldsList = document.getElementById('admin-fields-list');
-        const addFieldForm = document.getElementById('add-field-form');
-        const newFieldNameInput = document.getElementById('new-field-name');
-        const messageBoxAdminField = document.getElementById('message-box-admin-field');
-        const messageTextAdminField = document.getElementById('message-text-admin-field');
-
-        const adminsemeseterFieldSelect = document.getElementById('admin-semeseter-field-select');
-        const addsemeseterForm = document.getElementById('add-semeseter-form');
-        const newsemeseterNameInput = document.getElementById('new-semeseter-name');
-        const adminsemesetersList = document.getElementById('admin-semeseters-list');
-        const messageBoxAdminsemeseter = document.getElementById('message-box-admin-semeseter');
-        const messageTextAdminsemeseter = document.getElementById('message-text-admin-semeseter');
-
-        const adminCourseUnitFieldSelect = document.getElementById('admin-course-unit-field-select');
-        const adminCourseUnitsemeseterSelect = document.getElementById('admin-course-unit-semeseter-select');
-        const addCourseUnitForm = document.getElementById('add-course-unit-form');
-        const newCourseUnitNameInput = document.getElementById('new-course-unit-name');
-        const adminCourseUnitsList = document.getElementById('admin-course-units-list');
-        const messageBoxAdminCourseUnit = document.getElementById('message-box-admin-course-unit');
-        const messageTextAdminCourseUnit = document.getElementById('message-text-admin-course-unit');
-
-        // Show the auth modal when Login/Signup button is clicked
-        loginSignupBtn.addEventListener('click', () => {
-            authModal.classList.remove('hidden');
-        });
-
-        // Hide the auth modal when close button is clicked
-        closeModalAuthBtn.addEventListener('click', () => {
-            authModal.classList.add('hidden');
-        });
-
-        // Modal show/hide helpers for all modals (use hidden class)
-        // Add Resource Modal
-        addResourceBtn.addEventListener('click', () => {
-            addResourceModal.classList.remove('hidden');
-        });
-        closeModalAddBtn.addEventListener('click', () => {
-            addResourceModal.classList.add('hidden');
-        });
-        // Edit Resource Modal
-        closeModalEditBtn.addEventListener('click', () => {
-            editResourceModal.classList.add('hidden');
-        });
-        // Confirm Delete Modal
-        cancelDeleteBtn.addEventListener('click', () => {
-            confirmDeleteModal.classList.add('hidden');
-        });
-        // Admin Panel Modal
-        adminPanelBtn.addEventListener('click', () => {
-            adminPanelModal.classList.remove('hidden');
-        });
-        closeAdminPanelModalBtn.addEventListener('click', () => {
-            adminPanelModal.classList.add('hidden');
-        });
-
-        // --- Global State Variables ---
-        let isLoginMode = true;
-        let currentUser = null;
-        let isAdmin = false;
-        const ADMIN_UID = "SscqLofDUSRQNOMDRr4ffuPi9Li2";
-
-        let selectedFieldId = null;
-        let selectedsemeseterId = null;
-        let selectedCourseUnitId = null;
-
-        // --- Helper Functions ---
-        const displayMessage = (message, isError = true, modalType = 'auth') => {
-            let msgBox, msgText;
-            if (modalType === 'auth') {
-                msgBox = messageBoxAuth;
-                msgText = messageTextAuth;
-            } else if (modalType === 'add') {
-                msgBox = messageBoxAdd;
-                msgText = messageTextAdd;
-            } else if (modalType === 'edit') {
-                msgBox = messageBoxEdit;
-                msgText = messageTextEdit;
-            } else if (modalType === 'admin-field') {
-                msgBox = messageBoxAdminField;
-                msgText = messageTextAdminField;
-            } else if (modalType === 'admin-semeseter') {
-                msgBox = messageBoxAdminSemeseter;
-                msgText = messageTextAdminSemeseter;
-            } else if (modalType === 'admin-course-unit') {
-                msgBox = messageBoxAdminCourseUnit;
-                msgText = messageTextAdminCourseUnit;
-            }
-            if (msgBox && msgText) {
-                msgBox.classList.remove('hidden');
-                msgText.textContent = message;
-                msgBox.className = isError ? 'error-message' : 'success-message';
-            }
-        };
-
-        const toggleAuthMode = (event) => {
-            event.preventDefault();
-            isLoginMode = !isLoginMode;
-            const toggleElement = document.getElementById('toggle-auth-mode');
-            if (isLoginMode) {
-                modalTitle.textContent = 'Login';
-                submitBtn.textContent = 'Login';
-                toggleElement.textContent = 'Sign Up';
-            } else {
-                modalTitle.textContent = 'Sign Up';
-                submitBtn.textContent = 'Sign Up';
-                toggleElement.textContent = 'Login';
-            }
-            document.querySelector('#auth-form .input-group:nth-child(2)').innerHTML = `
-                <label for="password">Password</label>
-                <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
-                <p class="text-xs text-gray-500 mt-1">Password should be 8 characters or more.</p>
-            `;
-            passwordInput.value = '';
-            messageBoxAuth.classList.add('hidden');
-        };
-
-        const clearNavigation = () => {
-            semesetersSection.classList.add('hidden');
-            semesetersSection.querySelector('div:last-of-type').innerHTML = '';
-            courseUnitsSection.classList.add('hidden');
-            courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
-            contentContainer.innerHTML = '';
-            initialPrompt.classList.remove('hidden');
-            selectedFieldId = null;
-            selectedsemeseterId = null;
-            selectedCourseUnitId = null;
-        };
-
-        // --- Navigation "Back" Buttons Logic ---
-        backToFieldsBtn.addEventListener('click', () => {
-            fieldsSection.querySelector('div:last-of-type').querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
-            semesetersSection.classList.add('hidden');
-            courseUnitsSection.classList.add('hidden');
-            semesetersSection.querySelector('div:last-of-type').innerHTML = '';
-            courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
-            contentContainer.innerHTML = '';
-            initialPrompt.classList.remove('hidden');
-            selectedFieldId = null;
-            selectedsemeseterId = null;
-            selectedCourseUnitId = null;
-        });
-
-        backTosemesetersBtn.addEventListener('click', () => {
-            semesetersSection.querySelector('div:last-of-type').querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
-            courseUnitsSection.classList.add('hidden');
-            courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
-            contentContainer.innerHTML = '';
-            initialPrompt.classList.remove('hidden');
-            selectedsemeseterId = null;
-            selectedCourseUnitId = null;
-        });
-
-        // --- Core Data Loading Functions ---
-        const loadFields = async () => {
-            loadingFieldsMessage.classList.remove('hidden');
-            fieldsSection.querySelector('div:last-of-type').innerHTML = '';
+        // Function to save a new question to Firestore
+        async function saveQuestion(questionText) {
             try {
-                const fieldsCol = collection(db, "fields");
-                const q = query(fieldsCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) {
-                    fieldsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No fields defined yet.</p>';
-                    return;
-                }
-                querySnapshot.forEach((doc) => {
-                    const field = doc.data();
-                    const button = document.createElement('button');
-                    button.textContent = field.name;
-                    button.classList.add('section-button');
-                    button.dataset.fieldId = field.id;
-                    button.addEventListener('click', () => {
-                        selectedFieldId = field.id;
-                        selectedsemeseterId = null;
-                        selectedCourseUnitId = null;
-                        document.querySelectorAll('#fields-section .section-button').forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        loadsemeseters(field.id);
-                        semesetersSection.classList.remove('hidden');
-                        courseUnitsSection.classList.add('hidden');
-                        contentContainer.innerHTML = '';
-                        initialPrompt.classList.remove('hidden');
-                    });
-                    fieldsSection.querySelector('div:last-of-type').appendChild(button);
+                // Add a new document to the 'ai-questions' collection
+                const docRef = await db.collection("ai-questions").add({
+                    question: questionText,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-            } catch (error) {
-                console.error("Error loading fields:", error);
-                fieldsSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading fields: ${error.message}</p>`;
-            } finally {
-                loadingFieldsMessage.classList.add('hidden');
+                console.log("Document successfully written with ID: ", docRef.id);
+            } catch (e) {
+                console.error("Error adding document: ", e);
             }
-        };
+        }
+        
+        // --- Tab and Content Management ---
+        document.addEventListener('DOMContentLoaded', () => {
+            function initializeTabs(container) {
+                const tabButtons = container.querySelectorAll('.tab-button');
+                const tabContents = container.querySelectorAll('.tab-content, .sub-content');
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = button.getAttribute('data-target');
+                        const targetContent = document.querySelector(targetId);
+                        
+                        const parentTabNav = button.closest('.tab-nav, .nested-tab-nav');
+                        if (!parentTabNav) return;
+                        
+                        const siblingButtons = parentTabNav.querySelectorAll('.tab-button');
+                        const siblingContents = parentTabNav.nextElementSibling.querySelectorAll('.tab-content, .sub-content');
 
-        const loadsemeseters = async (fieldId) => {
-            semesetersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">Loading semeseters...</p>';
-            try {
-                const semesetersCol = collection(db, "fields", fieldId, "semeseters");
-                const q = query(semesetersCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) {
-                    semesetersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No semeseters defined for this field.</p>';
-                    return;
-                }
-                semesetersSection.querySelector('div:last-of-type').innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const semeseter = doc.data();
-                    const button = document.createElement('button');
-                    button.textContent = semeseter.name;
-                    button.classList.add('section-button');
-                    button.dataset.semeseterId = semeseter.id;
-                    button.addEventListener('click', () => {
-                        selectedsemeseterId = semeseter.id;
-                        selectedCourseUnitId = null;
-                        document.querySelectorAll('#semeseters-section .section-button').forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        loadCourseUnits(fieldId, semeseter.id);
-                        courseUnitsSection.classList.remove('hidden');
-                        contentContainer.innerHTML = '';
-                        initialPrompt.classList.remove('hidden');
-                    });
-                    semesetersSection.querySelector('div:last-of-type').appendChild(button);
-                });
-            } catch (error) {
-                console.error(`Error loading semeseters for field ${fieldId}:`, error);
-                semesetersSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading semeseters: ${error.message}</p>`;
-            }
-        };
+                        siblingButtons.forEach(btn => btn.classList.remove('active'));
+                        siblingContents.forEach(content => content.classList.remove('active'));
 
-        const loadCourseUnits = async (fieldId, semeseterId) => {
-            courseUnitsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">Loading course units...</p>';
-            try {
-                const courseUnitsCol = collection(db, "fields", fieldId, "semeseters", semeseterId, "courseUnits");
-                const q = query(courseUnitsCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) {
-                    courseUnitsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No course units defined for this semeseter.</p>';
-                    return;
-                }
-                courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const courseUnit = doc.data();
-                    const button = document.createElement('button');
-                    button.textContent = courseUnit.name;
-                    button.classList.add('section-button');
-                    button.dataset.courseUnitId = courseUnit.id;
-                    button.addEventListener('click', () => {
-                        selectedCourseUnitId = courseUnit.id;
-                        document.querySelectorAll('#course-units-section .section-button').forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        fetchAndDisplayResources(selectedFieldId, selectedsemeseterId, selectedCourseUnitId);
-                        initialPrompt.classList.add('hidden');
-                    });
-                    courseUnitsSection.querySelector('div:last-of-type').appendChild(button);
-                });
-            } catch (error) {
-                console.error(`Error loading course units for ${fieldId}/${semeseterId}:`, error);
-                courseUnitsSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading course units: ${error.message}</p>`;
-            }
-        };
-
-        const fetchAndDisplayResources = (fieldId, semeseterId, courseUnitId) => {
-            contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">Loading resources...</p>';
-            if (!fieldId || !semeseterId || !courseUnitId) {
-                contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">Please select a field, semeseter, and course unit.</p>';
-                return;
-            }
-            const q = query(
-                collection(db, "pharmacy_resources"),
-                where("field_id", "==", fieldId),
-                where("semeseter_id", "==", semeseterId),
-                where("course_unit_id", "==", courseUnitId)
-            );
-            onSnapshot(q, (querySnapshot) => {
-                if (querySnapshot.empty) {
-                    contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">No resources found for this course unit. Be the first to add one!</p>';
-                    return;
-                }
-                let htmlContent = '';
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const isOwner = currentUser && data.createdBy === currentUser.uid;
-                    const canEditDelete = isAdmin || isOwner;
-                    htmlContent += `
-                        <div class="card bg-[#242424] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 class="text-2xl font-semibold mb-2 text-white">${data.title}</h3>
-                                    <p class="text-gray-400">${data.content}</p>
-                                </div>
-                                ${canEditDelete ? `
-                                    <div class="relative">
-                                        <button class="options-btn text-gray-400 hover:text-white transition-colors duration-200">
-                                            <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
-                                        </button>
-                                        <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
-                                            <a class="options-menu-item edit-option hover:bg-gray-700" data-doc-id="${doc.id}" data-field-id="${data.field_id}" data-semeseter-id="${data.semeseter_id}" data-course-unit-id="${data.course_unit_id}">
-                                                <i class="ph-bold ph-pencil"></i>
-                                                <span>Edit</span>
-                                            </a>
-                                            <a class="options-menu-item delete-option hover:bg-gray-700" data-doc-id="${doc.id}">
-                                                <i class="ph-bold ph-trash"></i>
-                                                <span>Delete</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div class="flex justify-start items-center">
-                                ${data.download_url ? `<a href="${data.download_url}" target="_blank" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900 shadow-lg hover:bg-[#52c1da] transition duration-300 transform hover:scale-105 flex items-center">
-                                    <i class="ph-bold ph-download-simple mr-2"></i>Download
-                                </a>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                contentContainer.innerHTML = htmlContent;
-                attachResourceEventListeners();
-            }, (error) => {
-                console.error("Error fetching documents: ", error);
-                contentContainer.innerHTML = `<p class="error-message">Error fetching data: ${error.message}</p>`;
-            });
-        };
-
-        const attachResourceEventListeners = () => {
-            document.querySelectorAll('.options-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    document.querySelectorAll('.options-menu').forEach(menu => {
-                        if (menu !== button.nextElementSibling) {
-                            menu.classList.add('hidden');
+                        if (targetContent) {
+                            targetContent.classList.add('active');
                         }
+                        button.classList.add('active');
                     });
-                    const menu = button.nextElementSibling;
-                    if (menu) {
-                        menu.classList.toggle('hidden');
-                    }
                 });
-            });
-
-            document.querySelectorAll('.edit-option').forEach(button => {
-                button.addEventListener('click', async () => {
-                    const docId = button.dataset.docId;
-                    const docRef = doc(db, "pharmacy_resources", docId);
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        editDocIdInput.value = docId;
-                        editResourceTitleInput.value = data.title;
-                        editResourceContentInput.value = data.content;
-                        editResourceUrlInput.value = data.download_url || '';
-
-                        await populateFieldSelect(editResourceFieldSelect, data.field_id);
-                        await populatesemeseterSelect(editResourcesemeseterSelect, data.field_id, data.semeseter_id);
-                        await populateCourseUnitSelect(editResourceCourseUnitSelect, data.field_id, data.semeseter_id, data.course_unit_id);
-                        editResourceModal.classList.remove('hidden');
-                    } else {
-                        displayMessage('Resource not found for editing!', true, 'edit');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.delete-option').forEach(button => {
-                button.addEventListener('click', () => {
-                    const docIdToDelete = button.dataset.docId;
-                    confirmDeleteModal.classList.remove('hidden');
-                    
-                    const handleConfirm = async () => {
-                        try {
-                            const docRef = doc(db, "pharmacy_resources", docIdToDelete);
-                            await deleteDoc(docRef);
-                            displayMessage('Resource deleted successfully!', false, 'edit');
-                        } catch (error) {
-                            console.error("Error deleting document: ", error);
-                            displayMessage(`Error deleting resource: ${error.message}`, true, 'edit');
-                        } finally {
-                            confirmDeleteModal.classList.add('hidden');
-                            confirmDeleteBtn.removeEventListener('click', handleConfirm);
-                            cancelDeleteBtn.removeEventListener('click', handleCancel);
-                        }
-                    };
-
-                    const handleCancel = () => {
-                        confirmDeleteModal.classList.add('hidden');
-                        confirmDeleteBtn.removeEventListener('click', handleConfirm);
-                        cancelDeleteBtn.removeEventListener('click', handleCancel);
-                    };
-
-                    confirmDeleteBtn.addEventListener('click', handleConfirm);
-                    cancelDeleteBtn.addEventListener('click', handleCancel);
-                });
-            });
-
-            document.addEventListener('click', (e) => {
-                document.querySelectorAll('.options-menu').forEach(menu => {
-                    if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !e.target.closest('.options-btn')) {
-                        menu.classList.add('hidden');
-                    }
-                });
-            });
-        };
-
-        const populateFieldSelect = async (selectElement, selectedValue = null) => {
-            selectElement.innerHTML = '<option value="">Select a Field</option>';
-            selectElement.disabled = true;
-            try {
-                const fieldsCol = collection(db, "fields");
-                const q = query(fieldsCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((doc) => {
-                        const field = doc.data();
-                        const option = document.createElement('option');
-                        option.value = field.id;
-                        option.textContent = field.name;
-                        selectElement.appendChild(option);
-                    });
-                    selectElement.disabled = false;
-                    if (selectedValue) {
-                        selectElement.value = selectedValue;
-                    }
-                }
-            } catch (error) {
-                console.error("Error populating field select:", error);
-                selectElement.innerHTML = '<option value="">Error loading fields</option>';
             }
-        };
-
-        const populatesemeseterSelect = async (selectElement, fieldId, selectedValue = null) => {
-            selectElement.innerHTML = '<option value="">Select a semeseter</option>';
-            selectElement.disabled = true;
-            if (!fieldId) return;
-
-            try {
-                const semesetersCol = collection(db, "fields", fieldId, "semeseters");
-                const q = query(semesetersCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((doc) => {
-                        const semeseter = doc.data();
-                        const option = document.createElement('option');
-                        option.value = semeseter.id;
-                        option.textContent = semeseter.name;
-                        selectElement.appendChild(option);
-                    });
-                    selectElement.disabled = false;
-                    if (selectedValue) {
-                        selectElement.value = selectedValue;
-                    }
-                }
-            } catch (error) {
-                console.error("Error populating semeseter select:", error);
-                selectElement.innerHTML = '<option value="">Error loading semeseters</option>';
-            }
-        };
-
-        const populateCourseUnitSelect = async (selectElement, fieldId, semeseterId, selectedValue = null) => {
-            selectElement.innerHTML = '<option value="">Select a Course Unit</option>';
-            selectElement.disabled = true;
-            if (!fieldId || !semeseterId) return;
-
-            try {
-                const courseUnitsCol = collection(db, "fields", fieldId, "semeseters", semeseterId, "courseUnits");
-                const q = query(courseUnitsCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((doc) => {
-                        const courseUnit = doc.data();
-                        const option = document.createElement('option');
-                        option.value = courseUnit.id;
-                        option.textContent = courseUnit.name;
-                        selectElement.appendChild(option);
-                    });
-                    selectElement.disabled = false;
-                    if (selectedValue) {
-                        selectElement.value = selectedValue;
-                    }
-                }
-            } catch (error) {
-                console.error("Error populating course unit select:", error);
-                selectElement.innerHTML = '<option value="">Error loading course units</option>';
-            }
-        };
-
-        // --- Admin Panel Functions (your code) ---
-        const loadAdminFields = async () => {
-            adminFieldsList.innerHTML = '<p class="text-gray-400">Loading fields...</p>';
-            try {
-                const fieldsCol = collection(db, "fields");
-                const q = query(fieldsCol, orderBy("order", "asc"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) {
-                    adminFieldsList.innerHTML = '<p class="text-gray-400">No fields defined yet.</p>';
+            
+            document.querySelectorAll('.course-section').forEach(section => {
+                initializeTabs(section);
+            });
+            
+            // --- AI Search Functionality ---
+            const aiAskBtn = document.getElementById('ai-ask-btn');
+            const aiQuestionInput = document.getElementById('ai-question-input');
+            const aiImageInput = document.getElementById('ai-image-input');
+            const aiResponseContainer = document.getElementById('ai-response-container');
+            const aiResponseText = document.getElementById('ai-response-text');
+            const aiCopyBtn = document.getElementById('ai-copy-btn');
+            
+            aiAskBtn.addEventListener('click', () => {
+                const question = aiQuestionInput.value.trim();
+                const imageFile = aiImageInput.files[0];
+                
+                if (question === "" && !imageFile) {
+                    alert("Please enter a question or upload a photo.");
                     return;
                 }
-                adminFieldsList.innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const field = doc.data();
-                    const fieldItem = document.createElement('div');
-                    fieldItem.classList.add('flex', 'items-center', 'justify-between', 'p-2', 'bg-[#2a2a2a]', 'rounded-md');
-                    fieldItem.innerHTML = `
-                        <span class="text-white">${field.name} (ID: ${field.id})</span>
-                        <div class="flex gap-2">
-                            <button class="edit-field-btn text-shine-purple hover:text-white" data-doc-id="${doc.id}" data-name="${field.name}" data-id="${field.id}" data-order="${field.order}">
-                                <i class="ph-bold ph-pencil"></i>
-                            </button>
-                            <button class="delete-field-btn text-red-500 hover:text-white" data-doc-id="${doc.id}">
-                                <i class="ph-bold ph-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                    adminFieldsList.appendChild(fieldItem);
-                });
-                document.querySelectorAll('.edit-field-btn').forEach(btn => btn.addEventListener('click', (e) => {
-                    const docId = e.currentTarget.dataset.docId;
-                    const newName = prompt("Edit Field Name:", e.currentTarget.dataset.name);
-                    const newId = prompt("Edit Field ID (Use caution! Affects links):", e.currentTarget.dataset.id);
-                    const newOrder = prompt("Edit Field Order:", e.currentTarget.dataset.order);
-                    if (newName !== null && newId !== null && newOrder !== null) {
-                        updateField(docId, newName, newId, parseInt(newOrder));
-                    }
-                }));
-                // ... (rest of your admin panel functions and event listeners) ...
-            } catch (error) {
-                console.error("Error loading admin fields:", error);
-                adminFieldsList.innerHTML = `<p class="error-message">Error loading fields: ${error.message}</p>`;
-            }
-        };
-        // ... (rest of your existing script.js code) ...
+                
+                // Save the user's question to Firestore
+                if (question !== "") {
+                    saveQuestion(question);
+                }
 
-        // Initial load
-        loadFields();
+                // Show the response container to the user
+                aiResponseContainer.classList.add('active');
+
+                // Clear previous response and show a loading message
+                aiResponseText.textContent = "Thinking...";
+                
+                // --- THIS IS WHERE YOU NEED TO ADD YOUR BACKEND API LOGIC ---
+                // This code is a placeholder. You'll need to send the 'question' and 'imageFile'
+                // to a backend server that connects to an AI API (e.g., Google's Gemini API).
+                // The backend would then return the AI's answer.
+
+                console.log("Question:", question);
+                console.log("Image:", imageFile ? imageFile.name : 'No image uploaded');
+
+                // Example of what your backend request might look like:
+                /*
+                const formData = new FormData();
+                formData.append('question', question);
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                fetch('YOUR_BACKEND_API_ENDPOINT', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the API returns a JSON object like { answer: "..." }
+                    aiResponseText.textContent = data.answer;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    aiResponseText.textContent = "Sorry, an error occurred. Please try again.";
+                });
+                */
+                
+                // --- Placeholder Simulation of an AI Response ---
+                // For demonstration, we'll just show a static response after a delay.
+                setTimeout(() => {
+                    aiResponseText.textContent = "Based on your inquiry, here is a detailed medical explanation: " +
+                    "A patient presenting with symptoms of high fever, persistent cough, and fatigue may be " +
+                    "experiencing a viral infection like influenza. Medical assessment would typically involve " +
+                    "a physical examination and possibly a diagnostic test to confirm the presence of the virus. " +
+                    "Treatment usually focuses on supportive care, including rest, hydration, and over-the-counter " +
+                    "medications to manage symptoms. It is essential to consult with a healthcare professional " +
+                    "for an accurate diagnosis and treatment plan.";
+                }, 2000); // Simulate a 2-second response time
+            });
+
+            // Handle the Copy Button
+            aiCopyBtn.addEventListener('click', () => {
+                const textToCopy = aiResponseText.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert("Answer copied to clipboard!");
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            });
+
+            // --- Legacy Toggles (Privacy and Terms) ---
+            const togglePrivacyBtn = document.getElementById('togglePrivacy');
+            const privacyContent = document.getElementById('privacy-content');
+
+            togglePrivacyBtn.addEventListener('click', () => {
+                const isHidden = privacyContent.style.display === 'none' || privacyContent.style.display === '';
+                privacyContent.style.display = isHidden ? 'block' : 'none';
+                togglePrivacyBtn.textContent = isHidden ? 'Hide Privacy Policy' : 'View Our Privacy Policy';
+            });
+
+            const toggleTermsBtn = document.getElementById('toggleTerms');
+            const termsContent = document.getElementById('terms-content');
+
+            toggleTermsBtn.addEventListener('click', () => {
+                const isHidden = termsContent.style.display === 'none' || termsContent.style.display === '';
+                termsContent.style.display = isHidden ? 'block' : 'none';
+                toggleTermsBtn.textContent = isHidden ? 'Hide Terms and Conditions' : 'Read Our Terms and Conditions';
+            });
+
+            // --- Smooth Scrolling ---
+            document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // --- Highlight Active Nav Link ---
+            const sections = document.querySelectorAll('section, .hero');
+            const navLi = document.querySelectorAll('nav ul li a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    const offset = document.querySelector('header').offsetHeight + 20;
+
+                    if (pageYOffset >= sectionTop - offset && pageYOffset < sectionTop + sectionHeight - offset) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLi.forEach(li => {
+                    li.classList.remove('active');
+                    if (li.getAttribute('href') && li.getAttribute('href').includes(current)) {
+                        li.classList.add('active');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
