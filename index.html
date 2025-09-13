@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -260,6 +262,34 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, addDoc, query, where, doc, getDoc, updateDoc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+        // --- Helper Functions (move toggleAuthMode up so it's defined before use) ---
+        let isLoginMode = true;
+        const toggleAuthMode = (event) => {
+            event.preventDefault();
+            isLoginMode = !isLoginMode;
+            const toggleElement = document.getElementById('toggle-auth-mode');
+            const modalTitle = document.getElementById('modal-title');
+            const submitBtn = document.getElementById('submit-btn');
+            const passwordInput = document.getElementById('password');
+            const messageBoxAuth = document.getElementById('message-box-auth');
+            if (isLoginMode) {
+                modalTitle.textContent = 'Login';
+                submitBtn.textContent = 'Login';
+                toggleElement.textContent = 'Sign Up';
+            } else {
+                modalTitle.textContent = 'Sign Up';
+                submitBtn.textContent = 'Sign Up';
+                toggleElement.textContent = 'Login';
+            }
+            document.querySelector('#auth-form .input-group:nth-child(2)').innerHTML = `
+                <label for="password">Password</label>
+                <input type="password" id="password" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="••••••••" required>
+                <p class="text-xs text-gray-500 mt-1">Password should be 8 characters or more.</p>
+            `;
+            document.getElementById('password').value = '';
+            messageBoxAuth.classList.add('hidden');
+        };
+
         // Initialize Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
@@ -368,6 +398,30 @@
         // Hide the auth modal when close button is clicked
         closeModalAuthBtn.addEventListener('click', () => {
             authModal.classList.add('hidden');
+        });
+
+        // Modal show/hide helpers for all modals (use hidden class)
+        // Add Resource Modal
+        addResourceBtn.addEventListener('click', () => {
+            addResourceModal.classList.remove('hidden');
+        });
+        closeModalAddBtn.addEventListener('click', () => {
+            addResourceModal.classList.add('hidden');
+        });
+        // Edit Resource Modal
+        closeModalEditBtn.addEventListener('click', () => {
+            editResourceModal.classList.add('hidden');
+        });
+        // Confirm Delete Modal
+        cancelDeleteBtn.addEventListener('click', () => {
+            confirmDeleteModal.classList.add('hidden');
+        });
+        // Admin Panel Modal
+        adminPanelBtn.addEventListener('click', () => {
+            adminPanelModal.classList.remove('hidden');
+        });
+        closeAdminPanelModalBtn.addEventListener('click', () => {
+            adminPanelModal.classList.add('hidden');
         });
 
         // --- Global State Variables ---
@@ -669,8 +723,7 @@
                         await populateFieldSelect(editResourceFieldSelect, data.field_id);
                         await populateSemesterSelect(editResourceSemesterSelect, data.field_id, data.semester_id);
                         await populateCourseUnitSelect(editResourceCourseUnitSelect, data.field_id, data.semester_id, data.course_unit_id);
-                        
-                        editResourceModal.style.display = 'flex';
+                        editResourceModal.classList.remove('hidden');
                     } else {
                         displayMessage('Resource not found for editing!', true, 'edit');
                     }
@@ -680,7 +733,7 @@
             document.querySelectorAll('.delete-option').forEach(button => {
                 button.addEventListener('click', () => {
                     const docIdToDelete = button.dataset.docId;
-                    confirmDeleteModal.style.display = 'flex';
+                    confirmDeleteModal.classList.remove('hidden');
                     
                     const handleConfirm = async () => {
                         try {
@@ -691,14 +744,14 @@
                             console.error("Error deleting document: ", error);
                             displayMessage(`Error deleting resource: ${error.message}`, true, 'edit');
                         } finally {
-                            confirmDeleteModal.style.display = 'none';
+                            confirmDeleteModal.classList.add('hidden');
                             confirmDeleteBtn.removeEventListener('click', handleConfirm);
                             cancelDeleteBtn.removeEventListener('click', handleCancel);
                         }
                     };
 
                     const handleCancel = () => {
-                        confirmDeleteModal.style.display = 'none';
+                        confirmDeleteModal.classList.add('hidden');
                         confirmDeleteBtn.removeEventListener('click', handleConfirm);
                         cancelDeleteBtn.removeEventListener('click', handleCancel);
                     };
