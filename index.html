@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     
     <style>
@@ -43,9 +44,9 @@
             scroll-behavior: smooth;
         }
         
-        /* Ensure all main content is on a solid background for readability */
+        /* Ensure all main content is on a semi-transparent background for readability */
         header, main, footer, section {
-            background-color: var(--white-color); /* Overwrites the body's background for content */
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent to show background images */
         }
 
         /* Typography */
@@ -418,6 +419,137 @@
 
         /* Other sections and components are unchanged... */
 
+        /* Admin Menu Styles */
+        #admin-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        #admin-toggle {
+            background: var(--dark-color);
+            color: var(--white-color);
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 4px;
+        }
+
+        #admin-dropdown {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            background: var(--white-color);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            min-width: 150px;
+        }
+
+        #admin-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        #admin-dropdown button:hover {
+            background: #f5f5f5;
+        }
+
+        #admin-dropdown button:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--white-color);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .modal small {
+            display: block;
+            margin: 5px 0 10px 0;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .modal button {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal button:hover {
+            background: #0056b3;
+        }
+
+        .modal p {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .modal a {
+            color: var(--primary-color);
+        }
+
+        #login-message, #signup-message {
+            margin-top: 10px;
+            text-align: center;
+            color: red;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.8rem; }
@@ -436,11 +568,11 @@
             nav ul {
                 flex-direction: column;
             }
-            
+
             nav ul li {
                 margin: 0.5rem 0;
             }
-            
+
             .dropdown {
                 display: block;
                 width: 100%;
@@ -455,6 +587,11 @@
 
             .dropdown:hover .dropdown-content {
                 display: none;
+            }
+
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
             }
         }
     </style>
@@ -482,11 +619,22 @@
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="#privacy-policy-section">Privacy Policy</a></li>
                     <li><a href="#terms-and-conditions-section">T&Cs</a></li>
-                    <li><a href="#" class="btn-nav">Sign Up / Login</a></li>
+                    <li><button class="btn-nav" id="auth-btn">Sign Up / Login</button></li>
                 </ul>
             </nav>
         </div>
     </header>
+
+    <!-- Admin Menu -->
+    <div id="admin-menu" style="display: none;">
+        <button id="admin-toggle">⋮</button>
+        <div id="admin-dropdown" style="display: none;">
+            <button id="add-doc-btn">Add Document</button>
+            <button id="edit-doc-btn">Edit Documents</button>
+            <button id="delete-doc-btn">Delete Documents</button>
+            <button id="manage-fields-btn">Manage Fields</button>
+        </div>
+    </div>
 
     <div class="hero" id="home">
         <div class="container">
@@ -1162,6 +1310,77 @@
         </section>
     </main>
 
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="login-form">
+                <h2>Login</h2>
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <small>Password must be at least 8 characters.</small>
+                <button id="login-btn">Login</button>
+                <p>Don't have an account? <a href="#" id="switch-to-signup">Sign Up</a></p>
+                <div id="login-message"></div>
+            </div>
+            <div id="signup-form" style="display: none;">
+                <h2>Sign Up</h2>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <small>Password must be at least 8 characters.</small>
+                <button id="signup-btn">Sign Up</button>
+                <p>Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+                <div id="signup-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modals -->
+    <div id="add-doc-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="add-doc-modal">&times;</span>
+            <h2>Add Document</h2>
+            <select id="doc-course" required>
+                <option value="">Select Course</option>
+                <option value="DIPLOMA_PHARMACY">Diploma Pharmacy</option>
+                <option value="DIPLOMA_CLINICAL_MEDICINE">Diploma Clinical Medicine</option>
+                <option value="CERTIFICATE_PHARMACY">Certificate Pharmacy</option>
+                <option value="CERTIFICATE_MEDICAL_LAB_SCIENCE">Certificate Medical Lab Science</option>
+                <option value="CERTIFICATE_MEDICAL_RECORDS">Certificate Medical Records</option>
+                <option value="DIPLOMA_MEDICAL_RECORDS_MGT">Diploma Medical Records Management</option>
+            </select>
+            <input type="text" id="doc-id" placeholder="Document ID (e.g., diph1_1_sub1)" required>
+            <input type="text" id="doc-name" placeholder="Document Name" required>
+            <input type="url" id="doc-link" placeholder="Google Drive Link" required>
+            <button id="save-doc-btn">Save Document</button>
+            <div id="add-doc-message"></div>
+        </div>
+    </div>
+
+    <div id="edit-doc-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="edit-doc-modal">&times;</span>
+            <h2>Edit Documents</h2>
+            <div id="doc-list"></div>
+        </div>
+    </div>
+
+    <div id="delete-doc-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="delete-doc-modal">&times;</span>
+            <h2>Delete Documents</h2>
+            <div id="delete-doc-list"></div>
+        </div>
+    </div>
+
+    <div id="manage-fields-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="manage-fields-modal">&times;</span>
+            <h2>Manage Fields</h2>
+            <p>Feature coming soon...</p>
+        </div>
+    </div>
+
     <footer>
         <div class="container">
             <p>&copy; 2025 Studypedia. All Rights Reserved.</p>
@@ -1170,14 +1389,14 @@
 
     <script>
         // --- Firebase Configuration ---
-        // 🚨 IMPORTANT: Replace the following values with your project's configuration from the Firebase console.
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
+            authDomain: "studypedia-app.firebaseapp.com",
+            projectId: "studypedia-app",
+            storageBucket: "studypedia-app.firebasestorage.app",
+            messagingSenderId: "793261754970",
+            appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
+            measurementId: "G-6CTGP0MF8Y"
         };
         
         // Initialize Firebase
@@ -1185,6 +1404,9 @@
 
         // Get a reference to the Firestore service
         const db = firebase.firestore();
+
+        // Initialize Firebase Auth
+        const auth = firebase.auth();
 
         // Function to save a new question to Firestore
         async function saveQuestion(questionText) {
@@ -1197,6 +1419,58 @@
                 console.log("Document successfully written with ID: ", docRef.id);
             } catch (e) {
                 console.error("Error adding document: ", e);
+            }
+        }
+
+        // Function to load documents from PHARMACY_DOCUMENTS collection
+        async function loadPharmacyDocuments() {
+            try {
+                const querySnapshot = await db.collection("PHARMACY_DOCUMENTS").get();
+                const documents = {};
+                querySnapshot.forEach((doc) => {
+                    documents[doc.id] = doc.data();
+                });
+                return documents;
+            } catch (e) {
+                console.error("Error loading documents: ", e);
+                return {};
+            }
+        }
+
+        // Function to update download links
+        function updateDownloadLinks(documents) {
+            // Update links in diploma-pharmacy section
+            const diplomaSection = document.getElementById('diploma-pharmacy');
+            if (diplomaSection) {
+                const links = diplomaSection.querySelectorAll('a[href^="/documents/"]');
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    const id = href.replace('/documents/', '').replace('_notes.pdf', '');
+                    if (documents[id] && documents[id].link) {
+                        link.setAttribute('href', documents[id].link);
+                        link.setAttribute('target', '_blank'); // Open in new tab
+                        if (documents[id].name) {
+                            link.textContent = documents[id].name;
+                        }
+                    }
+                });
+            }
+
+            // Update links in certificate-pharmacy section
+            const certSection = document.getElementById('certificate-pharmacy');
+            if (certSection) {
+                const links = certSection.querySelectorAll('a[href^="/documents/"]');
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    const id = href.replace('/documents/', '').replace('_notes.pdf', '');
+                    if (documents[id] && documents[id].link) {
+                        link.setAttribute('href', documents[id].link);
+                        link.setAttribute('target', '_blank'); // Open in new tab
+                        if (documents[id].name) {
+                            link.textContent = documents[id].name;
+                        }
+                    }
+                });
             }
         }
         
@@ -1232,6 +1506,300 @@
             document.querySelectorAll('.course-section').forEach(section => {
                 initializeTabs(section);
             });
+
+            // Load pharmacy documents and update links
+            loadPharmacyDocuments().then(documents => {
+                updateDownloadLinks(documents);
+            }).catch(error => {
+                console.error("Failed to load pharmacy documents:", error);
+            });
+
+            // Background slideshow for medical studies images
+            const medicalImages = [
+                'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1551190822-a9333d879b1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+            ];
+
+            let currentImageIndex = 0;
+            const heroElement = document.querySelector('.hero');
+
+            function changeHeroBackground() {
+                currentImageIndex = (currentImageIndex + 1) % medicalImages.length;
+                heroElement.style.background = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${medicalImages[currentImageIndex]}') no-repeat center center/cover`;
+            }
+
+            function changeBodyBackground() {
+                currentImageIndex = (currentImageIndex + 1) % medicalImages.length;
+                document.body.style.background = `url('${medicalImages[currentImageIndex]}') no-repeat center center/cover fixed`;
+            }
+
+            // Change backgrounds every 5 seconds
+            setInterval(changeHeroBackground, 5000);
+            setInterval(changeBodyBackground, 5000);
+
+            // Auth Modal Functionality
+            const authBtn = document.getElementById('auth-btn');
+            const modal = document.getElementById('auth-modal');
+            const closeBtn = document.querySelector('.close');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const switchToSignup = document.getElementById('switch-to-signup');
+            const switchToLogin = document.getElementById('switch-to-login');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const loginMessage = document.getElementById('login-message');
+            const signupMessage = document.getElementById('signup-message');
+
+            // Show modal
+            authBtn.addEventListener('click', () => {
+                modal.style.display = 'block';
+            });
+
+            // Close modal
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                loginMessage.textContent = '';
+                signupMessage.textContent = '';
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    loginMessage.textContent = '';
+                    signupMessage.textContent = '';
+                }
+            });
+
+            // Switch to signup
+            switchToSignup.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                loginMessage.textContent = '';
+            });
+
+            // Switch to login
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                signupForm.style.display = 'none';
+                loginForm.style.display = 'block';
+                signupMessage.textContent = '';
+            });
+
+            // Login
+            loginBtn.addEventListener('click', async () => {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                if (!email || !password) {
+                    loginMessage.textContent = 'Please fill in all fields.';
+                    return;
+                }
+
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    loginMessage.textContent = 'Login successful!';
+                    loginMessage.style.color = 'green';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        loginMessage.textContent = '';
+                    }, 2000);
+                } catch (error) {
+                    loginMessage.textContent = error.message;
+                }
+            });
+
+            // Signup
+            signupBtn.addEventListener('click', async () => {
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+
+                if (!email || !password) {
+                    signupMessage.textContent = 'Please fill in all fields.';
+                    return;
+                }
+
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    signupMessage.textContent = 'Sign up successful!';
+                    signupMessage.style.color = 'green';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        signupMessage.textContent = '';
+                    }, 2000);
+                } catch (error) {
+                    signupMessage.textContent = error.message;
+                }
+            });
+
+            // Auth state observer
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    authBtn.textContent = 'Logout';
+                    authBtn.onclick = () => auth.signOut();
+
+                    // Show admin menu if admin
+                    if (user.email === 'kaigwaakram123@gmail.com') {
+                        document.getElementById('admin-menu').style.display = 'block';
+                    }
+                } else {
+                    authBtn.textContent = 'Sign Up / Login';
+                    document.getElementById('admin-menu').style.display = 'none';
+                }
+            });
+
+            // Admin Menu Functionality
+            const adminToggle = document.getElementById('admin-toggle');
+            const adminDropdown = document.getElementById('admin-dropdown');
+
+            adminToggle.addEventListener('click', () => {
+                adminDropdown.style.display = adminDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!adminToggle.contains(e.target) && !adminDropdown.contains(e.target)) {
+                    adminDropdown.style.display = 'none';
+                }
+            });
+
+            // Admin Modal Handlers
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', () => {
+                    const modalId = closeBtn.getAttribute('data-modal');
+                    if (modalId) {
+                        document.getElementById(modalId).style.display = 'none';
+                    } else {
+                        document.getElementById('auth-modal').style.display = 'none';
+                    }
+                });
+            });
+
+            // Add Document
+            document.getElementById('add-doc-btn').addEventListener('click', () => {
+                document.getElementById('add-doc-modal').style.display = 'block';
+                adminDropdown.style.display = 'none';
+            });
+
+            document.getElementById('save-doc-btn').addEventListener('click', async () => {
+                const id = document.getElementById('doc-id').value;
+                const name = document.getElementById('doc-name').value;
+                const link = document.getElementById('doc-link').value;
+                const message = document.getElementById('add-doc-message');
+
+                if (!id || !name || !link) {
+                    message.textContent = 'Please fill all fields.';
+                    return;
+                }
+
+                try {
+                    await db.collection("PHARMACY_DOCUMENTS").doc(id).set({
+                        name: name,
+                        link: link
+                    });
+                    message.textContent = 'Document added successfully!';
+                    message.style.color = 'green';
+                    setTimeout(() => {
+                        document.getElementById('add-doc-modal').style.display = 'none';
+                        message.textContent = '';
+                        // Refresh links
+                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                    }, 2000);
+                } catch (error) {
+                    message.textContent = error.message;
+                }
+            });
+
+            // Edit Documents
+            document.getElementById('edit-doc-btn').addEventListener('click', async () => {
+                const docList = document.getElementById('doc-list');
+                docList.innerHTML = '<p>Loading...</p>';
+                document.getElementById('edit-doc-modal').style.display = 'block';
+                adminDropdown.style.display = 'none';
+
+                try {
+                    const querySnapshot = await db.collection("PHARMACY_DOCUMENTS").get();
+                    docList.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const item = document.createElement('div');
+                        item.innerHTML = `
+                            <p><strong>${doc.id}</strong>: ${doc.data().name}</p>
+                            <button onclick="editDoc('${doc.id}', '${doc.data().name}', '${doc.data().link}')">Edit</button>
+                        `;
+                        docList.appendChild(item);
+                    });
+                } catch (error) {
+                    docList.innerHTML = '<p>Error loading documents.</p>';
+                }
+            });
+
+            // Delete Documents
+            document.getElementById('delete-doc-btn').addEventListener('click', async () => {
+                const deleteDocList = document.getElementById('delete-doc-list');
+                deleteDocList.innerHTML = '<p>Loading...</p>';
+                document.getElementById('delete-doc-modal').style.display = 'block';
+                adminDropdown.style.display = 'none';
+
+                try {
+                    const querySnapshot = await db.collection("PHARMACY_DOCUMENTS").get();
+                    deleteDocList.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const item = document.createElement('div');
+                        item.innerHTML = `
+                            <p><strong>${doc.id}</strong>: ${doc.data().name}</p>
+                            <button onclick="deleteDoc('${doc.id}')">Delete</button>
+                        `;
+                        deleteDocList.appendChild(item);
+                    });
+                } catch (error) {
+                    deleteDocList.innerHTML = '<p>Error loading documents.</p>';
+                }
+            });
+
+            // Manage Fields
+            document.getElementById('manage-fields-btn').addEventListener('click', () => {
+                document.getElementById('manage-fields-modal').style.display = 'block';
+                adminDropdown.style.display = 'none';
+            });
+
+            // Global functions for edit and delete
+            window.editDoc = async (id, name, link) => {
+                const newName = prompt('New name:', name);
+                const newLink = prompt('New link:', link);
+                if (newName && newLink) {
+                    try {
+                        await db.collection("PHARMACY_DOCUMENTS").doc(id).update({
+                            name: newName,
+                            link: newLink
+                        });
+                        alert('Document updated!');
+                        // Refresh
+                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                    } catch (error) {
+                        alert('Error updating: ' + error.message);
+                    }
+                }
+            };
+
+            window.deleteDoc = async (id) => {
+                if (confirm('Delete this document?')) {
+                    try {
+                        await db.collection("PHARMACY_DOCUMENTS").doc(id).delete();
+                        alert('Document deleted!');
+                        // Refresh
+                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                    } catch (error) {
+                        alert('Error deleting: ' + error.message);
+                    }
+                }
+            };
             
             // --- AI Search Functionality ---
             const aiAskBtn = document.getElementById('ai-ask-btn');
