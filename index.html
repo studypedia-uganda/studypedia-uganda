@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -270,6 +271,16 @@
         const adminCourseUnitsList = document.getElementById('admin-course-units-list');
         const messageBoxAdminCourseUnit = document.getElementById('message-box-admin-course-unit');
         const messageTextAdminCourseUnit = document.getElementById('message-text-admin-course-unit');
+
+        // Show the auth modal when Login/Signup button is clicked
+        loginSignupBtn.addEventListener('click', () => {
+            authModal.classList.remove('hidden');
+        });
+
+        // Hide the auth modal when close button is clicked
+        closeModalAuthBtn.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+        });
 
         // --- Global State Variables ---
         let isLoginMode = true;
