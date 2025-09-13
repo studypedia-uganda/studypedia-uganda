@@ -86,7 +86,7 @@
         <div class="bg-[#1e1e1e] p-8 rounded-2xl shadow-xl text-center">
             <h2 class="text-4xl font-bold mb-4 text-white">Welcome to Studypedia Uganda</h2>
             <p class="text-lg text-shine-purple font-semibold mb-6">Your hub for medical resources!</p>
-            <p class="text-gray-400 max-w-2xl mx-auto">Select a field of study, then a semester, and finally a course unit to access valuable learning materials.</p>
+            <p class="text-gray-400 max-w-2xl mx-auto">Select a field of study, then a semeseter, and finally a course unit to access valuable learning materials.</p>
         </div>
 
         <div class="mt-8 space-y-8">
@@ -98,17 +98,17 @@
                 <div class="flex flex-wrap gap-4 mt-4"></div>
             </section>
 
-            <section id="semesters-section" class="hidden">
+            <section id="semeseters-section" class="hidden">
                 <div class="flex items-center space-x-4">
                     <button id="back-to-fields-btn" class="back-btn"><i class="ph-bold ph-arrow-left"></i></button>
-                    <h3 class="text-2xl font-semibold text-white">Select Semester:</h3>
+                    <h3 class="text-2xl font-semibold text-white">Select Semeseter:</h3>
                 </div>
                 <div class="flex flex-wrap gap-4 mt-4"></div>
             </section>
 
             <section id="course-units-section" class="hidden">
                 <div class="flex items-center space-x-4">
-                    <button id="back-to-semesters-btn" class="back-btn"><i class="ph-bold ph-arrow-left"></i></button>
+                    <button id="back-to-semeseters-btn" class="back-btn"><i class="ph-bold ph-arrow-left"></i></button>
                     <h3 class="text-2xl font-semibold text-white">Select Course Unit:</h3>
                 </div>
                 <div class="flex flex-wrap gap-4 mt-4"></div>
@@ -117,7 +117,7 @@
 
         <section id="content-section" class="mt-8">
             <div id="initial-prompt" class="text-center text-gray-500 font-semibold text-xl">
-                <p>Please select a field, semester, and course unit to view resources.</p>
+                <p>Please select a field, semeseter, and course unit to view resources.</p>
                 <div class="ad-unit-placeholder mx-auto mt-4">
                     <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1234567890123456" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
                     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
@@ -177,7 +177,7 @@
             <h2 class="text-2xl font-bold mb-6 text-center">Add Resource</h2>
             <form id="add-resource-form" class="space-y-4">
                 <select id="resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="resource-semester" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
+                <select id="resource-semeseter" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
                 <select id="resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
                 <input id="resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Title" required />
                 <textarea id="resource-content" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Description"></textarea>
@@ -195,7 +195,7 @@
             <h2 class="text-2xl font-bold mb-6 text-center">Edit Resource</h2>
             <form id="edit-resource-form" class="space-y-4">
                 <select id="edit-resource-field" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
-                <select id="edit-resource-semester" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
+                <select id="edit-resource-semeseter" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
                 <select id="edit-resource-course-unit" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white"></select>
                 <input id="edit-resource-title" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Title" required />
                 <textarea id="edit-resource-content" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="Description"></textarea>
@@ -234,19 +234,19 @@
                 <div id="message-box-admin-field" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-field"></p></div>
             </div>
             <div class="mt-8">
-                <h3 class="text-xl font-semibold mb-2">Semesters</h3>
-                <select id="admin-semester-field-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
-                <form id="add-semester-form" class="flex gap-2 mb-4">
-                    <input id="new-semester-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New Semester Name" required />
-                    <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add Semester</button>
+                <h3 class="text-xl font-semibold mb-2">Semeseters</h3>
+                <select id="admin-semeseter-field-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
+                <form id="add-semeseter-form" class="flex gap-2 mb-4">
+                    <input id="new-semeseter-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New semeseter Name" required />
+                    <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add semeseter</button>
                 </form>
-                <div id="admin-semesters-list" class="mb-4"></div>
-                <div id="message-box-admin-semester" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-semester"></p></div>
+                <div id="admin-semeseters-list" class="mb-4"></div>
+                <div id="message-box-admin-semeseter" class="hidden px-4 py-2 rounded-lg text-center"><p id="message-text-admin-semeseter"></p></div>
             </div>
             <div class="mt-8">
                 <h3 class="text-xl font-semibold mb-2">Course Units</h3>
                 <select id="admin-course-unit-field-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
-                <select id="admin-course-unit-semester-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
+                <select id="admin-course-unit-semeseter-select" class="w-full py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white mb-2"></select>
                 <form id="add-course-unit-form" class="flex gap-2 mb-4">
                     <input id="new-course-unit-name" class="py-2 px-4 rounded-lg bg-[#333] border border-[#555] text-white" placeholder="New Course Unit Name" required />
                     <button type="submit" class="py-2 px-4 rounded-xl font-bold bg-shine-blue text-gray-900">Add Course Unit</button>
@@ -341,21 +341,21 @@
         const initialPrompt = document.getElementById('initial-prompt');
 
         const fieldsSection = document.getElementById('fields-section');
-        const semestersSection = document.getElementById('semesters-section');
+        const semesetersSection = document.getElementById('semeseters-section');
         const courseUnitsSection = document.getElementById('course-units-section');
         const loadingFieldsMessage = document.getElementById('loading-fields');
         const backToFieldsBtn = document.getElementById('back-to-fields-btn');
-        const backToSemestersBtn = document.getElementById('back-to-semesters-btn');
+        const backTosemesetersBtn = document.getElementById('back-to-semeseters-btn');
 
         const resourceFieldSelect = document.getElementById('resource-field');
-        const resourceSemesterSelect = document.getElementById('resource-semester');
+        const resourcesemeseterSelect = document.getElementById('resource-semeseter');
         const resourceCourseUnitSelect = document.getElementById('resource-course-unit');
         const resourceTitleInput = document.getElementById('resource-title');
         const resourceContentInput = document.getElementById('resource-content');
         const resourceUrlInput = document.getElementById('resource-url');
 
         const editResourceFieldSelect = document.getElementById('edit-resource-field');
-        const editResourceSemesterSelect = document.getElementById('edit-resource-semester');
+        const editResourcesemeseterSelect = document.getElementById('edit-resource-semeseter');
         const editResourceCourseUnitSelect = document.getElementById('edit-resource-course-unit');
         const editResourceTitleInput = document.getElementById('edit-resource-title');
         const editResourceContentInput = document.getElementById('edit-resource-content');
@@ -375,15 +375,15 @@
         const messageBoxAdminField = document.getElementById('message-box-admin-field');
         const messageTextAdminField = document.getElementById('message-text-admin-field');
 
-        const adminSemesterFieldSelect = document.getElementById('admin-semester-field-select');
-        const addSemesterForm = document.getElementById('add-semester-form');
-        const newSemesterNameInput = document.getElementById('new-semester-name');
-        const adminSemestersList = document.getElementById('admin-semesters-list');
-        const messageBoxAdminSemester = document.getElementById('message-box-admin-semester');
-        const messageTextAdminSemester = document.getElementById('message-text-admin-semester');
+        const adminsemeseterFieldSelect = document.getElementById('admin-semeseter-field-select');
+        const addsemeseterForm = document.getElementById('add-semeseter-form');
+        const newsemeseterNameInput = document.getElementById('new-semeseter-name');
+        const adminsemesetersList = document.getElementById('admin-semeseters-list');
+        const messageBoxAdminsemeseter = document.getElementById('message-box-admin-semeseter');
+        const messageTextAdminsemeseter = document.getElementById('message-text-admin-semeseter');
 
         const adminCourseUnitFieldSelect = document.getElementById('admin-course-unit-field-select');
-        const adminCourseUnitSemesterSelect = document.getElementById('admin-course-unit-semester-select');
+        const adminCourseUnitsemeseterSelect = document.getElementById('admin-course-unit-semeseter-select');
         const addCourseUnitForm = document.getElementById('add-course-unit-form');
         const newCourseUnitNameInput = document.getElementById('new-course-unit-name');
         const adminCourseUnitsList = document.getElementById('admin-course-units-list');
@@ -431,7 +431,7 @@
         const ADMIN_UID = "SscqLofDUSRQNOMDRr4ffuPi9Li2";
 
         let selectedFieldId = null;
-        let selectedSemesterId = null;
+        let selectedsemeseterId = null;
         let selectedCourseUnitId = null;
 
         // --- Helper Functions ---
@@ -449,9 +449,9 @@
             } else if (modalType === 'admin-field') {
                 msgBox = messageBoxAdminField;
                 msgText = messageTextAdminField;
-            } else if (modalType === 'admin-semester') {
-                msgBox = messageBoxAdminSemester;
-                msgText = messageTextAdminSemester;
+            } else if (modalType === 'admin-semeseter') {
+                msgBox = messageBoxAdminSemeseter;
+                msgText = messageTextAdminSemeseter;
             } else if (modalType === 'admin-course-unit') {
                 msgBox = messageBoxAdminCourseUnit;
                 msgText = messageTextAdminCourseUnit;
@@ -486,38 +486,38 @@
         };
 
         const clearNavigation = () => {
-            semestersSection.classList.add('hidden');
-            semestersSection.querySelector('div:last-of-type').innerHTML = '';
+            semesetersSection.classList.add('hidden');
+            semesetersSection.querySelector('div:last-of-type').innerHTML = '';
             courseUnitsSection.classList.add('hidden');
             courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
             contentContainer.innerHTML = '';
             initialPrompt.classList.remove('hidden');
             selectedFieldId = null;
-            selectedSemesterId = null;
+            selectedsemeseterId = null;
             selectedCourseUnitId = null;
         };
 
         // --- Navigation "Back" Buttons Logic ---
         backToFieldsBtn.addEventListener('click', () => {
             fieldsSection.querySelector('div:last-of-type').querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
-            semestersSection.classList.add('hidden');
+            semesetersSection.classList.add('hidden');
             courseUnitsSection.classList.add('hidden');
-            semestersSection.querySelector('div:last-of-type').innerHTML = '';
+            semesetersSection.querySelector('div:last-of-type').innerHTML = '';
             courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
             contentContainer.innerHTML = '';
             initialPrompt.classList.remove('hidden');
             selectedFieldId = null;
-            selectedSemesterId = null;
+            selectedsemeseterId = null;
             selectedCourseUnitId = null;
         });
 
-        backToSemestersBtn.addEventListener('click', () => {
-            semestersSection.querySelector('div:last-of-type').querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
+        backTosemesetersBtn.addEventListener('click', () => {
+            semesetersSection.querySelector('div:last-of-type').querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
             courseUnitsSection.classList.add('hidden');
             courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
             contentContainer.innerHTML = '';
             initialPrompt.classList.remove('hidden');
-            selectedSemesterId = null;
+            selectedsemeseterId = null;
             selectedCourseUnitId = null;
         });
 
@@ -541,12 +541,12 @@
                     button.dataset.fieldId = field.id;
                     button.addEventListener('click', () => {
                         selectedFieldId = field.id;
-                        selectedSemesterId = null;
+                        selectedsemeseterId = null;
                         selectedCourseUnitId = null;
                         document.querySelectorAll('#fields-section .section-button').forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-                        loadSemesters(field.id);
-                        semestersSection.classList.remove('hidden');
+                        loadsemeseters(field.id);
+                        semesetersSection.classList.remove('hidden');
                         courseUnitsSection.classList.add('hidden');
                         contentContainer.innerHTML = '';
                         initialPrompt.classList.remove('hidden');
@@ -561,49 +561,49 @@
             }
         };
 
-        const loadSemesters = async (fieldId) => {
-            semestersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">Loading semesters...</p>';
+        const loadsemeseters = async (fieldId) => {
+            semesetersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">Loading semeseters...</p>';
             try {
-                const semestersCol = collection(db, "fields", fieldId, "semesters");
-                const q = query(semestersCol, orderBy("order", "asc"));
+                const semesetersCol = collection(db, "fields", fieldId, "semeseters");
+                const q = query(semesetersCol, orderBy("order", "asc"));
                 const querySnapshot = await getDocs(q);
                 if (querySnapshot.empty) {
-                    semestersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No semesters defined for this field.</p>';
+                    semesetersSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No semeseters defined for this field.</p>';
                     return;
                 }
-                semestersSection.querySelector('div:last-of-type').innerHTML = '';
+                semesetersSection.querySelector('div:last-of-type').innerHTML = '';
                 querySnapshot.forEach((doc) => {
-                    const semester = doc.data();
+                    const semeseter = doc.data();
                     const button = document.createElement('button');
-                    button.textContent = semester.name;
+                    button.textContent = semeseter.name;
                     button.classList.add('section-button');
-                    button.dataset.semesterId = semester.id;
+                    button.dataset.semeseterId = semeseter.id;
                     button.addEventListener('click', () => {
-                        selectedSemesterId = semester.id;
+                        selectedsemeseterId = semeseter.id;
                         selectedCourseUnitId = null;
-                        document.querySelectorAll('#semesters-section .section-button').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('#semeseters-section .section-button').forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-                        loadCourseUnits(fieldId, semester.id);
+                        loadCourseUnits(fieldId, semeseter.id);
                         courseUnitsSection.classList.remove('hidden');
                         contentContainer.innerHTML = '';
                         initialPrompt.classList.remove('hidden');
                     });
-                    semestersSection.querySelector('div:last-of-type').appendChild(button);
+                    semesetersSection.querySelector('div:last-of-type').appendChild(button);
                 });
             } catch (error) {
-                console.error(`Error loading semesters for field ${fieldId}:`, error);
-                semestersSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading semesters: ${error.message}</p>`;
+                console.error(`Error loading semeseters for field ${fieldId}:`, error);
+                semesetersSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading semeseters: ${error.message}</p>`;
             }
         };
 
-        const loadCourseUnits = async (fieldId, semesterId) => {
+        const loadCourseUnits = async (fieldId, semeseterId) => {
             courseUnitsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">Loading course units...</p>';
             try {
-                const courseUnitsCol = collection(db, "fields", fieldId, "semesters", semesterId, "courseUnits");
+                const courseUnitsCol = collection(db, "fields", fieldId, "semeseters", semeseterId, "courseUnits");
                 const q = query(courseUnitsCol, orderBy("order", "asc"));
                 const querySnapshot = await getDocs(q);
                 if (querySnapshot.empty) {
-                    courseUnitsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No course units defined for this semester.</p>';
+                    courseUnitsSection.querySelector('div:last-of-type').innerHTML = '<p class="text-gray-400">No course units defined for this semeseter.</p>';
                     return;
                 }
                 courseUnitsSection.querySelector('div:last-of-type').innerHTML = '';
@@ -617,27 +617,27 @@
                         selectedCourseUnitId = courseUnit.id;
                         document.querySelectorAll('#course-units-section .section-button').forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-                        fetchAndDisplayResources(selectedFieldId, selectedSemesterId, selectedCourseUnitId);
+                        fetchAndDisplayResources(selectedFieldId, selectedsemeseterId, selectedCourseUnitId);
                         initialPrompt.classList.add('hidden');
                     });
                     courseUnitsSection.querySelector('div:last-of-type').appendChild(button);
                 });
             } catch (error) {
-                console.error(`Error loading course units for ${fieldId}/${semesterId}:`, error);
+                console.error(`Error loading course units for ${fieldId}/${semeseterId}:`, error);
                 courseUnitsSection.querySelector('div:last-of-type').innerHTML = `<p class="error-message">Error loading course units: ${error.message}</p>`;
             }
         };
 
-        const fetchAndDisplayResources = (fieldId, semesterId, courseUnitId) => {
+        const fetchAndDisplayResources = (fieldId, semeseterId, courseUnitId) => {
             contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">Loading resources...</p>';
-            if (!fieldId || !semesterId || !courseUnitId) {
-                contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">Please select a field, semester, and course unit.</p>';
+            if (!fieldId || !semeseterId || !courseUnitId) {
+                contentContainer.innerHTML = '<p class="text-gray-400 font-semibold text-xl">Please select a field, semeseter, and course unit.</p>';
                 return;
             }
             const q = query(
                 collection(db, "pharmacy_resources"),
                 where("field_id", "==", fieldId),
-                where("semester_id", "==", semesterId),
+                where("semeseter_id", "==", semeseterId),
                 where("course_unit_id", "==", courseUnitId)
             );
             onSnapshot(q, (querySnapshot) => {
@@ -663,7 +663,7 @@
                                             <i class="ph-bold ph-dots-three-vertical text-2xl"></i>
                                         </button>
                                         <div class="options-menu hidden absolute right-0 mt-2 bg-[#333] rounded-md shadow-lg py-1">
-                                            <a class="options-menu-item edit-option hover:bg-gray-700" data-doc-id="${doc.id}" data-field-id="${data.field_id}" data-semester-id="${data.semester_id}" data-course-unit-id="${data.course_unit_id}">
+                                            <a class="options-menu-item edit-option hover:bg-gray-700" data-doc-id="${doc.id}" data-field-id="${data.field_id}" data-semeseter-id="${data.semeseter_id}" data-course-unit-id="${data.course_unit_id}">
                                                 <i class="ph-bold ph-pencil"></i>
                                                 <span>Edit</span>
                                             </a>
@@ -721,8 +721,8 @@
                         editResourceUrlInput.value = data.download_url || '';
 
                         await populateFieldSelect(editResourceFieldSelect, data.field_id);
-                        await populateSemesterSelect(editResourceSemesterSelect, data.field_id, data.semester_id);
-                        await populateCourseUnitSelect(editResourceCourseUnitSelect, data.field_id, data.semester_id, data.course_unit_id);
+                        await populatesemeseterSelect(editResourcesemeseterSelect, data.field_id, data.semeseter_id);
+                        await populateCourseUnitSelect(editResourceCourseUnitSelect, data.field_id, data.semeseter_id, data.course_unit_id);
                         editResourceModal.classList.remove('hidden');
                     } else {
                         displayMessage('Resource not found for editing!', true, 'edit');
@@ -797,22 +797,22 @@
             }
         };
 
-        const populateSemesterSelect = async (selectElement, fieldId, selectedValue = null) => {
-            selectElement.innerHTML = '<option value="">Select a Semester</option>';
+        const populatesemeseterSelect = async (selectElement, fieldId, selectedValue = null) => {
+            selectElement.innerHTML = '<option value="">Select a semeseter</option>';
             selectElement.disabled = true;
             if (!fieldId) return;
 
             try {
-                const semestersCol = collection(db, "fields", fieldId, "semesters");
-                const q = query(semestersCol, orderBy("order", "asc"));
+                const semesetersCol = collection(db, "fields", fieldId, "semeseters");
+                const q = query(semesetersCol, orderBy("order", "asc"));
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
-                        const semester = doc.data();
+                        const semeseter = doc.data();
                         const option = document.createElement('option');
-                        option.value = semester.id;
-                        option.textContent = semester.name;
+                        option.value = semeseter.id;
+                        option.textContent = semeseter.name;
                         selectElement.appendChild(option);
                     });
                     selectElement.disabled = false;
@@ -821,18 +821,18 @@
                     }
                 }
             } catch (error) {
-                console.error("Error populating semester select:", error);
-                selectElement.innerHTML = '<option value="">Error loading semesters</option>';
+                console.error("Error populating semeseter select:", error);
+                selectElement.innerHTML = '<option value="">Error loading semeseters</option>';
             }
         };
 
-        const populateCourseUnitSelect = async (selectElement, fieldId, semesterId, selectedValue = null) => {
+        const populateCourseUnitSelect = async (selectElement, fieldId, semeseterId, selectedValue = null) => {
             selectElement.innerHTML = '<option value="">Select a Course Unit</option>';
             selectElement.disabled = true;
-            if (!fieldId || !semesterId) return;
+            if (!fieldId || !semeseterId) return;
 
             try {
-                const courseUnitsCol = collection(db, "fields", fieldId, "semesters", semesterId, "courseUnits");
+                const courseUnitsCol = collection(db, "fields", fieldId, "semeseters", semeseterId, "courseUnits");
                 const q = query(courseUnitsCol, orderBy("order", "asc"));
                 const querySnapshot = await getDocs(q);
 
