@@ -267,6 +267,8 @@
             background-color: var(--white-color);
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .tab-content.active {
@@ -467,6 +469,14 @@
             border-bottom: none;
         }
 
+        #doc-list, #delete-doc-list, #tab-names-container, #fields-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -480,7 +490,10 @@
         }
 
         .modal-content {
-            background-color: var(--white-color);
+            background-color: rgba(255, 255, 255, 0.95);
+            background-image: url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+            background-size: cover;
+            background-position: center;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
@@ -633,6 +646,8 @@
             <button id="edit-doc-btn">Edit Documents</button>
             <button id="delete-doc-btn">Delete Documents</button>
             <button id="manage-fields-btn">Manage Fields</button>
+            <button id="edit-tabs-btn">Edit Tab Names</button>
+            <button id="refresh-docs-btn">Refresh Documents</button>
         </div>
     </div>
 
@@ -908,26 +923,26 @@
             
             <div id="cpha1_1" class="tab-content active">
                 <h3>cpha1:1 Content</h3>
-                <p>This is the main content for cpha1:1. It contains the next level of tabs.</p>
+                <p>ACCESS ALL COURSE UNITS FOR cpha1:1.</p>
                 <div class="nested-tab-container">
                     <div class="nested-tab-nav">
-                        <button class="tab-button active" data-target="#cpha1_1_sub1">Tab 1</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub2">Tab 2</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub3">Tab 3</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub4">Tab 4</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub5">Tab 5</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub6">Tab 6</button>
-                        <button class="tab-button" data-target="#cpha1_1_sub7">Tab 7</button>
+                        <button class="tab-button active" data-target="#cpha1_1_sub1">ANATOMY AND PHYSIOLOGY</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub2">MICROBIOLOGY</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub3">PHARM CHEM</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub4">FIRST AID</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub5">COMPUTER</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub6">PHC</button>
+                        <button class="tab-button" data-target="#cpha1_1_sub7">PASTPAPERS</button>
                         <button class="tab-button" data-target="#cpha1_1_sub8">Tab 8</button>
                     </div>
-                    <div id="cpha1_1_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha1:1, Tab 1. You can add your medical notes here!</p><a href="/documents/cpha1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha1:1, Tab 2.</p><a href="/documents/cpha1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha1:1, Tab 3.</p><a href="/documents/cpha1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub4" class="sub-content"><h4>Sub-content 4</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub5" class="sub-content"><h4>Sub-content 5</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub6" class="sub-content"><h4>Sub-content 6</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub7" class="sub-content"><h4>Sub-content 7</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
-                    <div id="cpha1_1_sub8" class="sub-content"><h4>Sub-content 8</h4><p>Add your study notes for this section here.</p><a href="/documents/cpha1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub1" class="sub-content active"><h4>Sub-content 1</h4><p>This is the innermost content for cpha1:1, ANATOMY AND PHYSIOLOGY. You can add your medical notes here!</p><a href="/documents/cpha1_1_sub1_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub2" class="sub-content"><h4>Sub-content 2</h4><p>This is the innermost content for cpha1:1, MICROBIOLOGY.</p><a href="/documents/cpha1_1_sub2_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub3" class="sub-content"><h4>Sub-content 3</h4><p>This is the innermost content for cpha1:1, PHARM CHEM.</p><a href="/documents/cpha1_1_sub3_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub4" class="sub-content"><h4>Sub-content 4</h4><p>This is the innermost content for cpha1:1,FIRST AID.</p><a href="/documents/cpha1_1_sub4_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub5" class="sub-content"><h4>Sub-content 5</h4><p>This is the innermost content for cpha1:1,COMPUTER.</p><a href="/documents/cpha1_1_sub5_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub6" class="sub-content"><h4>Sub-content 6</h4><p>This is the innermost content for cpha1:1,PHC.</p><a href="/documents/cpha1_1_sub6_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub7" class="sub-content"><h4>Sub-content 7</h4><p>This is the innermost content for cpha1:1,PASTPAPERS.</p><a href="/documents/cpha1_1_sub7_notes.pdf" download class="btn">Download Document</a></div>
+                    <div id="cpha1_1_sub8" class="sub-content"><h4>Sub-content 8</h4><p>This is the innermost content for cpha1:1,.</p><a href="/documents/cpha1_1_sub8_notes.pdf" download class="btn">Download Document</a></div>
                 </div>
             </div>
             
@@ -1377,7 +1392,39 @@
         <div class="modal-content">
             <span class="close" data-modal="manage-fields-modal">&times;</span>
             <h2>Manage Fields</h2>
-            <p>Feature coming soon...</p>
+            <div id="fields-list">
+                <p>Loading fields...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-tabs-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="edit-tabs-modal">&times;</span>
+            <h2>Edit Tab Names</h2>
+            <select id="tab-course-select">
+                <option value="">Select Course</option>
+                <option value="diploma-pharmacy">Diploma Pharmacy</option>
+                <option value="diploma-clinical-medicine">Diploma Clinical Medicine</option>
+                <option value="certificate-pharmacy">Certificate Pharmacy</option>
+                <option value="certificate-medical-lab-science">Certificate Medical Lab Science</option>
+                <option value="certificate-medical-records">Certificate Medical Records</option>
+            </select>
+            <select id="tab-main-select" style="display: none;">
+                <option value="">Select Main Tab</option>
+            </select>
+            <div id="tab-names-container" style="display: none;">
+                <input type="text" id="tab1" placeholder="Tab 1 Name">
+                <input type="text" id="tab2" placeholder="Tab 2 Name">
+                <input type="text" id="tab3" placeholder="Tab 3 Name">
+                <input type="text" id="tab4" placeholder="Tab 4 Name">
+                <input type="text" id="tab5" placeholder="Tab 5 Name">
+                <input type="text" id="tab6" placeholder="Tab 6 Name">
+                <input type="text" id="tab7" placeholder="Tab 7 Name">
+                <input type="text" id="tab8" placeholder="Tab 8 Name">
+                <button id="save-tabs-btn">Rename</button>
+                <div id="tabs-message"></div>
+            </div>
         </div>
     </div>
 
@@ -1422,56 +1469,124 @@
             }
         }
 
-        // Function to load documents from PHARMACY_DOCUMENTS collection
-        async function loadPharmacyDocuments() {
-            try {
-                const querySnapshot = await db.collection("PHARMACY_DOCUMENTS").get();
-                const documents = {};
-                querySnapshot.forEach((doc) => {
-                    documents[doc.id] = doc.data();
-                });
-                return documents;
-            } catch (e) {
-                console.error("Error loading documents: ", e);
-                return {};
+        // Function to load documents from all collections
+        async function loadAllDocuments() {
+            const collections = [
+                'DIPLOMA_PHARMACY_DOCUMENTS',
+                'DIPLOMA_CLINICAL_MEDICINE_DOCUMENTS',
+                'CERTIFICATE_PHARMACY_DOCUMENTS',
+                'CERTIFICATE_MEDICAL_LAB_SCIENCE_DOCUMENTS',
+                'CERTIFICATE_MEDICAL_RECORDS_DOCUMENTS',
+                'DIPLOMA_MEDICAL_RECORDS_MGT_DOCUMENTS'
+            ];
+            const allDocuments = {};
+
+            for (const collection of collections) {
+                try {
+                    const querySnapshot = await db.collection(collection).get();
+                    querySnapshot.forEach((doc) => {
+                        allDocuments[doc.id] = doc.data();
+                    });
+                } catch (e) {
+                    console.error(`Error loading ${collection}: `, e);
+                }
             }
+            return allDocuments;
         }
 
-        // Function to update download links
-        function updateDownloadLinks(documents) {
-            // Update links in diploma-pharmacy section
-            const diplomaSection = document.getElementById('diploma-pharmacy');
-            if (diplomaSection) {
-                const links = diplomaSection.querySelectorAll('a[href^="/documents/"]');
-                links.forEach(link => {
-                    const href = link.getAttribute('href');
-                    const id = href.replace('/documents/', '').replace('_notes.pdf', '');
-                    if (documents[id] && documents[id].link) {
-                        link.setAttribute('href', documents[id].link);
-                        link.setAttribute('target', '_blank'); // Open in new tab
-                        if (documents[id].name) {
-                            link.textContent = documents[id].name;
-                        }
-                    }
+        // Function to load course titles
+        async function loadCourseTitles() {
+            const titles = {};
+            try {
+                const querySnapshot = await db.collection("COURSE_TITLES").get();
+                querySnapshot.forEach((doc) => {
+                    titles[doc.id] = doc.data().title;
                 });
+            } catch (e) {
+                console.error("Error loading course titles: ", e);
             }
+            return titles;
+        }
 
-            // Update links in certificate-pharmacy section
-            const certSection = document.getElementById('certificate-pharmacy');
-            if (certSection) {
-                const links = certSection.querySelectorAll('a[href^="/documents/"]');
-                links.forEach(link => {
-                    const href = link.getAttribute('href');
-                    const id = href.replace('/documents/', '').replace('_notes.pdf', '');
-                    if (documents[id] && documents[id].link) {
-                        link.setAttribute('href', documents[id].link);
-                        link.setAttribute('target', '_blank'); // Open in new tab
-                        if (documents[id].name) {
-                            link.textContent = documents[id].name;
+        // Function to load tab names
+        async function loadTabNames() {
+            const tabNames = {};
+            try {
+                const querySnapshot = await db.collection("TAB_NAMES").get();
+                querySnapshot.forEach((doc) => {
+                    tabNames[doc.id] = doc.data();
+                });
+            } catch (e) {
+                console.error("Error loading tab names: ", e);
+            }
+            return tabNames;
+        }
+
+        // Function to update all download links
+        function updateAllDownloadLinks(documents) {
+            const sections = [
+                'diploma-pharmacy',
+                'diploma-clinical-medicine',
+                'certificate-pharmacy',
+                'certificate-medical-lab-science',
+                'certificate-medical-records'
+            ];
+
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const subContents = section.querySelectorAll('.sub-content');
+                    subContents.forEach(sub => {
+                        const link = sub.querySelector('a[href^="/documents/"]');
+                        if (link) {
+                            const href = link.getAttribute('href');
+                            const id = href.replace('/documents/', '').replace('_notes.pdf', '');
+                            const h4 = sub.querySelector('h4');
+                            const p = sub.querySelector('p');
+                            if (documents[id] && documents[id].link) {
+                                link.setAttribute('href', documents[id].link);
+                                link.setAttribute('target', '_blank'); // Open in new tab
+                                if (documents[id].name) {
+                                    link.textContent = documents[id].name;
+                                    if (h4) h4.textContent = documents[id].name;
+                                    if (p) p.textContent = 'Click below to download the document.';
+                                }
+                            } else {
+                                // Reset to default if no document
+                                link.setAttribute('href', href);
+                                link.textContent = 'Download Document';
+                                if (h4) h4.textContent = h4.textContent.replace(/Notes for/, 'Notes for');
+                                if (p) p.textContent = 'Add your study notes for this section here.';
+                            }
+                        }
+                    });
+                }
+
+                // Add main tab documents
+                const tabContents = section.querySelectorAll('.tab-content');
+                tabContents.forEach(tabContent => {
+                    const mainId = tabContent.id;
+                    if (documents[mainId] && !tabContent.querySelector('.main-doc')) {
+                        const doc = documents[mainId];
+                        const p = tabContent.querySelector('p');
+                        if (p) {
+                            const docDiv = document.createElement('div');
+                            docDiv.className = 'main-doc';
+                            docDiv.innerHTML = `<h4>${doc.name}</h4><p>Click below to download the document.</p><a href="${doc.link}" target="_blank" class="btn">${doc.name}</a>`;
+                            p.insertAdjacentElement('afterend', docDiv);
                         }
                     }
                 });
-            }
+            });
+        }
+
+        // Keep old function for compatibility
+        async function loadPharmacyDocuments() {
+            return loadAllDocuments();
+        }
+
+        function updateDownloadLinks(documents) {
+            updateAllDownloadLinks(documents);
         }
         
         // --- Tab and Content Management ---
@@ -1507,11 +1622,32 @@
                 initializeTabs(section);
             });
 
-            // Load pharmacy documents and update links
-            loadPharmacyDocuments().then(documents => {
-                updateDownloadLinks(documents);
+            // Load all data
+            Promise.all([
+                loadAllDocuments(),
+                loadCourseTitles(),
+                loadTabNames()
+            ]).then(([documents, titles, tabNames]) => {
+                updateAllDownloadLinks(documents);
+
+                // Set course titles
+                for (const [id, title] of Object.entries(titles)) {
+                    const h2 = document.querySelector(`#${id} h2`);
+                    if (h2) h2.textContent = title;
+                }
+
+                // Set tab names
+                for (const [id, data] of Object.entries(tabNames)) {
+                    const subTabs = document.querySelectorAll(`#${id} .nested-tab-nav .tab-button`);
+                    subTabs.forEach((tab, index) => {
+                        const key = `tab${index + 1}`;
+                        if (data[key]) {
+                            tab.textContent = data[key];
+                        }
+                    });
+                }
             }).catch(error => {
-                console.error("Failed to load pharmacy documents:", error);
+                console.error("Failed to load data:", error);
             });
 
             // Background slideshow for medical studies images
@@ -1688,19 +1824,50 @@
                 adminDropdown.style.display = 'none';
             });
 
+            // Update placeholder based on course
+            document.getElementById('doc-course').addEventListener('change', (e) => {
+                const course = e.target.value;
+                const idInput = document.getElementById('doc-id');
+                if (course === 'CERTIFICATE_PHARMACY') {
+                    idInput.placeholder = 'e.g., cpha1_1 for Certificate Pharmacy tab 1:1 or cpha1_1_sub1 for sub-tab 1';
+                } else if (course === 'DIPLOMA_PHARMACY') {
+                    idInput.placeholder = 'e.g., diph1_1 for Diploma Pharmacy tab 1:1 or diph1_1_sub1 for sub-tab 1';
+                } else if (course === 'DIPLOMA_CLINICAL_MEDICINE') {
+                    idInput.placeholder = 'e.g., dicm1_1 for Diploma Clinical Medicine tab 1:1 or dicm1_1_sub1 for sub-tab 1';
+                } else if (course === 'CERTIFICATE_MEDICAL_LAB_SCIENCE') {
+                    idInput.placeholder = 'e.g., cmls1_1 for Certificate Medical Lab Science tab 1:1 or cmls1_1_sub1 for sub-tab 1';
+                } else if (course === 'CERTIFICATE_MEDICAL_RECORDS') {
+                    idInput.placeholder = 'e.g., cmr1_1 for Certificate Medical Records tab 1:1 or cmr1_1_sub1 for sub-tab 1';
+                } else if (course === 'DIPLOMA_MEDICAL_RECORDS_MGT') {
+                    idInput.placeholder = 'e.g., dmr1_1 for Diploma Medical Records Mgt tab 1:1 or dmr1_1_sub1 for sub-tab 1';
+                } else {
+                    idInput.placeholder = 'Document ID (e.g., diph1_1 or diph1_1_sub1)';
+                }
+            });
+
             document.getElementById('save-doc-btn').addEventListener('click', async () => {
+                const course = document.getElementById('doc-course').value;
                 const id = document.getElementById('doc-id').value;
                 const name = document.getElementById('doc-name').value;
-                const link = document.getElementById('doc-link').value;
+                let link = document.getElementById('doc-link').value;
                 const message = document.getElementById('add-doc-message');
 
-                if (!id || !name || !link) {
+                if (!course || !id || !name || !link) {
                     message.textContent = 'Please fill all fields.';
                     return;
                 }
 
+                // Convert Google Drive share link to download link
+                const driveMatch = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+                if (driveMatch) {
+                    const fileId = driveMatch[1];
+                    link = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+
+                const collectionName = course + '_DOCUMENTS';
+
                 try {
-                    await db.collection("PHARMACY_DOCUMENTS").doc(id).set({
+                    await db.collection(collectionName).doc(id).set({
                         name: name,
                         link: link
                     });
@@ -1710,7 +1877,7 @@
                         document.getElementById('add-doc-modal').style.display = 'none';
                         message.textContent = '';
                         // Refresh links
-                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                        loadAllDocuments().then(() => updateAllDownloadLinks());
                     }, 2000);
                 } catch (error) {
                     message.textContent = error.message;
@@ -1765,8 +1932,141 @@
 
             // Manage Fields
             document.getElementById('manage-fields-btn').addEventListener('click', () => {
+                const fieldsList = document.getElementById('fields-list');
+                fieldsList.innerHTML = '';
+
+                const sections = [
+                    { id: 'diploma-pharmacy', name: 'Diploma Pharmacy' },
+                    { id: 'diploma-clinical-medicine', name: 'Diploma Clinical Medicine' },
+                    { id: 'certificate-pharmacy', name: 'Certificate Pharmacy' },
+                    { id: 'certificate-medical-lab-science', name: 'Certificate Medical Lab Science' },
+                    { id: 'certificate-medical-records', name: 'Certificate Medical Records' }
+                ];
+
+                sections.forEach(section => {
+                    const item = document.createElement('div');
+                    const currentTitle = document.querySelector(`#${section.id} h2`).textContent;
+                    item.innerHTML = `
+                        <p><strong>${section.name}</strong>: <span id="title-${section.id}">${currentTitle}</span></p>
+                        <button onclick="editField('${section.id}')">Edit</button>
+                    `;
+                    fieldsList.appendChild(item);
+                });
+
                 document.getElementById('manage-fields-modal').style.display = 'block';
                 adminDropdown.style.display = 'none';
+            });
+
+            // Refresh Documents
+            document.getElementById('refresh-docs-btn').addEventListener('click', () => {
+                loadAllDocuments().then(documents => {
+                    updateAllDownloadLinks(documents);
+                    alert('Documents refreshed!');
+                }).catch(error => {
+                    console.error("Failed to refresh documents:", error);
+                    alert('Failed to refresh documents.');
+                });
+                adminDropdown.style.display = 'none';
+            });
+
+            // Edit Tabs
+            document.getElementById('edit-tabs-btn').addEventListener('click', () => {
+                document.getElementById('edit-tabs-modal').style.display = 'block';
+                adminDropdown.style.display = 'none';
+            });
+
+            // Course select for tabs
+            document.getElementById('tab-course-select').addEventListener('change', (e) => {
+                const course = e.target.value;
+                const mainSelect = document.getElementById('tab-main-select');
+                const container = document.getElementById('tab-names-container');
+
+                if (course) {
+                    mainSelect.style.display = 'block';
+                    mainSelect.innerHTML = '<option value="">Select Main Tab</option>';
+                    const section = document.getElementById(course);
+                    const mainTabs = section.querySelectorAll('.tab-nav .tab-button');
+                    mainTabs.forEach((tab, index) => {
+                        const option = document.createElement('option');
+                        option.value = tab.getAttribute('data-target');
+                        option.textContent = tab.textContent;
+                        mainSelect.appendChild(option);
+                    });
+                } else {
+                    mainSelect.style.display = 'none';
+                    container.style.display = 'none';
+                }
+            });
+
+            // Main tab select
+            document.getElementById('tab-main-select').addEventListener('change', (e) => {
+                const mainTab = e.target.value;
+                const container = document.getElementById('tab-names-container');
+
+                if (mainTab) {
+                    container.style.display = 'block';
+                    const subTabs = document.querySelectorAll(`${mainTab} .nested-tab-nav .tab-button`);
+                    subTabs.forEach((tab, index) => {
+                        const inputId = `tab${index + 1}`;
+                        document.getElementById(inputId).value = tab.textContent;
+                    });
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+
+            // Save tabs
+            document.getElementById('save-tabs-btn').addEventListener('click', async () => {
+                const mainTab = document.getElementById('tab-main-select').value;
+                const message = document.getElementById('tabs-message');
+
+                if (!mainTab) {
+                    message.textContent = 'Please select course and main tab first.';
+                    message.style.color = 'red';
+                    setTimeout(() => {
+                        message.textContent = '';
+                    }, 2000);
+                    return;
+                }
+
+                const subTabs = document.querySelectorAll(`#${mainTab} .nested-tab-nav .tab-button`);
+
+                const tabData = {};
+                subTabs.forEach((tab, index) => {
+                    const inputId = `tab${index + 1}`;
+                    const newName = document.getElementById(inputId).value;
+                    if (newName) {
+                        tab.textContent = newName;
+                        tabData[`tab${index + 1}`] = newName;
+                    } else {
+                        tabData[`tab${index + 1}`] = tab.textContent;
+                    }
+                });
+
+                // Save to Firestore
+                const btn = document.getElementById('save-tabs-btn');
+                btn.textContent = 'Saving...';
+                btn.disabled = true;
+
+                try {
+                    await db.collection("TAB_NAMES").doc(mainTab.replace('#', '')).set(tabData);
+                    message.textContent = 'Tab names updated and saved!';
+                    message.style.color = 'green';
+                    btn.textContent = 'Renamed';
+                    setTimeout(() => {
+                        btn.textContent = 'Rename';
+                        btn.disabled = false;
+                    }, 2000);
+                } catch (error) {
+                    message.textContent = 'Error saving: ' + error.message;
+                    message.style.color = 'red';
+                    btn.textContent = 'Rename';
+                    btn.disabled = false;
+                }
+
+                setTimeout(() => {
+                    message.textContent = '';
+                }, 2000);
             });
 
             // Global functions for edit and delete
@@ -1781,7 +2081,7 @@
                         });
                         alert('Document updated!');
                         // Refresh
-                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                        loadAllDocuments().then(documents => updateAllDownloadLinks(documents));
                     } catch (error) {
                         alert('Error updating: ' + error.message);
                     }
@@ -1794,9 +2094,28 @@
                         await db.collection("PHARMACY_DOCUMENTS").doc(id).delete();
                         alert('Document deleted!');
                         // Refresh
-                        loadPharmacyDocuments().then(documents => updateDownloadLinks(documents));
+                        loadAllDocuments().then(documents => updateAllDownloadLinks(documents));
                     } catch (error) {
                         alert('Error deleting: ' + error.message);
+                    }
+                }
+            };
+
+            window.editField = async (sectionId) => {
+                const currentTitle = document.querySelector(`#${sectionId} h2`).textContent;
+                const newTitle = prompt('Edit title:', currentTitle);
+                if (newTitle && newTitle !== currentTitle) {
+                    document.querySelector(`#${sectionId} h2`).textContent = newTitle;
+                    document.getElementById(`title-${sectionId}`).textContent = newTitle;
+
+                    // Save to Firestore
+                    try {
+                        await db.collection("COURSE_TITLES").doc(sectionId).set({
+                            title: newTitle
+                        });
+                        alert('Title updated and saved!');
+                    } catch (error) {
+                        alert('Error saving title: ' + error.message);
                     }
                 }
             };
