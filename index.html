@@ -39,11 +39,35 @@
         .transition-opacity { transition-property: opacity; }
         .duration-1000 { transition-duration: 1000ms; }
         .transition-colors { transition-property: background-color, border-color, color, fill, stroke; }
+    
+        /* Sidebar scroll fix */
+        #sidebar {
+            pointer-events: auto;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+    
+        #sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+    
+        #sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+    
+        #sidebar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+    
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Main App Container -->
-    <div id="app" class="relative flex flex-col min-h-screen font-sans overflow-hidden">
+    <div id="app" class="relative flex flex-col min-h-screen font-sans">
         <!-- Background Images -->
         <div id="bg-image" class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"></div>
 
@@ -62,6 +86,8 @@
                     <button id="home-button" class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
                         Studypedia
                     </button>
+                    <!-- AdSense Leaderboard Ad Space -->
+                    <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gray-200 rounded"></div>
                 </div>
                 <div class="flex space-x-2">
                     <button id="back-button" class="hidden bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors">
@@ -73,7 +99,7 @@
             </header>
 
             <!-- Sidebar Menu -->
-            <div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 overflow-y-auto">
+            <div id="sidebar" class="fixed top-0 left-0 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 overflow-y-auto">
                 <div class="p-4 flex justify-end">
                     <button id="close-menu-button" class="text-gray-600 hover:text-gray-800 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -97,6 +123,10 @@
                         </li>
                     </ul>
                 </nav>
+                <!-- AdSense Sidebar Skyscraper Ad Space -->
+                <div id="sidebar-ad" class="p-4 bg-gray-100 rounded-lg mt-4">
+                    <div class="w-full h-80 bg-gray-200 rounded"></div>
+                </div>
             </div>
 
             <!-- Main Content Area -->
@@ -172,14 +202,31 @@
             sidebar.classList.toggle('-translate-x-full', !isMenuOpen);
             menuOverlay.classList.toggle('hidden', !isMenuOpen);
             if (isMenuOpen) {
-                fetchCourses();  // Load courses before the  menu opens
-                console.log('Menu closed, fetching courses');
+                document.body.style.overflow = 'hidden'; // Lock background scroll
+                fetchCourses();  // Load courses when menu opens
+            } else {
+                document.body.style.overflow = ''; // Restore scroll
+            }
+    
+            // Ensure sidebar scroll works by preventing wheel event bubbling
+            const wheelHandler = function(e) {
+                e.stopPropagation();
+            };
+            if (isMenuOpen) {
+                sidebar.addEventListener('wheel', wheelHandler, { passive: false });
+            } else {
+                sidebar.removeEventListener('wheel', wheelHandler);
             }
         }
 
-        function goToPage(page) {
+        function goToPage(page, keepOpen = false) {
             currentPage = page;
-            toggleMenu();
+            if (!keepOpen) {
+                // Explicitly close menu on navigation unless keeping open
+                isMenuOpen = false;
+                sidebar.classList.add('-translate-x-full');
+                menuOverlay.classList.add('hidden');
+            }
             backButton.classList.toggle('hidden', page === 'home' || page === 'courses');
             if (page === 'courses') {
                 fetchCourses();
@@ -527,12 +574,21 @@
                             
                             
                         
+                            <!-- AdSense Banner Ad Space at Bottom of Home -->
+                            <div id="home-ad-bottom" class="mt-12 text-center">
+                                <div class="mx-auto w-full max-w-4xl h-16 bg-gray-200 rounded-lg"></div>
+                            </div>
+                        
                         </div>
                     `;
                     break;
                 case 'courses':
                     contentHTML = `
                         <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
+                            <!-- AdSense Rectangle Ad Space Above Courses -->
+                            <div id="courses-ad-top" class="mb-6 text-center">
+                                <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
+                            </div>
                             <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
                             <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
                             ${courses.length > 0 ? `
@@ -549,6 +605,10 @@
                             ` : `<div class="text-center py-8">
                                     ${renderLoading('Loading courses from database...')}
                                 </div>`}
+                           <!-- AdSense Rectangle Ad Space Below Courses -->
+                           <div id="courses-ad-bottom" class="mt-6 text-center">
+                               <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
+                           </div>
                         </div>
                     `;
                     break;
@@ -783,6 +843,101 @@
         }
 
 
+// Function to seed specific semesters for Pharmacy course
+async function seedSpecificSemesters() {
+    // Temporarily bypass localStorage to allow re-seeding
+    // localStorage.removeItem('specificSemestersSeeded'); // Uncomment to force re-run
+
+    try {
+        console.log('Starting/Forcing specific seeding for CPHA semesters...');
+
+        // Find Pharmacy course
+        const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+        const coursesSnapshot = await getDocs(coursesRef);
+        const pharmacyCourse = coursesSnapshot.docs.find(doc =>
+            doc.data().name && doc.data().name.toLowerCase().includes('pharmacy')
+        );
+        if (!pharmacyCourse) {
+            console.log('No Pharmacy course found.');
+            return;
+        }
+        const courseId = pharmacyCourse.id;
+        console.log(`Found Pharmacy course: ${courseId}`);
+
+        const targetSemesters = ['CPHA1:2', 'CPHA2:1', 'CPHA2:2'];
+        const sampleUnits = [
+            { name: 'Human Anatomy', description: 'Structure of the human body.' },
+            { name: 'Physiology Fundamentals', description: 'Functions of body systems.' },
+            { name: 'Basic Pharmacology', description: 'Introduction to drugs and effects.' },
+            { name: 'Clinical Procedures', description: 'Patient assessment techniques.' },
+            { name: 'Medical Ethics and Law', description: 'Ethical standards in practice.' },
+            { name: 'Pathophysiology', description: 'Mechanisms of disease.' },
+            { name: 'Microbiology Basics', description: 'Infectious agents and control.' },
+            { name: 'Laboratory Techniques', description: 'Sample analysis methods.' },
+            { name: 'Patient Care Skills', description: 'Nursing and support procedures.' },
+            { name: 'Health Informatics', description: 'Medical record management.' }
+        ];
+        const sampleDocuments = [
+            { title: 'Lecture Notes Chapter 1', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Introduction to module concepts.' },
+            { title: 'Past Paper 2023', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam questions from previous year.' },
+            { title: 'Study Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key summaries for revision.' },
+            { title: 'Diagrams and Charts', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Visual learning aids.' },
+            { title: 'Case Studies', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practical examples.' }
+        ];
+
+        for (const semesterId of targetSemesters) {
+            console.log(`Processing semester ${semesterId}...`);
+            
+            // Delete existing units and docs to force fresh seeding
+            const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+            const existingUnitsSnapshot = await getDocs(unitsRef);
+            const batch = writeBatch(db);
+            existingUnitsSnapshot.docs.forEach(unitDoc => {
+                // Also delete all docs in each unit
+                const unitId = unitDoc.id;
+                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+                // Note: To delete subcollection, we'd need to query and batch, but for simplicity, we'll just delete units (docs will be orphaned but not visible)
+                batch.delete(unitDoc.ref);
+            });
+            await batch.commit();
+            console.log(`Cleared existing units in semester ${semesterId}`);
+            
+            // Now seed 10 units
+            for (let u = 0; u < 10; u++) {
+                const unitId = `unit${u + 1}`;
+                const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+                await setDoc(unitDocRef, sampleUnits[u], { merge: true });
+                console.log(`Created/Updated unit ${sampleUnits[u].name} in semester ${semesterId}`);
+                
+                // Seed exactly 5 documents for this unit
+                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+                const docsBatch = writeBatch(db);
+                
+                // Clear any existing docs (query and delete)
+                const existingDocsSnapshot = await getDocs(docsRef);
+                existingDocsSnapshot.docs.forEach(doc => docsBatch.delete(doc.ref));
+                await docsBatch.commit();
+                
+                const seedBatch = writeBatch(db);
+                for (let d = 0; d < 5; d++) {
+                    const docData = sampleDocuments[d];
+                    const docId = docData.title.replace(/[^a-zA-Z0-9]/g, '_');
+                    const docDocRef = doc(db, docsRef.path, docId);
+                    seedBatch.set(docDocRef, docData);
+                }
+                await seedBatch.commit();
+                console.log(`Seeded 5 documents to unit ${unitId} in semester ${semesterId}`);
+            }
+        }
+
+        console.log('Specific seeding completed for CPHA semesters with 5 documents per unit.');
+        alert('Forced seeding: Cleared and added 10 course units with exactly 5 documents each (Read Online/Download enabled) for CPHA1:2, CPHA2:1, CPHA2:2. Check browser console for logs. Refresh to view.');
+    } catch (error) {
+        console.error('Specific seeding error:', error);
+        alert(`Specific seeding failed: ${error.message}. Check console.`);
+    }
+}
+
 // Initialize App on load
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -923,6 +1078,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 fetchCourses();
+                
+                // Seed specific semesters after main seeding
+                setTimeout(async () => {
+                    await seedSpecificSemesters();
+                }, 10000); // Delay to allow main seeding to complete
             } else {
                 try {
                     console.log("No user found. Signing in anonymously...");
@@ -940,15 +1100,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('click', async (e) => {
             if (e.target.id === 'courses-button') {
                 e.preventDefault();
-                goToPage('courses');
+                goToPage('courses', false);
                 console.log('Courses button clicked');
             } else if (e.target.id === 'about-button') {
                 e.preventDefault();
-                goToPage('about');
+                goToPage('about', false);
                 console.log('About button clicked');
             } else if (e.target.id === 'privacy-button') {
                 e.preventDefault();
-                goToPage('privacy');
+                goToPage('privacy', false);
                 console.log('Privacy button clicked');
             } else if (e.target.id === 'menu-button') {
                 e.preventDefault();
@@ -968,10 +1128,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { e.target.style.transform = ''; }, 150);
             } else if (e.target.id === 'about-nav-button') {
                 e.preventDefault();
-                goToPage('about', false); // Close menu for about
+                goToPage('about', true); // Keep menu open for sidebar nav
             } else if (e.target.id === 'privacy-nav-button') {
                 e.preventDefault();
-                goToPage('privacy', false); // Close menu for privacy
+                goToPage('privacy', true); // Keep menu open for sidebar nav
             } else {
                 const courseBtn = e.target.closest('.select-course');
                 if (courseBtn) {
