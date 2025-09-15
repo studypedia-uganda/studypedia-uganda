@@ -809,7 +809,6 @@ function updateUserInfo() {
                                 <button id="courses-button" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-blue-700 hover:to-indigo-800 transform hover:scale-105 transition-all duration-300">Browse Courses</button>
                                 <button id="about-button" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300">About Us</button>
                                 <button id="privacy-button" class="bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-green-600 hover:to-cyan-600 transform hover:scale-105 transition-all duration-300">Privacy Policy</button>
-                                <button id="seed-dcm-semesters" class="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 hidden md:block">Seed DCM Semesters</button>
                             </div>
                             
                             
@@ -1103,6 +1102,122 @@ function updateUserInfo() {
     }
 
 
+        // Function to seed 8 course units for CLT1:1 semester (one-time only, clears existing)
+        async function seedDCM31Units() {
+          if (localStorage.getItem('clt1_1_seeded')) {
+            console.log('CLT1:1 already seeded. Skipping.');
+            return false;
+          }
+
+          try {
+            console.log('Starting one-time seeding for CLT1:1 with 8 course units...');
+
+            // Find or create Diploma Clinical Laboratory Technology course
+            const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+            const coursesSnapshot = await getDocs(coursesRef);
+            let cltCourses = coursesSnapshot.docs.filter(doc =>
+              doc.data().name &&
+              doc.data().name.toLowerCase().includes('diploma') &&
+              (doc.data().name.toLowerCase().includes('laboratory') || doc.data().name.toLowerCase().includes('clt') || doc.data().name.toLowerCase().includes('clinical lab'))
+            );
+
+            let courseId;
+            if (cltCourses.length === 0) {
+              // Create the course if not found
+              const newCourseRef = await addDoc(coursesRef, {
+                name: 'Diploma in Clinical Laboratory Technology',
+                description: 'Diploma program for clinical laboratory technology in Uganda.',
+                createdAt: new Date()
+              });
+              courseId = newCourseRef.id;
+              console.log(`Created new CLT course with ID: ${courseId}`);
+              cltCourses = [{ id: courseId, data: () => ({ name: 'Diploma in Clinical Laboratory Technology' }) }];
+            } else {
+              courseId = cltCourses[0].id; // Use first matching course
+            }
+
+            console.log(`Using CLT course for seeding: ${courseId} (${cltCourses[0].data().name})`);
+
+            const semesterId = 'CLT1:1';
+
+            // Create semester if it doesn't exist
+            const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
+            const semesterDocSnap = await getDoc(semesterDocRef);
+            if (!semesterDocSnap.exists()) {
+              await setDoc(semesterDocRef, {
+                name: 'Diploma Clinical Laboratory Technology Semester 1',
+                description: 'Introductory semester for Diploma in Clinical Laboratory Technology.'
+              });
+              console.log(`Created semester ${semesterId} for course ${courseId}`);
+            }
+
+            // Clear existing units (force seed)
+            const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+            const existingUnitsSnapshot = await getDocs(unitsRef);
+            if (existingUnitsSnapshot.size > 0) {
+              const deleteBatch = writeBatch(db);
+              existingUnitsSnapshot.docs.forEach((doc) => {
+                deleteBatch.delete(doc.ref);
+              });
+              await deleteBatch.commit();
+              console.log(`Cleared ${existingUnitsSnapshot.size} existing units in CLT1:1`);
+            }
+
+            // 8 sample units for CLT1:1
+            const clt11Units = [
+              { name: 'Introduction to Laboratory Techniques', description: 'Basic lab procedures and safety.' },
+              { name: 'Hematology Fundamentals', description: 'Blood analysis and disorders.' },
+              { name: 'Clinical Chemistry Basics', description: 'Chemical analysis of body fluids.' },
+              { name: 'Microbiology Introduction', description: 'Identification of microorganisms.' },
+              { name: 'Urinalysis and Body Fluids', description: 'Analysis of urine and other fluids.' },
+              { name: 'Immunology Principles', description: 'Immune system and testing.' },
+              { name: 'Laboratory Quality Control', description: 'Ensuring accuracy in testing.' },
+              { name: 'Phlebotomy Skills', description: 'Blood collection techniques.' }
+            ];
+
+            const sampleDocuments = [
+              { title: 'Lab Safety Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Safety protocols overview.' },
+              { title: 'Hematology Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Blood cell identification.' },
+              { title: 'Chemistry Test Procedures', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Standard lab tests.' },
+              { title: 'Microbiology Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Culture and staining methods.' },
+              { title: 'Urinalysis Workbook', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Sample analysis examples.' }
+            ];
+
+            // Add 8 units, each with 5 documents (clear existing docs in each unit)
+            for (let u = 0; u < 8; u++) {
+              const unitId = `unit${u + 1}`;
+              const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+              await setDoc(unitDocRef, clt11Units[u], { merge: false });
+              console.log(`Added unit ${clt11Units[u].name} to CLT1:1`);
+
+              const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+              const existingDocsSnapshot = await getDocs(docsRef);
+              if (existingDocsSnapshot.size > 0) {
+                const deleteDocsBatch = writeBatch(db);
+                existingDocsSnapshot.docs.forEach((doc) => {
+                  deleteDocsBatch.delete(doc.ref);
+                });
+                await deleteDocsBatch.commit();
+                console.log(`Cleared existing documents for unit ${unitId} in CLT1:1`);
+              }
+
+              for (const docData of sampleDocuments) {
+                await addDoc(docsRef, docData);
+              }
+              console.log(`Added 5 documents to unit ${unitId} in CLT1:1`);
+            }
+
+            // Mark as seeded
+            localStorage.setItem('clt1_1_seeded', 'true');
+            console.log('CLT1:1 seeding completed successfully (one-time).');
+            alert('Successfully added Diploma in Clinical Laboratory Technology course (if needed), cleared existing units, and seeded 8 new course units to CLT1:1 semester! The button will now be hidden. Refresh to see changes.');
+            return true;
+          } catch (error) {
+            console.error('CLT1:1 seeding error:', error);
+            alert(`Seeding failed: ${error.message}. Check console for details.`);
+            return false;
+          }
+        }
     // Function to seed specific semesters for Pharmacy course
     async function seedSpecificSemesters() {
       if (localStorage.getItem('specificSemestersSeeded')) {
