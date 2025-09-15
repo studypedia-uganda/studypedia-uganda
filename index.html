@@ -108,6 +108,8 @@
       background: #a8a8a8;
     }
   </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
+     crossorigin="anonymous"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -652,7 +654,7 @@ function updateUserInfo() {
       }
     }
 
-    async function handleDocumentDownload(docData) {
+    async function handleViewDocument(docData) {
       try {
         let url;
         if (docData.filePath.startsWith('http')) {
@@ -666,12 +668,43 @@ function updateUserInfo() {
         }
         window.open(url, '_blank');
       } catch (error) {
-        console.error('Error accessing document:', error);
+        console.error('Error accessing document for viewing:', error);
         const title = docData.title || 'this document';
         if (docData.filePath.startsWith('http')) {
           alert(`Failed to open link for "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
         } else {
-          alert(`Failed to load "${title}" from Firebase Storage. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
+          alert(`Failed to load "${title}" from Firebase Storage for viewing. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
+        }
+      }
+    }
+    
+    async function handleDownloadDocument(docData) {
+      try {
+        let url;
+        if (docData.filePath.startsWith('http')) {
+          // Direct external link (e.g., Google Drive)
+          url = docData.filePath;
+        } else {
+          // Firebase Storage path
+          const storage = getStorage();
+          const fileRef = ref(storage, docData.filePath);
+          url = await getDownloadURL(fileRef);
+        }
+        const filename = docData.title ? `${docData.title.replace(/[^a-z0-9]/gi, '_')}.pdf` : 'document.pdf';
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        console.log(`Download initiated for: ${filename}`);
+      } catch (error) {
+        console.error('Error accessing document for download:', error);
+        const title = docData.title || 'this document';
+        if (docData.filePath.startsWith('http')) {
+          alert(`Failed to download "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
+        } else {
+          alert(`Failed to load "${title}" from Firebase Storage for download. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
         }
       }
     }
@@ -932,7 +965,7 @@ function updateUserInfo() {
                       `;
               }
               const safeDoc = { ...doc, title: displayTitle };
-              const jsonStr = JSON.stringify(safeDoc).replace(/"/g, '"');
+              const jsonStr = JSON.stringify(safeDoc).replace(/"/g, '&quot;');
               return `
                       <div class="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg flex flex-col sm:flex-row justify-between items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:from-blue-50 hover:to-indigo-100 border border-blue-200 hover:border-blue-300">
                         <div class="text-center sm:text-left mb-2 sm:mb-0">
@@ -1420,7 +1453,7 @@ function updateUserInfo() {
               e.preventDefault();
               try {
                 const docData = JSON.parse(viewDocBtn.dataset.doc);
-                await handleDocumentDownload(docData);
+                await handleViewDocument(docData);
               } catch (err) {
                 console.error('Error parsing or accessing document data:', err);
               }
@@ -1431,7 +1464,7 @@ function updateUserInfo() {
               e.preventDefault();
               try {
                 const docData = JSON.parse(downloadDocBtn.dataset.doc);
-                await handleDocumentDownload(docData);
+                await handleDownloadDocument(docData);
               } catch (err) {
                 console.error('Error parsing or accessing document data:', err);
               }
