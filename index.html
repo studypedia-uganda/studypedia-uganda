@@ -655,40 +655,62 @@ function updateUserInfo() {
     }
 
     async function handleViewDocument(docData) {
+      console.log('Attempting to view document:', docData);
       try {
         let url;
-        if (docData.filePath.startsWith('http')) {
+        if (docData.filePath && docData.filePath.startsWith('http')) {
           // Direct external link (e.g., Google Drive)
           url = docData.filePath;
-        } else {
+          console.log('Using external URL:', url);
+        } else if (docData.filePath) {
           // Firebase Storage path
           const storage = getStorage();
           const fileRef = ref(storage, docData.filePath);
           url = await getDownloadURL(fileRef);
+          console.log('Generated Firebase Storage URL:', url);
+        } else {
+          throw new Error('Missing filePath');
         }
         window.open(url, '_blank');
+        console.log('Document opened in new tab');
       } catch (error) {
-        console.error('Error accessing document for viewing:', error);
+        console.error('Error accessing document for viewing:', error, 'Document data:', docData);
         const title = docData.title || 'this document';
-        if (docData.filePath.startsWith('http')) {
-          alert(`Failed to open link for "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
+        if (!docData.filePath) {
+          alert(`Cannot view "${title}". Missing 'filePath' in Firebase document. Add a valid URL (e.g., Google Drive link) or Storage path to this document in Firestore.`);
+        } else if (docData.filePath.startsWith('http')) {
+          alert(`Failed to open external link for "${title}". URL: ${docData.filePath}. Check if it's public and accessible. Error: ${error.message}`);
         } else {
-          alert(`Failed to load "${title}" from Firebase Storage for viewing. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
+          let errorMsg = `Failed to load "${title}" from Firebase Storage. Path: ${docData.filePath}. `;
+          if (error.code === 'storage/object-not-found') {
+            errorMsg += 'File not found—upload it to Firebase Storage at this path and ensure public access.';
+          } else if (error.code === 'storage/unauthorized') {
+            errorMsg += 'Access denied—make the file public in Firebase Storage rules.';
+          } else {
+            errorMsg += 'General error. ';
+          }
+          errorMsg += `Full error: ${error.message}\n\nRequired: 'title' (string), 'filePath' (URL or Storage path).`;
+          alert(errorMsg);
         }
       }
     }
     
     async function handleDownloadDocument(docData) {
+      console.log('Attempting to download document:', docData);
       try {
         let url;
-        if (docData.filePath.startsWith('http')) {
+        if (docData.filePath && docData.filePath.startsWith('http')) {
           // Direct external link (e.g., Google Drive)
           url = docData.filePath;
-        } else {
+          console.log('Using external URL for download:', url);
+        } else if (docData.filePath) {
           // Firebase Storage path
           const storage = getStorage();
           const fileRef = ref(storage, docData.filePath);
           url = await getDownloadURL(fileRef);
+          console.log('Generated Firebase Storage URL for download:', url);
+        } else {
+          throw new Error('Missing filePath');
         }
         const filename = docData.title ? `${docData.title.replace(/[^a-z0-9]/gi, '_')}.pdf` : 'document.pdf';
         const a = document.createElement('a');
@@ -699,12 +721,23 @@ function updateUserInfo() {
         document.body.removeChild(a);
         console.log(`Download initiated for: ${filename}`);
       } catch (error) {
-        console.error('Error accessing document for download:', error);
+        console.error('Error accessing document for download:', error, 'Document data:', docData);
         const title = docData.title || 'this document';
-        if (docData.filePath.startsWith('http')) {
-          alert(`Failed to download "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
+        if (!docData.filePath) {
+          alert(`Cannot download "${title}". Missing 'filePath' in Firebase document. Add a valid URL or Storage path to this document in Firestore.`);
+        } else if (docData.filePath.startsWith('http')) {
+          alert(`Failed to download external file "${title}". URL: ${docData.filePath}. Ensure it's downloadable and public. Error: ${error.message}`);
         } else {
-          alert(`Failed to load "${title}" from Firebase Storage for download. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
+          let errorMsg = `Failed to download "${title}" from Firebase Storage. Path: ${docData.filePath}. `;
+          if (error.code === 'storage/object-not-found') {
+            errorMsg += 'File not found—upload it to Firebase Storage at this path and make public.';
+          } else if (error.code === 'storage/unauthorized') {
+            errorMsg += 'Access denied—set Storage rules to allow public read.';
+          } else {
+            errorMsg += 'General error. ';
+          }
+          errorMsg += `Full error: ${error.message}\n\nRequired: 'title' (string), 'filePath' (URL or Storage path).`;
+          alert(errorMsg);
         }
       }
     }
@@ -1452,7 +1485,8 @@ function updateUserInfo() {
             if (viewDocBtn) {
               e.preventDefault();
               try {
-                const docData = JSON.parse(viewDocBtn.dataset.doc);
+                const rawJson = viewDocBtn.dataset.doc.replace(/"/g, '"');
+                const docData = JSON.parse(rawJson);
                 await handleViewDocument(docData);
               } catch (err) {
                 console.error('Error parsing or accessing document data:', err);
@@ -1463,7 +1497,8 @@ function updateUserInfo() {
             if (downloadDocBtn) {
               e.preventDefault();
               try {
-                const docData = JSON.parse(downloadDocBtn.dataset.doc);
+                const rawJson = downloadDocBtn.dataset.doc.replace(/"/g, '"');
+                const docData = JSON.parse(rawJson);
                 await handleDownloadDocument(docData);
               } catch (err) {
                 console.error('Error parsing or accessing document data:', err);
