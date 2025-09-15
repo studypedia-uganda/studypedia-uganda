@@ -123,29 +123,32 @@
     <div class="relative z-10 flex flex-col min-h-screen">
       <header class="bg-white shadow-md p-4 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <button id="menu-button" class="focus:outline-none p-2 rounded-md hover:bg-gray-100 transition-colors">
+          <button id="menu-button" class="focus:outline-none p-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md">
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
           </button>
-          <button id="home-button" class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
+          <button id="home-button" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent tracking-wide hover:scale-105 transition-transform duration-300">
             Studypedia
           </button>
           <!-- Auth Buttons -->
           <div id="auth-buttons" class="flex items-center space-x-2 ml-4">
-            <button id="login-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+            <button id="login-button" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl">
               Login
             </button>
-            <button id="register-button" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+            <button id="register-button" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl">
               Register
             </button>
-            <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors hidden">
+            <button id="logout-button" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl hidden">
               Logout
+            </button>
+            <button id="seed-clt-button" class="ml-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-2 rounded-lg text-xs transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl hidden">
+              Seed CLT
             </button>
           </div>
           <!-- AdSense Leaderboard Ad Space -->
-          <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gray-200 rounded"></div>
+          <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gradient-to-r from-gray-200 to-gray-300 rounded shadow-md"></div>
         </div>
         <div class="flex space-x-2">
           <button id="back-button"
@@ -161,9 +164,9 @@
 
       <!-- Sidebar Menu -->
       <div id="sidebar"
-        class="fixed top-0 left-0 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 overflow-y-auto">
+        class="fixed top-0 left-0 h-screen transform -translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-b from-white to-blue-50 w-64 shadow-2xl z-50 overflow-y-auto border-r-2 border-blue-100">
         <div class="p-4 flex justify-end">
-          <button id="close-menu-button" class="text-gray-600 hover:text-gray-800 transition-colors">
+          <button id="close-menu-button" class="text-gray-600 hover:text-red-500 transition-all duration-300 ease-in-out transform hover:scale-110">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -173,38 +176,38 @@
         <nav class="p-4">
           <ul class="space-y-2">
             <li>
-              <h4 class="text-lg font-bold text-gray-800 mb-2">Courses</h4>
+              <h4 class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent mb-2">Courses</h4>
               <ul id="course-list" class="pl-4 space-y-2">
                 <!-- Courses will be dynamically injected here -->
               </ul>
 
               <!-- User Profile Section -->
-              <li id="user-profile-section" class="pt-4 border-t border-gray-100">
-                <div id="user-info" class="text-sm text-gray-600 py-2 px-3 rounded-lg bg-gray-50">
+              <li id="user-profile-section" class="pt-4 border-t border-blue-200">
+                <div id="user-info" class="text-sm text-gray-700 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-inner">
                   Loading user...
                 </div>
               </li>
             </li>
-            <li class="pt-4 border-t border-gray-100">
+            <li class="pt-4 border-t border-blue-200">
               <button id="about-nav-button"
-                class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">About
+                class="w-full text-left text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 transition-all duration-300 ease-in-out py-3 px-4 rounded-xl cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">About
                 Us</button>
             </li>
             <li>
               <button id="privacy-nav-button"
-                class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">Privacy
+                class="w-full text-left text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-teal-600 transition-all duration-300 ease-in-out py-3 px-4 rounded-xl cursor-pointer focus:outline-none focus:ring-4 focus:ring-green-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">Privacy
                 Policy</button>
             </li>
           </ul>
         </nav>
         <!-- AdSense Sidebar Skyscraper Ad Space -->
-        <div id="sidebar-ad" class="p-4 bg-gray-100 rounded-lg mt-4">
-          <div class="w-full h-80 bg-gray-200 rounded"></div>
+        <div id="sidebar-ad" class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl mt-4 border border-purple-200 shadow-md">
+          <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg shadow-inner"></div>
         </div>
       </div>
 
       <!-- Main Content Area -->
-      <main id="main-content" class="flex-grow p-4 md:p-8 flex items-center justify-center">
+      <main id="main-content" class="flex-grow p-4 md:p-8 flex items-center justify-center transition-all duration-500 ease-in-out">
         <!-- Content will be dynamically injected here -->
       </main>
     </div>
@@ -332,6 +335,7 @@
     const switchToLogin = document.getElementById('switch-to-login');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
+    const seedButton = document.getElementById('seed-clt-button');
 // Auth functions
 async function registerUser(email, password) {
   try {
@@ -375,11 +379,14 @@ function updateAuthUI(isLoggedIn, user) {
     loginButton.classList.add('hidden');
     registerButton.classList.add('hidden');
     logoutButton.classList.remove('hidden');
+    // Seed button deactivated - documents already added to database
+    seedButton.classList.add('hidden');
     logoutButton.textContent = `Logout (${user.email || user.uid.substring(0,8)}...)`;
   } else {
     loginButton.classList.remove('hidden');
     registerButton.classList.remove('hidden');
     logoutButton.classList.add('hidden');
+    seedButton.classList.add('hidden');
   }
 }
 
@@ -806,9 +813,9 @@ function updateUserInfo() {
                             </div>
                             
                             <div class="flex flex-col md:flex-row gap-4 w-full justify-center mt-8">
-                                <button id="courses-button" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-blue-700 hover:to-indigo-800 transform hover:scale-105 transition-all duration-300">Browse Courses</button>
-                                <button id="about-button" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300">About Us</button>
-                                <button id="privacy-button" class="bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-green-600 hover:to-cyan-600 transform hover:scale-105 transition-all duration-300">Privacy Policy</button>
+                              <button id="courses-button" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-blue-700 hover:via-indigo-700 hover:to-purple-800 transform hover:scale-110 transition-all duration-500 ease-out animate-pulse">Browse Courses</button>
+                              <button id="about-button" class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-purple-600 hover:via-pink-600 hover:to-red-600 transform hover:scale-110 transition-all duration-500 ease-out">About Us</button>
+                              <button id="privacy-button" class="bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-green-600 hover:via-teal-600 hover:to-cyan-600 transform hover:scale-110 transition-all duration-500 ease-out">Privacy Policy</button>
                             </div>
                             
                             
@@ -842,8 +849,8 @@ function updateUserInfo() {
                 ${courses.length > 0 ? `
                   <div class="space-y-4">
                     ${courses.map((course) => `
-                      <div class="course-item-main bg-gray-100 rounded-lg shadow-sm overflow-hidden cursor-pointer" data-course-id="${course.id}">
-                        <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gray-200 transition-colors cursor-pointer ${selectedCourse === course.id ? 'bg-blue-100' : ''}" data-course-id="${course.id}" style="user-select: none;">
+                      <div class="course-item-main bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-md overflow-hidden cursor-pointer border border-blue-200 hover:border-blue-300 transition-all duration-300 ease-in-out transform hover:scale-105" data-course-id="${course.id}">
+                        <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gradient-to-r hover:from-blue-200 hover:to-indigo-200 transition-all duration-300 ease-in-out cursor-pointer ${selectedCourse === course.id ? 'bg-gradient-to-r from-blue-100 to-indigo-100 ring-2 ring-blue-300' : ''}" data-course-id="${course.id}" style="user-select: none;">
                           ${course.name || 'Unknown Course'}
                         </div>
                         <div class="semesters-list-main bg-white hidden px-4 pb-4 space-y-2"></div>
@@ -869,7 +876,7 @@ function updateUserInfo() {
                             ${semesters.length > 0 ? `
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                     ${semesters.map((semester, sIndex) => `
-                                        <button class="select-semester bg-gray-100 text-gray-800 py-3 px-4 rounded-lg shadow-sm hover:bg-gray-200 transform hover:scale-105 transition-transform duration-200 text-left" data-semester-id="${semester.id}">
+                                        <button class="select-semester bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 py-3 px-4 rounded-lg shadow-sm hover:from-blue-200 hover:to-indigo-200 hover:text-blue-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-left border border-gray-300 hover:border-blue-300" data-semester-id="${semester.id}">
                                             ${semester.name || `Semester ${sIndex + 1}`}
                                         </button>
                                     `).join('')}
@@ -887,7 +894,7 @@ function updateUserInfo() {
                             ${courseUnits.length > 0 ? `
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                     ${courseUnits.map((courseUnit, uIndex) => `
-                                        <button class="select-courseunit bg-gray-100 text-gray-800 py-3 px-4 rounded-lg shadow-sm hover:bg-gray-200 transform hover:scale-105 transition-transform duration-200 text-left" data-courseunit-id="${courseUnit.id}">
+                                        <button class="select-courseunit bg-gradient-to-r from-green-50 to-teal-100 text-gray-800 py-3 px-4 rounded-lg shadow-sm hover:from-green-100 hover:to-teal-200 hover:text-green-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-left border border-green-200 hover:border-green-300" data-courseunit-id="${courseUnit.id}">
                                             ${courseUnit.name || `Course Unit ${uIndex + 1}`}
                                         </button>
                                     `).join('')}
@@ -927,14 +934,16 @@ function updateUserInfo() {
               const safeDoc = { ...doc, title: displayTitle };
               const jsonStr = JSON.stringify(safeDoc).replace(/"/g, '"');
               return `
-                      <div class="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-all duration-200 hover:shadow-lg">
-                        <span class="font-medium text-gray-700 text-center sm:text-left mb-2 sm:mb-0">${displayTitle}</span>
-                        ${doc.description ? `<p class="text-sm text-gray-500 text-center sm:text-left mt-1">${doc.description}</p>` : ''}
-                        <div class="flex flex-row space-x-2 mt-2">
-                          <button class="view-doc bg-green-500 text-white text-sm py-2 px-4 rounded-full hover:bg-green-600 transition-colors" data-doc="${jsonStr}">
+                      <div class="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl shadow-lg flex flex-col sm:flex-row justify-between items-center transition-all duration-300 ease-in-out hover:shadow-xl hover:from-blue-50 hover:to-indigo-100 border border-blue-200 hover:border-blue-300">
+                        <div class="text-center sm:text-left mb-2 sm:mb-0">
+                          <span class="font-semibold text-gray-800 text-lg">${displayTitle}</span>
+                          ${doc.description ? `<p class="text-sm text-gray-600 mt-1 italic">${doc.description}</p>` : ''}
+                        </div>
+                        <div class="flex flex-row space-x-3 mt-3 sm:mt-0">
+                          <button class="view-doc bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm py-3 px-6 rounded-full hover:from-green-600 hover:to-emerald-700 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl" data-doc="${jsonStr}">
                             Read Online
                           </button>
-                          <button class="download-doc bg-blue-600 text-white text-sm py-2 px-4 rounded-full hover:bg-blue-700 transition-colors" data-doc="${jsonStr}">
+                          <button class="download-doc bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-sm py-3 px-6 rounded-full hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl" data-doc="${jsonStr}">
                             Download
                           </button>
                         </div>
@@ -942,18 +951,18 @@ function updateUserInfo() {
                     `;
             }).join('')}
                   </div>
-                ` : `<p class="text-center text-gray-500 py-8">No documents found for this course unit. Add documents to Firebase with required fields: 'title' (string for name) and 'filePath' (URL or Storage path).</p>`}
+                ` : `<p class="text-center text-gray-500 py-8">No documents yet for this course unit in Certificate Medical Lab Science. Use the 'Seed CLT' button (visible when logged in) to add sample documents. Ensure each document in Firebase has 'title' (string) and 'filePath' (URL or Storage path) fields for read online and download buttons to work.</p>`}
               </div>
             `;
           }
           break;
         case 'about':
           contentHTML = `
-                        <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-4">About Studypedia Uganda</h2>
-                            <p class="text-gray-600 mb-4">Studypedia Uganda is a dedicated platform for medical students, offering a centralized repository of study materials and resources to help them excel in their Diploma and Certificate courses. We are committed to providing easy access to quality educational content.</p>
-                            <h3 class="text-2xl font-semibold text-gray-700 mb-2">Contact Us</h3>
-                            <ul class="list-disc list-inside text-gray-600">
+                        <div class="p-8 bg-gradient-to-br from-white via-blue-50 to-indigo-100 backdrop-blur-sm rounded-2xl shadow-2xl w-full border border-blue-200">
+                            <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent mb-6 animate-fade-in">About Studypedia Uganda</h2>
+                            <p class="text-gray-700 mb-6 leading-relaxed text-lg">Studypedia Uganda is a dedicated platform for medical students, offering a centralized repository of study materials and resources to help them excel in their Diploma and Certificate courses. We are committed to providing easy access to quality educational content.</p>
+                            <h3 class="text-3xl font-semibold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-4">Contact Us</h3>
+                            <ul class="space-y-3 text-gray-700">
                                 <li>
                                     <a href="tel:+256756454646" class="flex items-center space-x-2 text-blue-500 hover:text-blue-700 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
@@ -971,12 +980,10 @@ function updateUserInfo() {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://t.me/256706571957" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-blue-400 hover:text-blue-600 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12.004 0a12 12 0 00-12 12 12 12 0 0012 12 12 12 0 0012-12 12 12 0 00-12-12zm-1.896 16.92c-.176.155-.378.14-.582-.03-.205-.17-.33-.35-.536-.554-1.288-1.25-2.585-2.49-3.87-3.75-.434-.418-.89-.844-1.33-1.27-.406-.412-1.205-.205-1.12.392.17.947.375 1.886.58 2.83.18 1.25.32 2.5.47 3.75.107.82.72 1.48 1.54 1.73a3.52 3.52 0 00.97.166c.228 0 .45-.02.66-.057.94-.148 1.87-.296 2.81-.444 1.76-.282 3.51-.57 5.27-.853 1.01-.164 1.545-.583 1.63-1.63.11-1.32.22-2.64.33-3.96.11-1.3-.01-2.58-.2-3.87-.26-1.78-.5-3.56-.75-5.34a2.535 2.535 0 00-.8-1.42c-.5-.4-1.07-.64-1.72-.66-.46-.01-.9-.01-1.35.01-.89.05-1.62.48-2.3 1.12-1.85 1.72-3.69 3.44-5.54 5.16-.14.13-.2.27-.14.46.2.66.41 1.3.62 1.95.27.87.56 1.73.83 2.6z" fill="currentColor"/>
-                                        </svg>
-                                        <span>+256 706 571 957</span>
-                                    </a>
+                                  <a href="https://t.me/256706571957" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-blue-400 hover:text-blue-600 transition-colors">
+                                    <img src="https://telegram.org/img/t_logo.png" alt="Telegram" class="h-6 w-6">
+                                    <span>+256 706 571 957</span>
+                                  </a>
                                 </li>
                                 <li>
                                     <a href="mailto:kaigwaakram123@gmail.com" class="flex items-center space-x-2 text-red-500 hover:text-red-700 transition-colors">
@@ -988,18 +995,18 @@ function updateUserInfo() {
                                 </li>
                             </ul>
                             <div class="mt-8 text-center">
-                                <button class="back-home bg-gray-200 text-gray-700 py-2 px-6 rounded-full hover:bg-gray-300 transition-colors">Back to Home</button>
+                                <button class="back-home bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-3 px-8 rounded-full hover:from-gray-400 hover:to-gray-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">Back to Home</button>
                             </div>
                         </div>
                     `;
           break;
         case 'privacy':
           contentHTML = `
-                        <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-4">Privacy Policy</h2>
-                            <p class="text-gray-600 mb-4">Your privacy is important to us. This policy outlines how Studypedia Uganda collects, uses, and protects your information. We do not share your personal data with third parties. All access and usage data is anonymized to improve our service. Your documents are stored securely with Firebase Firestore and Storage, with public documents accessible to all logged-in users and private documents restricted to the authenticated user's ID.</p>
+                        <div class="p-8 bg-gradient-to-br from-white via-green-50 to-teal-100 backdrop-blur-sm rounded-2xl shadow-2xl w-full border border-green-200">
+                            <h2 class="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-6 animate-fade-in">Privacy Policy</h2>
+                            <p class="text-gray-700 mb-6 leading-relaxed text-lg">Your privacy is important to us. This policy outlines how Studypedia Uganda collects, uses, and protects your information. We do not share your personal data with third parties. All access and usage data is anonymized to improve our service. Your documents are stored securely with Firebase Firestore and Storage, with public documents accessible to all logged-in users and private documents restricted to the authenticated user's ID.</p>
                             <div class="mt-8 text-center">
-                                <button class="back-home bg-gray-200 text-gray-700 py-2 px-6 rounded-full hover:bg-gray-300 transition-colors">Back to Home</button>
+                              <button class="back-home bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-3 px-8 rounded-full hover:from-gray-400 hover:to-gray-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">Back to Home</button>
                             </div>
                         </div>
                     `;
@@ -1101,254 +1108,206 @@ function updateUserInfo() {
       });
     }
 
+    // Function to add 5 documents to each existing course unit in Certificate Medical Lab Science semesters
+    async function seedCLT10Units() {
+      try {
+        console.log('Starting to add 5 documents to each existing course unit in Certificate Medical Lab Science semesters...');
+        const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+        const coursesSnapshot = await getDocs(coursesRef);
+        const cltCourses = coursesSnapshot.docs.filter((doc) => {
+          const name = doc.data().name || '';
+          const lowerName = name.toLowerCase();
+          return lowerName.includes('certificate') && (lowerName.includes('medical lab') || lowerName.includes('lab science') || lowerName.includes('clt'));
+        });
 
-        // Function to seed 8 course units for CLT1:1 semester (one-time only, clears existing)
-        async function seedDCM31Units() {
-          if (localStorage.getItem('clt1_1_seeded')) {
-            console.log('CLT1:1 already seeded. Skipping.');
-            return false;
+        if (cltCourses.length === 0) {
+          alert('No Certificate Medical Lab Science course found. Please ensure the course exists in Firebase.');
+          return;
+        }
+
+        const courseId = cltCourses[0].id;  // Assume first match
+        console.log(`Found Certificate Medical Lab Science course ID: ${courseId} - ${cltCourses[0].data().name}`);
+
+        const targetSemesters = ['CLT1:1', 'CLT1:2', 'CLT2:1', 'CLT2:2'];
+
+        const sampleDocuments = [
+          { title: 'Lab Safety Protocols', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Essential lab safety guidelines.' },
+          { title: 'Microbiology Basics', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Introduction to microorganisms.' },
+          { title: 'Hematology Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Blood analysis techniques.' },
+          { title: 'Clinical Chemistry Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Chemical testing procedures.' },
+          { title: 'Lab Equipment Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Handling and maintenance of lab tools.' }
+        ];
+
+        let successfulSemesters = 0;
+        let totalDocumentsAdded = 0;
+
+        for (const semesterId of targetSemesters) {
+          console.log(`\n--- Processing semester: ${semesterId} ---`);
+
+          // Check if semester exists
+          const semesterRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}`);
+          const semesterSnap = await getDoc(semesterRef);
+          if (!semesterSnap.exists()) {
+            console.log(`Semester ${semesterId} does not exist. Skipping.`);
+            continue;
           }
 
-          try {
-            console.log('Starting one-time seeding for CLT1:1 with 8 course units...');
+          // Get existing course units
+          const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+          const unitsSnapshot = await getDocs(unitsRef);
+          if (unitsSnapshot.empty) {
+            console.log(`No course units found in semester ${semesterId}. Skipping.`);
+            continue;
+          }
 
-            // Find or create Diploma Clinical Laboratory Technology course
+          let documentsAddedThisSemester = 0;
+
+          // For each existing unit, add 5 documents
+          for (const unitDoc of unitsSnapshot.docs) {
+            const unitId = unitDoc.id;
+            const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+
+            // Add 5 new documents (always add, even if some exist, to ensure 5 more)
+            for (let d = 0; d < 5; d++) {
+              const docData = sampleDocuments[d];
+              await addDoc(docsRef, docData);
+            }
+            documentsAddedThisSemester += 5;
+            totalDocumentsAdded += 5;
+            console.log(`Added 5 documents to unit ${unitId} in semester ${semesterId}`);
+          }
+
+          console.log(`Added ${documentsAddedThisSemester} documents to ${unitsSnapshot.size} units in semester ${semesterId}`);
+          successfulSemesters++;
+        }
+
+        console.log(`\nDocument seeding completed: ${successfulSemesters} semesters updated with ${totalDocumentsAdded} documents added.`);
+        alert(`Document seeding successful! Added 5 documents to each existing course unit in ${successfulSemesters} Certificate Medical Lab Science semesters (with read online and download buttons). The page will refresh to show them.`);
+
+        // Optionally hide button after success
+        if (seedButton) {
+          seedButton.style.display = 'none';
+        }
+
+        // Refresh to update the UI with new data
+        location.reload();
+
+      } catch (error) {
+        console.error('Error during Certificate Medical Lab Science document seeding:', error);
+        alert(`Seeding failed: ${error.message}. Please check the console for details and ensure you have write permissions in Firestore.`);
+      }
+    }
+
+
+        // Function to seed 9 course units for Certificate in Medical Lab Science semesters (one-time only, clears existing, no creation)
+        async function seedDCM31Units() {
+          // Temporarily remove localStorage check to force re-seeding
+          // localStorage.removeItem('cml_all_seeded');
+
+          try {
+            console.log('Starting one-time seeding for all Certificate in Medical Lab Science semesters with 9 units each...');
+
             const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
             const coursesSnapshot = await getDocs(coursesRef);
-            let cltCourses = coursesSnapshot.docs.filter(doc =>
-              doc.data().name &&
-              doc.data().name.toLowerCase().includes('diploma') &&
-              (doc.data().name.toLowerCase().includes('laboratory') || doc.data().name.toLowerCase().includes('clt') || doc.data().name.toLowerCase().includes('clinical lab'))
-            );
 
-            let courseId;
-            if (cltCourses.length === 0) {
-              // Create the course if not found
-              const newCourseRef = await addDoc(coursesRef, {
-                name: 'Diploma in Clinical Laboratory Technology',
-                description: 'Diploma program for clinical laboratory technology in Uganda.',
-                createdAt: new Date()
-              });
-              courseId = newCourseRef.id;
-              console.log(`Created new CLT course with ID: ${courseId}`);
-              cltCourses = [{ id: courseId, data: () => ({ name: 'Diploma in Clinical Laboratory Technology' }) }];
-            } else {
-              courseId = cltCourses[0].id; // Use first matching course
+            // Define only CLT course and its semesters - no creation, only seed if found
+            const courseConfig = {
+              filter: (doc) => doc.data().name && doc.data().name.toLowerCase().includes('certificate') &&
+                (doc.data().name.toLowerCase().includes('medical lab') || doc.data().name.toLowerCase().includes('lab science') || doc.data().name.toLowerCase().includes('clt')),
+              name: 'Certificate in Medical Lab Science',
+              prefix: 'CLT',
+              semesters: ['CLT1:1', 'CLT1:2', 'CLT2:1', 'CLT2:2']
+            };
+
+            let courseDocs = coursesSnapshot.docs.filter(courseConfig.filter);
+
+            if (courseDocs.length === 0) {
+              console.log(`No ${courseConfig.name} course found. Skipping.`);
+              alert('No Certificate in Medical Lab Science course found. Please create it first.');
+              return false;
             }
 
-            console.log(`Using CLT course for seeding: ${courseId} (${cltCourses[0].data().name})`);
+            const courseId = courseDocs[0].id;
+            console.log(`Using ${courseConfig.name} course for seeding: ${courseId}`);
+            let seededCourses = 1;
 
-            const semesterId = 'CLT1:1';
-
-            // Create semester if it doesn't exist
-            const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
-            const semesterDocSnap = await getDoc(semesterDocRef);
-            if (!semesterDocSnap.exists()) {
-              await setDoc(semesterDocRef, {
-                name: 'Diploma Clinical Laboratory Technology Semester 1',
-                description: 'Introductory semester for Diploma in Clinical Laboratory Technology.'
-              });
-              console.log(`Created semester ${semesterId} for course ${courseId}`);
-            }
-
-            // Clear existing units (force seed)
-            const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
-            const existingUnitsSnapshot = await getDocs(unitsRef);
-            if (existingUnitsSnapshot.size > 0) {
-              const deleteBatch = writeBatch(db);
-              existingUnitsSnapshot.docs.forEach((doc) => {
-                deleteBatch.delete(doc.ref);
-              });
-              await deleteBatch.commit();
-              console.log(`Cleared ${existingUnitsSnapshot.size} existing units in CLT1:1`);
-            }
-
-            // 8 sample units for CLT1:1
-            const clt11Units = [
-              { name: 'Introduction to Laboratory Techniques', description: 'Basic lab procedures and safety.' },
-              { name: 'Hematology Fundamentals', description: 'Blood analysis and disorders.' },
-              { name: 'Clinical Chemistry Basics', description: 'Chemical analysis of body fluids.' },
-              { name: 'Microbiology Introduction', description: 'Identification of microorganisms.' },
-              { name: 'Urinalysis and Body Fluids', description: 'Analysis of urine and other fluids.' },
-              { name: 'Immunology Principles', description: 'Immune system and testing.' },
-              { name: 'Laboratory Quality Control', description: 'Ensuring accuracy in testing.' },
-              { name: 'Phlebotomy Skills', description: 'Blood collection techniques.' }
+            // 9 sample units (tailored for lab science)
+            const sampleUnits = [
+              { name: 'Basic Laboratory Sciences', description: 'Foundational lab knowledge.' },
+              { name: 'Microbiology Techniques', description: 'Microbial identification skills.' },
+              { name: 'Hematology', description: 'Blood analysis fundamentals.' },
+              { name: 'Clinical Chemistry', description: 'Chemical testing methods.' },
+              { name: 'Immunology', description: 'Immune system lab procedures.' },
+              { name: 'Urinalysis and Body Fluids', description: 'Fluid analysis techniques.' },
+              { name: 'Lab Safety and Quality Control', description: 'Safety protocols and standards.' },
+              { name: 'Instrumentation', description: 'Lab equipment operation.' },
+              { name: 'Phlebotomy and Specimen Collection', description: 'Sample handling practices.' }
             ];
 
+            // 5 sample documents per unit
             const sampleDocuments = [
-              { title: 'Lab Safety Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Safety protocols overview.' },
-              { title: 'Hematology Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Blood cell identification.' },
-              { title: 'Chemistry Test Procedures', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Standard lab tests.' },
-              { title: 'Microbiology Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Culture and staining methods.' },
-              { title: 'Urinalysis Workbook', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Sample analysis examples.' }
+              { title: 'Lab Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Core lab material.' },
+              { title: 'Practical Exercises', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Hands-on lab activities.' },
+              { title: 'Past Lab Exams', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Previous assessments.' },
+              { title: 'Safety Guidelines', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Protocol summaries.' },
+              { title: 'Case Studies in Diagnostics', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Real lab scenarios.' }
             ];
 
-            // Add 8 units, each with 5 documents (clear existing docs in each unit)
-            for (let u = 0; u < 8; u++) {
-              const unitId = `unit${u + 1}`;
-              const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-              await setDoc(unitDocRef, clt11Units[u], { merge: false });
-              console.log(`Added unit ${clt11Units[u].name} to CLT1:1`);
+            // For each semester in this course
+            for (const semesterId of courseConfig.semesters) {
+              console.log(`Processing semester ${semesterId} for ${courseConfig.name}...`);
 
-              const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-              const existingDocsSnapshot = await getDocs(docsRef);
-              if (existingDocsSnapshot.size > 0) {
-                const deleteDocsBatch = writeBatch(db);
-                existingDocsSnapshot.docs.forEach((doc) => {
-                  deleteDocsBatch.delete(doc.ref);
-                });
-                await deleteDocsBatch.commit();
-                console.log(`Cleared existing documents for unit ${unitId} in CLT1:1`);
+              // Check if semester exists
+              const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
+              const semesterDocSnap = await getDoc(semesterDocRef);
+              if (!semesterDocSnap.exists()) {
+                console.log(`Semester ${semesterId} not found in ${courseConfig.name}. Skipping.`);
+                continue;
               }
 
-              for (const docData of sampleDocuments) {
-                await addDoc(docsRef, docData);
+              // Clear all existing units in this semester
+              const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+              const existingUnitsSnapshot = await getDocs(unitsRef);
+              if (existingUnitsSnapshot.size > 0) {
+                const deleteBatch = writeBatch(db);
+                for (const doc of existingUnitsSnapshot.docs) {
+                  const unitDocsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${doc.id}/documents`);
+                  const unitDocsSnapshot = await getDocs(unitDocsRef);
+                  unitDocsSnapshot.docs.forEach((docSnap) => {
+                    deleteBatch.delete(docSnap.ref);
+                  });
+                  deleteBatch.delete(doc.ref);
+                }
+                await deleteBatch.commit();
+                console.log(`Cleared ${existingUnitsSnapshot.size} units and documents in ${semesterId}`);
               }
-              console.log(`Added 5 documents to unit ${unitId} in CLT1:1`);
+
+              // Seed 9 units for this semester
+              for (let u = 0; u < 9; u++) {
+                const unitId = `unit${u + 1}`;
+                const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+                await setDoc(unitDocRef, sampleUnits[u % sampleUnits.length], { merge: false });
+                console.log(`Added unit ${sampleUnits[u % sampleUnits.length].name} to ${semesterId}`);
+
+                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+                for (const docData of sampleDocuments) {
+                  await addDoc(docsRef, docData);
+                }
+                console.log(`Added 5 documents to unit ${unitId} in ${semesterId}`);
+              }
             }
 
-            // Mark as seeded
-            localStorage.setItem('clt1_1_seeded', 'true');
-            console.log('CLT1:1 seeding completed successfully (one-time).');
-            alert('Successfully added Diploma in Clinical Laboratory Technology course (if needed), cleared existing units, and seeded 8 new course units to CLT1:1 semester! The button will now be hidden. Refresh to see changes.');
+            // Mark as seeded (commented to allow re-run if needed)
+            // localStorage.setItem('cml_all_seeded', 'true');
+            console.log('Certificate in Medical Lab Science all semesters seeding completed successfully (one-time).');
+            alert(`Successfully seeded 9 course units with 5 documents each for all existing semesters in ${courseConfig.name}! Refresh to see changes.`);
             return true;
           } catch (error) {
-            console.error('CLT1:1 seeding error:', error);
+            console.error('Certificate in Medical Lab Science seeding error:', error);
             alert(`Seeding failed: ${error.message}. Check console for details.`);
             return false;
           }
         }
-    // Function to seed specific semesters for Pharmacy course
-    async function seedSpecificSemesters() {
-      if (localStorage.getItem('specificSemestersSeeded')) {
-        console.log('Specific semesters already seeded. Skipping.');
-        return;
-      }
-
-      // Temporarily bypass localStorage to allow re-seeding
-      // localStorage.removeItem('specificSemestersSeeded'); // Uncomment to force re-run
-
-      try {
-        console.log('Starting/Forcing specific seeding for CPHA,DCM & DPHA semesters...');
-
-        // Find Pharmacy course,clinical medicine ,medical laboratory science,medical records
-        const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-        const coursesSnapshot = await getDocs(coursesRef);
-        // Find diploma pharmacy course specifically for DPHA seeding
-        const diplomaPharmacyCourses = coursesSnapshot.docs.filter(doc =>
-          doc.data().name &&
-          doc.data().name.toLowerCase().includes('diploma') &&
-          doc.data().name.toLowerCase().includes('pharmacy')
-        );
-        
-        if (diplomaPharmacyCourses.length === 0) {
-          console.log('No Diploma Pharmacy course found for specific DPHA seeding.');
-          return;
-        }
-
-        // Process each diploma pharmacy course (in case multiple)
-        for (const pharmacyCourse of diplomaPharmacyCourses) {
-          const courseId = pharmacyCourse.id;
-          console.log(`Found Diploma Pharmacy course for specific seeding: ${courseId} (${pharmacyCourse.data().name})`);
-
-          const targetSemesters = ['CPHA1:2', 'CPHA2:1', 'CPHA2:2', 'DPHA1:1', 'DPHA1:2', 'DPHA2:1', 'DPHA2:2', 'DPHA3:1', 'DPHA3:2', 'DCM1:1', 'DCM1:2', 'DCM2:1', 'DCM2:2', 'DCM3:1', 'DCM3:2'];
-
-          // Force seed 10 units for DPHA1:1 (10 base + 0 more), 10 for others; each with 10 documents
-          const baseSampleUnits = [
-            { name: 'Human Anatomy', description: 'Structure of the human body.' },
-            { name: 'Physiology Fundamentals', description: 'Functions of body systems.' },
-            { name: 'Basic Pharmacology', description: 'Introduction to drugs and effects.' },
-            { name: 'Clinical Procedures', description: 'Patient assessment techniques.' },
-            { name: 'Medical Ethics and Law', description: 'Ethical standards in practice.' },
-            { name: 'Pathophysiology', description: 'Mechanisms of disease.' },
-            { name: 'Microbiology Basics', description: 'Infectious agents and control.' },
-            { name: 'Laboratory Techniques', description: 'Sample analysis methods.' },
-            { name: 'Patient Care Skills', description: 'Nursing and support procedures.' },
-            { name: 'Health Informatics', description: 'Medical record management.' }
-          ];
-
-          const additionalSampleUnits = [
-            { name: 'Advanced Pharmacology', description: 'In-depth drug interactions.' },
-            { name: 'Diagnostic Imaging', description: 'X-ray and ultrasound basics.' },
-            { name: 'Surgical Principles', description: 'Intro to surgical techniques.' },
-            { name: 'Public Health', description: 'Community health strategies.' },
-            { name: 'Nutrition in Medicine', description: 'Dietary impacts on health.' },
-            { name: 'Emergency Medicine', description: 'First response procedures.' },
-            { name: 'Research Methods', description: 'Scientific inquiry in healthcare.' }
-          ];
-
-          const sampleDocuments = [
-            { title: 'Lecture Notes Chapter 1', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Introduction to module concepts.' },
-            { title: 'Past Paper 2023', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam questions from previous year.' },
-            { title: 'Study Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key summaries for revision.' },
-            { title: 'Diagrams and Charts', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Visual learning aids.' },
-            { title: 'Case Studies', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practical examples.' },
-            { title: 'Glossary of Terms', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key terminology defined.' },
-            { title: 'Lab Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Laboratory procedures.' },
-            { title: 'Review Questions', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Self-assessment materials.' },
-            { title: 'Midterm Prep Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam preparation guide.' },
-            { title: 'References', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Further reading sources.' }
-          ];
-
-          for (const semesterId of targetSemesters) {
-            console.log(`Processing semester ${semesterId}...`);
-
-            // Create semester if it doesn't exist
-            const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
-            const semesterDocSnap = await getDoc(semesterDocRef);
-            if (!semesterDocSnap.exists()) {
-              const semesterName = semesterId.replace('DPHA', 'Diploma Pharmacy ').replace('DCM', 'Diploma Clinical Medicine ').replace('CPHA', 'Certificate Pharmacy ');
-              await setDoc(semesterDocRef, {
-                name: semesterName,
-                description: `Content for ${semesterName}.`
-              });
-              console.log(`Created semester ${semesterId} for course ${courseId}`);
-            }
-
-            const sampleUnits = [...baseSampleUnits, ...additionalSampleUnits];
-            const numUnits = semesterId === 'DPHA1:1' ? 17 : 10;
-
-            const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
-            const existingUnitsSnapshot = await getDocs(unitsRef);
-            if (existingUnitsSnapshot.size > 0) {
-              const deleteBatch = writeBatch(db);
-              existingUnitsSnapshot.docs.forEach((doc) => {
-                deleteBatch.delete(doc.ref);
-              });
-              await deleteBatch.commit();
-              console.log(`Deleted existing units in semester ${semesterId} for course ${courseId}`);
-            }
-
-            for (let u = 0; u < numUnits; u++) {
-              const unitId = `unit${u + 10}`;
-              const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-              await setDoc(unitDocRef, sampleUnits[u], { merge: false });
-              console.log(`Forced unit ${sampleUnits[u].name} in semester ${semesterId} for course ${courseId}`);
-
-              const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-              const existingDocsSnapshot = await getDocs(docsRef);
-              if (existingDocsSnapshot.size > 0) {
-                const deleteDocsBatch = writeBatch(db);
-                existingDocsSnapshot.docs.forEach((doc) => {
-                  deleteDocsBatch.delete(doc.ref);
-                });
-                await deleteDocsBatch.commit();
-                console.log(`Deleted existing documents for unit ${unitId} in semester ${semesterId} for course ${courseId}`);
-              }
-
-              for (const docData of sampleDocuments) {
-                await addDoc(docsRef, docData);
-              }
-              console.log(`Forced 10 documents to unit ${unitId} in semester ${semesterId} for course ${courseId}`);
-            }
-          }
-        }
-
-      } catch (error) {
-        console.error('Specific seeding error:', error);
-        alert(`Specific seeding failed: ${error.message}. Check console.`);
-      }
-    }
 
     // Initialize App on load
     document.addEventListener('DOMContentLoaded', () => {
@@ -1365,80 +1324,8 @@ function updateUserInfo() {
             updateUserInfo();
             updateAuthUI(!user.isAnonymous, user);
 
-            // Targeted seeding for specific semesters like DCM3:1 and DCM3:2 (one-time, preserves existing data)
-            setTimeout(async () => {
-              try {
-                const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-                const coursesSnapshot = await getDocs(coursesRef);
-                const clinicalMedicineCourses = coursesSnapshot.docs.filter(doc =>
-                  doc.data().name?.toLowerCase().includes('diploma') &&
-                  (doc.data().name?.toLowerCase().includes('clinical') || doc.data().name?.toLowerCase().includes('medicine'))
-                );
-
-                if (clinicalMedicineCourses.length > 0) {
-                  const courseId = clinicalMedicineCourses[0].id; // Assume first matching course
-                  const targetSemesters = ['DCM3:1', 'DCM3:2'];
-
-                  const baseSampleUnits = [
-                    { name: 'Advanced Clinical Skills', description: 'Advanced patient care techniques.' },
-                    { name: 'Specialized Diagnostics', description: 'In-depth diagnostic methods.' },
-                    { name: 'Therapeutic Interventions', description: 'Treatment strategies.' },
-                    { name: 'Medical Research', description: 'Research in clinical practice.' },
-                    { name: 'Public Health Policy', description: 'Health policy and ethics.' },
-                    { name: 'Emergency Response', description: 'Crisis management.' },
-                    { name: 'Surgical Assistance', description: 'Supporting surgical procedures.' },
-                    { name: 'Community Medicine', description: 'Community health initiatives.' },
-                    { name: 'Quality Assurance', description: 'Healthcare quality standards.' },
-                    { name: 'Professional Development', description: 'Career growth in medicine.' }
-                  ];
-
-                  const sampleDocuments = [
-                    { title: 'Advanced Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key concepts overview.' },
-                    { title: 'Case Study Examples', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Real-world applications.' },
-                    { title: 'Past Exam Papers', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practice questions.' },
-                    { title: 'Study Guide Summary', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Quick revision notes.' },
-                    { title: 'Reference Materials', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Additional resources.' }
-                  ];
-
-                  for (const semesterId of targetSemesters) {
-                    const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
-                    const existingUnitsSnapshot = await getDocs(unitsRef);
-                    if (existingUnitsSnapshot.size === 0) {
-                      console.log(`Seeding 10 units for empty semester ${semesterId} in course ${courseId}`);
-
-                      for (let u = 0; u < 10; u++) {
-                        const unitId = `unit${u + 1}`;
-                        const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-                        await setDoc(unitDocRef, baseSampleUnits[u], { merge: false });
-                        console.log(`Added unit ${baseSampleUnits[u].name} to semester ${semesterId}`);
-
-                        const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-
-                        for (const docData of sampleDocuments) {
-                          await addDoc(docsRef, docData);
-                        }
-                        console.log(`Added 5 documents to unit ${unitId} in semester ${semesterId}`);
-                      }
-                    } else {
-                      console.log(`Semester ${semesterId} already has units; skipping.`);
-                    }
-                  }
-
-                  console.log('Targeted seeding for DCM3:1 and DCM3:2 completed.');
-                }
-              } catch (error) {
-                console.error('Targeted seeding error:', error);
-              }
-            }, 2000);
-
             fetchCourses();
 
-            // Seed specific semesters after main seeding (commented out)
-            /*
-            setTimeout(async () => {
-              await seedSpecificSemesters();
-            }, 10000);
-            */
           } else {
             updateUserInfo();
             updateAuthUI(false, null);
@@ -1574,6 +1461,15 @@ function updateUserInfo() {
             } else if (e.target.id === 'logout-button') {
               if (confirm('Are you sure you want to logout?')) {
                 auth.signOut();
+              }
+            } else if (e.target.id === 'seed-clt-button') {
+              if (confirm('This will add 5 new documents to each existing course unit in Diploma in Pharmacy semesters (DPHA1:1 through DPHA3:2). This action cannot be undone. Proceed?')) {
+                e.target.disabled = true;
+                e.target.textContent = 'Seeding...';
+                seedCLT10Units().finally(() => {
+                  e.target.disabled = false;
+                  e.target.textContent = 'Seed CLT';
+                });
               }
             } else if (e.target.id === 'close-login-modal' || e.target.closest('#menu-overlay')) {
               hideModal(loginModal);
