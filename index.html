@@ -1,557 +1,796 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studypedia Uganda</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        
-        .active-menu {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-            font-weight: 500;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .delay-500 { animation-delay: 0.5s; }
-        .transition-transform { transition-property: transform; }
-        .duration-300 { transition-duration: 300ms; }
-        .ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-        .transition-opacity { transition-property: opacity; }
-        .duration-1000 { transition-duration: 1000ms; }
-        .transition-colors { transition-property: background-color, border-color, color, fill, stroke; }
-    
-        /* Sidebar scroll fix */
-        #sidebar {
-            pointer-events: auto;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        }
-    
-        #sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-    
-        #sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-    
-        #sidebar::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-    
-        #sidebar::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studypedia Uganda</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+
+    .active-menu {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 500;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .delay-100 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-400 {
+      animation-delay: 0.4s;
+    }
+
+    .delay-500 {
+      animation-delay: 0.5s;
+    }
+
+    .transition-transform {
+      transition-property: transform;
+    }
+
+    .duration-300 {
+      transition-duration: 300ms;
+    }
+
+    .ease-in-out {
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .transition-opacity {
+      transition-property: opacity;
+    }
+
+    .duration-1000 {
+      transition-duration: 1000ms;
+    }
+
+    .transition-colors {
+      transition-property: background-color, border-color, color, fill, stroke;
+    }
+
+    /* Sidebar scroll fix */
+    #sidebar {
+      pointer-events: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      /* Smooth scrolling on iOS */
+    }
+
+    #sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #sidebar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+  </style>
 </head>
+
 <body class="bg-gray-50">
-    <!-- Main App Container -->
-    <div id="app" class="relative flex flex-col min-h-screen font-sans">
-        <!-- Background Images -->
-        <div id="bg-image" class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"></div>
+  <!-- Main App Container -->
+  <div id="app" class="relative flex flex-col min-h-screen font-sans">
+    <!-- Background Images -->
+    <div id="bg-image" class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"></div>
 
-        <!-- Semi-transparent Overlay -->
-        <div class="absolute inset-0 bg-blue-900 opacity-70"></div>
+    <!-- Semi-transparent Overlay -->
+    <div class="absolute inset-0 bg-blue-900 opacity-70"></div>
 
-        <!-- Main Content Wrapper -->
-        <div class="relative z-10 flex flex-col min-h-screen">
-            <header class="bg-white shadow-md p-4 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <button id="menu-button" class="focus:outline-none p-2 rounded-md hover:bg-gray-100 transition-colors">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                        </svg>
-                    </button>
-                    <button id="home-button" class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
-                        Studypedia
-                    </button>
-                    <!-- AdSense Leaderboard Ad Space -->
-                    <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gray-200 rounded"></div>
-                </div>
-                <div class="flex space-x-2">
-                    <button id="back-button" class="hidden bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Sidebar Menu -->
-            <div id="sidebar" class="fixed top-0 left-0 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 overflow-y-auto">
-                <div class="p-4 flex justify-end">
-                    <button id="close-menu-button" class="text-gray-600 hover:text-gray-800 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <nav class="p-4">
-                    <ul class="space-y-2">
-                        <li>
-                            <h4 class="text-lg font-bold text-gray-800 mb-2">Courses</h4>
-                            <ul id="course-list" class="pl-4 space-y-2">
-                                <!-- Courses will be dynamically injected here -->
-                            </ul>
-                        </li>
-                        <li class="pt-4 border-t border-gray-100">
-                            <button id="about-nav-button" class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">About Us</button>
-                        </li>
-                        <li>
-                            <button id="privacy-nav-button" class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">Privacy Policy</button>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- AdSense Sidebar Skyscraper Ad Space -->
-                <div id="sidebar-ad" class="p-4 bg-gray-100 rounded-lg mt-4">
-                    <div class="w-full h-80 bg-gray-200 rounded"></div>
-                </div>
-            </div>
-
-            <!-- Main Content Area -->
-            <main id="main-content" class="flex-grow p-4 md:p-8 flex items-center justify-center">
-                <!-- Content will be dynamically injected here -->
-            </main>
+    <!-- Main Content Wrapper -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+      <header class="bg-white shadow-md p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <button id="menu-button" class="focus:outline-none p-2 rounded-md hover:bg-gray-100 transition-colors">
+            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+          <button id="home-button" class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
+            Studypedia
+          </button>
+          <!-- Auth Buttons -->
+          <div id="auth-buttons" class="flex items-center space-x-2 ml-4">
+            <button id="login-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+              Login
+            </button>
+            <button id="register-button" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+              Register
+            </button>
+            <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors hidden">
+              Logout
+            </button>
+          </div>
+          <!-- AdSense Leaderboard Ad Space -->
+          <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gray-200 rounded"></div>
         </div>
+        <div class="flex space-x-2">
+          <button id="back-button"
+            class="hidden bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+              </path>
+            </svg>
+          </button>
+        </div>
+      </header>
 
-        <!-- Overlay for menu -->
-        <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+      <!-- Sidebar Menu -->
+      <div id="sidebar"
+        class="fixed top-0 left-0 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out bg-white w-64 shadow-xl z-50 overflow-y-auto">
+        <div class="p-4 flex justify-end">
+          <button id="close-menu-button" class="text-gray-600 hover:text-gray-800 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <nav class="p-4">
+          <ul class="space-y-2">
+            <li>
+              <h4 class="text-lg font-bold text-gray-800 mb-2">Courses</h4>
+              <ul id="course-list" class="pl-4 space-y-2">
+                <!-- Courses will be dynamically injected here -->
+              </ul>
+
+              <!-- User Profile Section -->
+              <li id="user-profile-section" class="pt-4 border-t border-gray-100">
+                <div id="user-info" class="text-sm text-gray-600 py-2 px-3 rounded-lg bg-gray-50">
+                  Loading user...
+                </div>
+              </li>
+            </li>
+            <li class="pt-4 border-t border-gray-100">
+              <button id="about-nav-button"
+                class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">About
+                Us</button>
+            </li>
+            <li>
+              <button id="privacy-nav-button"
+                class="w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">Privacy
+                Policy</button>
+            </li>
+          </ul>
+        </nav>
+        <!-- AdSense Sidebar Skyscraper Ad Space -->
+        <div id="sidebar-ad" class="p-4 bg-gray-100 rounded-lg mt-4">
+          <div class="w-full h-80 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <main id="main-content" class="flex-grow p-4 md:p-8 flex items-center justify-center">
+        <!-- Content will be dynamically injected here -->
+      </main>
     </div>
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, writeBatch, setLogLevel, onSnapshot, query, collectionGroup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    <!-- Overlay for menu -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
-        // --- Firebase Configuration ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
-            authDomain: "studypedia-app.firebaseapp.com",
-            projectId: "studypedia-app",
-            storageBucket: "studypedia-app.firebasestorage.app",
-            messagingSenderId: "793261754970",
-            appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
-            measurementId: "G-6CTGP0MF8Y"
-        };
-        
-        // These global variables are provided by the canvas environment.
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Login</h3>
+          <form id="login-form">
+            <div class="mb-4">
+              <label for="login-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input type="email" id="login-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your email">
+            </div>
+            <div class="mb-6">
+              <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" id="login-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors">Login</button>
+          </form>
+          <p class="mt-4 text-center text-sm text-gray-600">
+            Don't have an account? <button id="switch-to-register" class="text-blue-500 hover:underline">Register here</button>
+          </p>
+          <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        let db;
-        let auth;
-        let user;
-        let isMenuOpen = false;
-        let currentPage = 'home';
-        let selectedCourse = null;
-        let selectedSemester = null;
-        let selectedCourseUnit = null;
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Register</h3>
+          <form id="register-form">
+            <div class="mb-4">
+              <label for="register-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input type="email" id="register-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your email">
+            </div>
+            <div class="mb-4">
+              <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" id="register-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" minlength="6" placeholder="At least 6 characters">
+            </div>
+            <div class="mb-6">
+              <label for="register-confirm-password" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+              <input type="password" id="register-confirm-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Confirm your password">
+            </div>
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors">Register</button>
+          </form>
+          <p class="mt-4 text-center text-sm text-gray-600">
+            Already have an account? <button id="switch-to-login" class="text-blue-500 hover:underline">Login here</button>
+          </p>
+          <button id="close-register-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        let courses = [];
-        let semesters = [];
-        let courseUnits = [];
-        let documents = [];
+  <!-- Firebase SDK Imports -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, deleteDoc, writeBatch, setLogLevel, onSnapshot, query, collectionGroup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-        // UI elements
-        const mainContent = document.getElementById('main-content');
-        const sidebar = document.getElementById('sidebar');
-        const menuOverlay = document.getElementById('menu-overlay');
-        const backButton = document.getElementById('back-button');
-        const courseList = document.getElementById('course-list');
-        const bgImageDiv = document.getElementById('bg-image');
-        const coursesButton = document.getElementById('courses-button');
-        const aboutButton = document.getElementById('about-button');
-        const privacyButton = document.getElementById('privacy-button');
-        
-        const bgImages = Array.from({ length: 30 }, (_, i) => `https://picsum.photos/1920/1080?random=${i + 1}&blur=2`);
-        let bgImageIndex = 0;
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZLoJZVVCVAWafhd4Oh8bhEGV4waN1B5g",
+      authDomain: "studypedia-app.firebaseapp.com",
+      projectId: "studypedia-app",
+      storageBucket: "studypedia-app.firebasestorage.app",
+      messagingSenderId: "793261754970",
+      appId: "1:793261754970:web:49bbd2bea1ab4d46486663",
+      measurementId: "G-6CTGP0MF8Y"
+    };
 
-        function cycleBgImages() {
-            setInterval(() => {
-                bgImageIndex = (bgImageIndex + 1) % bgImages.length;
-                bgImageDiv.style.backgroundImage = `url('${bgImages[bgImageIndex]}')`;
-            }, 20000); // Change image every 20 seconds
+    // These global variables are provided by the canvas environment.
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    let db;
+    let auth;
+    let user;
+    let isMenuOpen = false;
+    let currentPage = 'home';
+    let selectedCourse = null;
+    let selectedSemester = null;
+    let selectedCourseUnit = null;
+
+    let courses = [];
+    let semesters = [];
+    let courseUnits = [];
+    let documents = [];
+
+    // UI elements
+    const mainContent = document.getElementById('main-content');
+    const sidebar = document.getElementById('sidebar');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const backButton = document.getElementById('back-button');
+    const courseList = document.getElementById('course-list');
+    const bgImageDiv = document.getElementById('bg-image');
+    const coursesButton = document.getElementById('courses-button');
+    const aboutButton = document.getElementById('about-button');
+    const privacyButton = document.getElementById('privacy-button');
+
+    // Auth UI elements
+    const loginButton = document.getElementById('login-button');
+    const registerButton = document.getElementById('register-button');
+    const logoutButton = document.getElementById('logout-button');
+    const loginModal = document.getElementById('login-modal');
+    const registerModal = document.getElementById('register-modal');
+    const closeLoginModal = document.getElementById('close-login-modal');
+    const closeRegisterModal = document.getElementById('close-register-modal');
+    const switchToRegister = document.getElementById('switch-to-register');
+    const switchToLogin = document.getElementById('switch-to-login');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+// Auth functions
+async function registerUser(email, password) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    console.log('User registered:', userCredential.user);
+    alert('Registration successful! You can now login.');
+    hideModal(registerModal);
+    return userCredential.user;
+  } catch (error) {
+    console.error('Registration error:', error);
+    alert('Registration failed: ' + error.message);
+  }
+}
+
+async function loginUser(email, password) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log('User logged in:', userCredential.user);
+    alert('Login successful!');
+    hideModal(loginModal);
+    return userCredential.user;
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Login failed: ' + error.message);
+  }
+}
+
+async function logoutUser() {
+  try {
+    await signOut(auth);
+    console.log('User logged out');
+    alert('Logged out successfully.');
+  } catch (error) {
+    console.error('Logout error:', error);
+    alert('Logout failed: ' + error.message);
+  }
+}
+
+function updateAuthUI(isLoggedIn, user) {
+  if (isLoggedIn && user) {
+    loginButton.classList.add('hidden');
+    registerButton.classList.add('hidden');
+    logoutButton.classList.remove('hidden');
+    logoutButton.textContent = `Logout (${user.email || user.uid.substring(0,8)}...)`;
+  } else {
+    loginButton.classList.remove('hidden');
+    registerButton.classList.remove('hidden');
+    logoutButton.classList.add('hidden');
+  }
+}
+
+    // Modal functions
+    function showModal(modal) {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+function updateUserInfo() {
+  const userInfo = document.getElementById('user-info');
+  if (user && !user.isAnonymous) {
+    userInfo.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span>Logged in as: ${user.email}</span>
+      </div>
+    `;
+    userInfo.classList.remove('bg-gray-50');
+    userInfo.classList.add('bg-blue-50', 'border', 'border-blue-200');
+  } else if (user && user.isAnonymous) {
+    userInfo.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span>Guest User</span>
+      </div>
+    `;
+    userInfo.classList.remove('bg-blue-50', 'border', 'border-blue-200');
+    userInfo.classList.add('bg-gray-50');
+  } else {
+    userInfo.textContent = 'Loading user...';
+  }
+}
+    function hideModal(modal) {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+
+    const bgImages = Array.from({ length: 30 }, (_, i) => `https://picsum.photos/1920/1080?random=${i + 1}&blur=2`);
+    let bgImageIndex = 0;
+
+    function cycleBgImages() {
+      setInterval(() => {
+        bgImageIndex = (bgImageIndex + 1) % bgImages.length;
+        bgImageDiv.style.backgroundImage = `url('${bgImages[bgImageIndex]}')`;
+      }, 20000); // Change image every 20 seconds
+    }
+
+    // State Management and Rendering Functions
+    function toggleMenu() {
+      isMenuOpen = !isMenuOpen;
+      sidebar.classList.toggle('-translate-x-full', !isMenuOpen);
+      menuOverlay.classList.toggle('hidden', !isMenuOpen);
+      if (isMenuOpen) {
+        document.body.style.overflow = 'hidden'; // Lock background scroll
+        fetchCourses();  // Load courses when menu opens
+      } else {
+        document.body.style.overflow = ''; // Restore scroll
+      }
+
+      // Ensure sidebar scroll works by preventing wheel event bubbling
+      const wheelHandler = function (e) {
+        e.stopPropagation();
+      };
+      if (isMenuOpen) {
+        sidebar.addEventListener('wheel', wheelHandler, { passive: false });
+      } else {
+        sidebar.removeEventListener('wheel', wheelHandler);
+      }
+    }
+
+    function goToPage(page, keepOpen = false) {
+      currentPage = page;
+      if (!keepOpen) {
+        // Explicitly close menu on navigation unless keeping open
+        isMenuOpen = false;
+        sidebar.classList.add('-translate-x-full');
+        menuOverlay.classList.add('hidden');
+      }
+      backButton.classList.toggle('hidden', page === 'home' || page === 'courses');
+      if (page === 'courses') {
+        fetchCourses();
+      }
+      renderContent();
+    }
+
+    function handleCourseSelection(courseId) {
+      selectedCourse = courseId;
+      selectedSemester = null;
+      selectedCourseUnit = null;
+      // For main page, expand semesters inline (prioritize over sidebar)
+      const mainCourseItem = document.querySelector('.course-item-main[data-course-id="' + courseId + '"]');
+      if (mainCourseItem) {
+        toggleMainCourseSemesters(courseId);
+        return;
+      }
+      // For sidebar, expand semesters in sidebar
+      const sidebarCourseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
+      if (sidebarCourseItem) {
+        toggleCourseSemesters(courseId);
+        return;
+      }
+      // Fallback navigation
+      goToPage('course-semesters');
+      fetchSemesters();
+    }
+
+    window.handleCourseSelection = handleCourseSelection;
+
+    function toggleCourseSemesters(courseId) {
+      const courseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
+      if (courseItem) {
+        const semestersList = courseItem.querySelector('.semesters-list');
+        const arrow = courseItem.querySelector('.arrow');
+        if (semestersList) {
+          const isVisible = semestersList.classList.contains('hidden');
+          semestersList.classList.toggle('hidden', !isVisible);
+          if (isVisible) {
+            // Load semesters if not loaded
+            loadCourseSemestersInSidebar(courseId);
+          }
         }
+      }
+    }
 
-        // State Management and Rendering Functions
-        function toggleMenu() {
-            isMenuOpen = !isMenuOpen;
-            sidebar.classList.toggle('-translate-x-full', !isMenuOpen);
-            menuOverlay.classList.toggle('hidden', !isMenuOpen);
-            if (isMenuOpen) {
-                document.body.style.overflow = 'hidden'; // Lock background scroll
-                fetchCourses();  // Load courses when menu opens
-            } else {
-                document.body.style.overflow = ''; // Restore scroll
-            }
-    
-            // Ensure sidebar scroll works by preventing wheel event bubbling
-            const wheelHandler = function(e) {
-                e.stopPropagation();
-            };
-            if (isMenuOpen) {
-                sidebar.addEventListener('wheel', wheelHandler, { passive: false });
-            } else {
-                sidebar.removeEventListener('wheel', wheelHandler);
-            }
+    function toggleMainCourseSemesters(courseId) {
+      const courseItem = document.querySelector('.course-item-main[data-course-id="' + courseId + '"]');
+      if (courseItem) {
+        const semestersList = courseItem.querySelector('.semesters-list-main');
+        if (semestersList) {
+          const isVisible = semestersList.classList.contains('hidden');
+          semestersList.classList.toggle('hidden', !isVisible);
+          if (isVisible) {
+            // Load semesters if not loaded
+            loadMainCourseSemesters(courseId);
+          } else {
+            // Clear semesters when collapsing to save space
+            semestersList.innerHTML = '';
+          }
         }
+      }
+    }
 
-        function goToPage(page, keepOpen = false) {
-            currentPage = page;
-            if (!keepOpen) {
-                // Explicitly close menu on navigation unless keeping open
-                isMenuOpen = false;
-                sidebar.classList.add('-translate-x-full');
-                menuOverlay.classList.add('hidden');
-            }
-            backButton.classList.toggle('hidden', page === 'home' || page === 'courses');
-            if (page === 'courses') {
-                fetchCourses();
-            }
-            renderContent();
-        }
-
-        function handleCourseSelection(courseId) {
-            selectedCourse = courseId;
-            selectedSemester = null;
-            selectedCourseUnit = null;
-            // For main page, expand semesters inline (prioritize over sidebar)
-            const mainCourseItem = document.querySelector('.course-item-main[data-course-id="' + courseId + '"]');
-            if (mainCourseItem) {
-                toggleMainCourseSemesters(courseId);
-                return;
-            }
-            // For sidebar, expand semesters in sidebar
-            const sidebarCourseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
-            if (sidebarCourseItem) {
-                toggleCourseSemesters(courseId);
-                return;
-            }
-            // Fallback navigation
-            goToPage('course-semesters');
-            fetchSemesters();
-        }
-
-        window.handleCourseSelection = handleCourseSelection;
-        
-        function toggleCourseSemesters(courseId) {
-            const courseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
-            if (courseItem) {
-                const semestersList = courseItem.querySelector('.semesters-list');
-                const arrow = courseItem.querySelector('.arrow');
-                if (semestersList) {
-                    const isVisible = semestersList.classList.contains('hidden');
-                    semestersList.classList.toggle('hidden', !isVisible);
-                    if (isVisible) {
-                        // Load semesters if not loaded
-                        loadCourseSemestersInSidebar(courseId);
-                    }
-                }
-            }
-        }
-
-        function toggleMainCourseSemesters(courseId) {
-            const courseItem = document.querySelector('.course-item-main[data-course-id="' + courseId + '"]');
-            if (courseItem) {
-                const semestersList = courseItem.querySelector('.semesters-list-main');
-                if (semestersList) {
-                    const isVisible = semestersList.classList.contains('hidden');
-                    semestersList.classList.toggle('hidden', !isVisible);
-                    if (isVisible) {
-                        // Load semesters if not loaded
-                        loadMainCourseSemesters(courseId);
-                    } else {
-                        // Clear semesters when collapsing to save space
-                        semestersList.innerHTML = '';
-                    }
-                }
-            }
-        }
-
-        async function loadMainCourseSemesters(courseId) {
-            const semestersList = document.querySelector(`.course-item-main[data-course-id="${courseId}"] .semesters-list-main`);
-            if (semestersList && semestersList.children.length === 0) {
-                try {
-                    semestersList.innerHTML = renderLoading('Loading semesters...');
-                    const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`);
-                    const snapshot = await getDocs(semestersRef);
-                    const semestersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if (semestersData.length > 0) {
-                        semestersList.innerHTML = semestersData.map(sem => `
+    async function loadMainCourseSemesters(courseId) {
+      const semestersList = document.querySelector(`.course-item-main[data-course-id="${courseId}"] .semesters-list-main`);
+      if (semestersList && semestersList.children.length === 0) {
+        try {
+          semestersList.innerHTML = renderLoading('Loading semesters...');
+          const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`);
+          const snapshot = await getDocs(semestersRef);
+          const semestersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          semesters = semestersData; // Update global semesters array for consistent rendering
+          if (semestersData.length > 0) {
+            semestersList.innerHTML = semestersData.map(sem => `
                             <div class="select-semester-main w-full text-left bg-gray-50 text-gray-700 py-3 px-4 rounded-lg shadow-sm hover:bg-gray-100 cursor-pointer transition-all duration-200 ${selectedSemester === sem.id ? 'bg-blue-100' : ''}" data-semester-id="${sem.id}" data-course-id="${courseId}" style="user-select: none;">
                                 ${sem.name}
                             </div>
                         `).join('');
-                    } else {
-                        semestersList.innerHTML = '<p class="text-center text-gray-500 py-4">No semesters available for this course.</p>';
-                    }
-                } catch (error) {
-                    console.error('Error loading semesters on main page:', error);
-                    semestersList.innerHTML = '<p class="text-center text-red-500 py-4">Failed to load semesters. Please try again.</p>';
-                }
-            }
+          } else {
+            semestersList.innerHTML = '<p class="text-center text-gray-500 py-4">No semesters available for this course.</p>';
+          }
+        } catch (error) {
+          console.error('Error loading semesters on main page:', error);
+          semestersList.innerHTML = '<p class="text-center text-red-500 py-4">Failed to load semesters. Please try again.</p>';
         }
+      }
+    }
 
-        async function loadCourseSemestersInSidebar(courseId) {
-            const semestersList = document.querySelector(`.course-item[data-course-id="${courseId}"] .semesters-list`);
-            if (semestersList && semestersList.children.length === 0) {
-                try {
-                    const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`);
-                    const snapshot = await getDocs(semestersRef);
-                    const semesters = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    semestersList.innerHTML = semesters.map(sem => `
+    async function loadCourseSemestersInSidebar(courseId) {
+      const semestersList = document.querySelector(`.course-item[data-course-id="${courseId}"] .semesters-list`);
+      if (semestersList && semestersList.children.length === 0) {
+        try {
+          const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`);
+          const snapshot = await getDocs(semestersRef);
+          const localSemesters = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          semesters = localSemesters; // Update global semesters array for consistent rendering
+          semestersList.innerHTML = localSemesters.map(sem => `
                         <li class="pl-6 py-1">
                             <button class="sidebar-semester w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-1 px-2 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${selectedSemester === sem.id ? 'active-menu' : ''}" data-semester-id="${sem.id}" data-course-id="${courseId}">
                                 ${sem.name}
                             </button>
                         </li>
                     `).join('');
-                } catch (error) {
-                    console.error('Error loading semesters in sidebar:', error);
-                    semestersList.innerHTML = '<li class="text-red-500 pl-6">Error loading semesters</li>';
-                }
-            }
+        } catch (error) {
+          console.error('Error loading semesters in sidebar:', error);
+          semestersList.innerHTML = '<li class="text-red-500 pl-6">Error loading semesters</li>';
         }
-        
-        function handleSemesterSelection(semesterId, fromSidebar = false, fromMain = false) {
-            selectedSemester = semesterId;
-            selectedCourseUnit = null;
-            if (fromSidebar) {
-                // From sidebar, navigate but keep menu open
-                goToPage('semester-courseunits', true);
-                fetchCourseUnits();
-            } else if (fromMain) {
-                // From main page, navigate and close any expansions if needed
-                goToPage('semester-courseunits');
-                fetchCourseUnits();
-            } else {
-                goToPage('semester-courseunits');
-                fetchCourseUnits();
-            }
+      }
+    }
+
+    function handleSemesterSelection(semesterId, fromSidebar = false, fromMain = false) {
+      selectedSemester = semesterId;
+      selectedCourseUnit = null;
+      if (fromSidebar) {
+        // From sidebar, navigate but keep menu open
+        goToPage('semester-courseunits', true);
+        fetchCourseUnits();
+      } else if (fromMain) {
+        // From main page, navigate and close any expansions if needed
+        goToPage('semester-courseunits');
+        fetchCourseUnits();
+      } else {
+        goToPage('semester-courseunits');
+        fetchCourseUnits();
+      }
+    }
+
+    async function loadSemesterCourseUnitsInSidebar(courseId, semesterId) {
+      // For now, navigate to main page; can extend to nested if needed
+      goToPage('semester-courseunits');
+      fetchCourseUnits();
+    }
+
+    function handleCourseUnitSelection(courseUnitId) {
+      selectedCourseUnit = courseUnitId;
+      goToPage('document-viewer', false); // Close menu for document viewer
+      fetchDocuments();
+    }
+
+    function updateMenuHighlights() {
+      // Remove all active classes
+      document.querySelectorAll('.select-course, .sidebar-semester, #about-nav-button, #privacy-nav-button').forEach(el => el.classList.remove('active-menu'));
+
+      // Highlight selected course in sidebar
+      if (selectedCourse && isMenuOpen) {
+        const courseBtn = document.querySelector(`.select-course[data-course-id="${selectedCourse}"]`);
+        if (courseBtn) courseBtn.classList.add('active-menu');
+      }
+
+      // Highlight selected semester if visible
+      if (selectedSemester && isMenuOpen) {
+        const semesterBtn = document.querySelector(`.sidebar-semester[data-semester-id="${selectedSemester}"]`);
+        if (semesterBtn) semesterBtn.classList.add('active-menu');
+      }
+
+      // Highlight about/privacy if current page
+      if (currentPage === 'about') {
+        document.getElementById('about-nav-button').classList.add('active-menu');
+      } else if (currentPage === 'privacy') {
+        document.getElementById('privacy-nav-button').classList.add('active-menu');
+      }
+    }
+
+    function handleBack() {
+      if (currentPage === 'document-viewer') {
+        selectedCourseUnit = null;
+        goToPage('semester-courseunits');
+      } else if (currentPage === 'semester-courseunits') {
+        selectedSemester = null;
+        goToPage('course-semesters');
+      } else if (currentPage === 'course-semesters') {
+        selectedCourse = null;
+        goToPage('home');
+      } else if (currentPage === 'courses') {
+        goToPage('home');
+      } else if (currentPage === 'about' || currentPage === 'privacy') {
+        goToPage('home');
+      }
+    }
+
+    async function handleDocumentDownload(docData) {
+      try {
+        let url;
+        if (docData.filePath.startsWith('http')) {
+          // Direct external link (e.g., Google Drive)
+          url = docData.filePath;
+        } else {
+          // Firebase Storage path
+          const storage = getStorage();
+          const fileRef = ref(storage, docData.filePath);
+          url = await getDownloadURL(fileRef);
         }
-        
-        async function loadSemesterCourseUnitsInSidebar(courseId, semesterId) {
-            // For now, navigate to main page; can extend to nested if needed
-            goToPage('semester-courseunits');
-            fetchCourseUnits();
+        window.open(url, '_blank');
+      } catch (error) {
+        console.error('Error accessing document:', error);
+        const title = docData.title || 'this document';
+        if (docData.filePath.startsWith('http')) {
+          alert(`Failed to open link for "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
+        } else {
+          alert(`Failed to load "${title}" from Firebase Storage. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
         }
-        
-        function handleCourseUnitSelection(courseUnitId) {
-            selectedCourseUnit = courseUnitId;
-            goToPage('document-viewer', false); // Close menu for document viewer
-            fetchDocuments();
-        }
-        
-        function updateMenuHighlights() {
-            // Remove all active classes
-            document.querySelectorAll('.select-course, .sidebar-semester, #about-nav-button, #privacy-nav-button').forEach(el => el.classList.remove('active-menu'));
-            
-            // Highlight selected course in sidebar
-            if (selectedCourse && isMenuOpen) {
-                const courseBtn = document.querySelector(`.select-course[data-course-id="${selectedCourse}"]`);
-                if (courseBtn) courseBtn.classList.add('active-menu');
-            }
-            
-            // Highlight selected semester if visible
-            if (selectedSemester && isMenuOpen) {
-                const semesterBtn = document.querySelector(`.sidebar-semester[data-semester-id="${selectedSemester}"]`);
-                if (semesterBtn) semesterBtn.classList.add('active-menu');
-            }
-            
-            // Highlight about/privacy if current page
-            if (currentPage === 'about') {
-                document.getElementById('about-nav-button').classList.add('active-menu');
-            } else if (currentPage === 'privacy') {
-                document.getElementById('privacy-nav-button').classList.add('active-menu');
-            }
-        }
+      }
+    }
 
-        function handleBack() {
-            if (currentPage === 'document-viewer') {
-                selectedCourseUnit = null;
-                goToPage('semester-courseunits');
-            } else if (currentPage === 'semester-courseunits') {
-                selectedSemester = null;
-                goToPage('course-semesters');
-            } else if (currentPage === 'course-semesters') {
-                selectedCourse = null;
-                goToPage('home');
-            } else if (currentPage === 'courses') {
-                goToPage('home');
-            } else if (currentPage === 'about' || currentPage === 'privacy') {
-                goToPage('home');
-            }
-        }
+    // Temporary cleanup function to remove sample data
+    async function cleanupSampleData() {
+      try {
+        console.log('Starting cleanup of sample data...');
 
-        async function handleDocumentDownload(docData) {
-            try {
-                let url;
-                if (docData.filePath.startsWith('http')) {
-                    // Direct external link (e.g., Google Drive)
-                    url = docData.filePath;
-                } else {
-                    // Firebase Storage path
-                    const storage = getStorage();
-                    const fileRef = ref(storage, docData.filePath);
-                    url = await getDownloadURL(fileRef);
-                }
-                window.open(url, '_blank');
-            } catch (error) {
-                console.error('Error accessing document:', error);
-                const title = docData.title || 'this document';
-                if (docData.filePath.startsWith('http')) {
-                    alert(`Failed to open link for "${title}". The URL may be invalid or inaccessible: ${docData.filePath}. Ensure it's a valid public link.`);
-                } else {
-                    alert(`Failed to load "${title}" from Firebase Storage. Ensure the file is uploaded at path: ${docData.filePath} and is public. Error: ${error.message}\n\nRequired database fields:\n- 'title': Document name (string)\n- 'filePath': Full URL (e.g., 'https://...') or Storage path (e.g., 'folder/file.pdf')`);
-                }
-            }
-        }
-        
-        // Temporary cleanup function to remove sample data
-        async function cleanupSampleData() {
-            try {
-                console.log('Starting cleanup of sample data...');
-                
-                // Delete all documents in a collection using batches
-                async function deleteCollectionDocs(collectionPath) {
-                    const collectionRef = collection(db, collectionPath);
-                    const snapshot = await getDocs(collectionRef);
-                    if (snapshot.empty) {
-                        console.log(`No documents in ${collectionPath}`);
-                        return;
-                    }
-                    
-                    const batch = writeBatch(db);
-                    snapshot.docs.forEach((doc) => {
-                        batch.delete(doc.ref);
-                    });
-                    await batch.commit();
-                    console.log(`Deleted ${snapshot.size} documents from ${collectionPath}`);
-                }
-                
-                // Sample data patterns to target for deletion
-                const sampleCourses = ['Medical Laboratory Science Diploma', 'Nursing Certificate', 'Pharmacy Diploma', 'Clinical Medicine Diploma'];
-                const sampleSemesters = ['Semester 1', 'Semester 2'];
-                const sampleCourseUnits = ['Anatomy Basics', 'Physiology', 'Pharmacology Introduction'];
-                const sampleDocuments = ['Lecture Notes Chapter 1', 'Past Paper 2023', 'Study Guide'];
+        // Delete all documents in a collection using batches
+        async function deleteCollectionDocs(collectionPath) {
+          const collectionRef = collection(db, collectionPath);
+          const snapshot = await getDocs(collectionRef);
+          if (snapshot.empty) {
+            console.log(`No documents in ${collectionPath}`);
+            return;
+          }
 
-                // Targeted deletion function for sample data only
-                async function deleteSampleDataOnly() {
-                    try {
-                        // Delete sample documents in all courseunits
-                        const allDocsQuery = query(collectionGroup(db, 'documents'));
-                        const docsSnapshot = await getDocs(allDocsQuery);
-                        const sampleDocsToDelete = docsSnapshot.docs.filter(doc =>
-                            sampleDocuments.includes(doc.data().title)
-                        );
-                        if (sampleDocsToDelete.length > 0) {
-                            const batch = writeBatch(db);
-                            sampleDocsToDelete.forEach(doc => batch.delete(doc.ref));
-                            await batch.commit();
-                            console.log(`Deleted ${sampleDocsToDelete.length} sample documents`);
-                        }
-
-                        // Delete sample course units
-                        const allUnitsQuery = query(collectionGroup(db, 'courseunits'));
-                        const unitsSnapshot = await getDocs(allUnitsQuery);
-                        const sampleUnitsToDelete = unitsSnapshot.docs.filter(doc =>
-                            sampleCourseUnits.includes(doc.data().name)
-                        );
-                        if (sampleUnitsToDelete.length > 0) {
-                            const batch = writeBatch(db);
-                            sampleUnitsToDelete.forEach(unit => batch.delete(unit.ref));
-                            await batch.commit();
-                            console.log(`Deleted ${sampleUnitsToDelete.length} sample course units`);
-                        }
-
-                        // Delete sample semesters
-                        const allSemestersQuery = query(collectionGroup(db, 'semesters'));
-                        const semestersSnapshot = await getDocs(allSemestersQuery);
-                        const sampleSemestersToDelete = semestersSnapshot.docs.filter(doc =>
-                            sampleSemesters.includes(doc.data().name)
-                        );
-                        if (sampleSemestersToDelete.length > 0) {
-                            const batch = writeBatch(db);
-                            sampleSemestersToDelete.forEach(sem => batch.delete(sem.ref));
-                            await batch.commit();
-                            console.log(`Deleted ${sampleSemestersToDelete.length} sample semesters`);
-                        }
-
-                        // Delete sample courses
-                        const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-                        const coursesSnapshot = await getDocs(coursesRef);
-                        const sampleCoursesToDelete = coursesSnapshot.docs.filter(doc =>
-                            sampleCourses.includes(doc.data().name)
-                        );
-                        if (sampleCoursesToDelete.length > 0) {
-                            const batch = writeBatch(db);
-                            sampleCoursesToDelete.forEach(course => batch.delete(course.ref));
-                            await batch.commit();
-                            console.log(`Deleted ${sampleCoursesToDelete.length} sample courses`);
-                        }
-
-                        console.log('Targeted cleanup of sample data completed!');
-                        return true;
-                    } catch (error) {
-                        console.error('Error in targeted cleanup:', error);
-                        throw error;
-                    }
-                }
-
-                // Perform targeted deletion of sample data only
-                const success = await deleteSampleDataOnly();
-                if (success) {
-                    // Hide the cleanup button after successful deletion
-                    const button = document.getElementById('clear-sample-data');
-                    if (button) {
-                        button.style.display = 'none';
-                    }
-                    alert('Sample data cleared successfully! Only your manually saved data remains. Refresh the page to see the updated state.');
-                    location.reload(); // Refresh to update the UI
-                }
-            } catch (error) {
-                console.error('Error during cleanup:', error);
-                alert('Error clearing sample data. Check console for details: ' + error.message);
-            }
+          const batch = writeBatch(db);
+          snapshot.docs.forEach((doc) => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+          console.log(`Deleted ${snapshot.size} documents from ${collectionPath}`);
         }
 
-        function renderLoading(message) {
-            return `
+        // Sample data patterns to target for deletion
+        const sampleCourses = ['Medical Laboratory Science Diploma', 'Nursing Certificate', 'Pharmacy Diploma', 'Clinical Medicine Diploma'];
+        const sampleSemesters = ['Semester 1', 'Semester 2'];
+        const sampleCourseUnits = ['Anatomy Basics', 'Physiology', 'Pharmacology Introduction'];
+        const sampleDocuments = ['Lecture Notes Chapter 1', 'Past Paper 2023', 'Study Guide'];
+
+        // Targeted deletion function for sample data only
+        async function deleteSampleDataOnly() {
+          try {
+            // Delete sample documents in all courseunits
+            const allDocsQuery = query(collectionGroup(db, 'documents'));
+            const docsSnapshot = await getDocs(allDocsQuery);
+            const sampleDocsToDelete = docsSnapshot.docs.filter(doc =>
+              sampleDocuments.includes(doc.data().title)
+            );
+            if (sampleDocsToDelete.length > 0) {
+              const batch = writeBatch(db);
+              sampleDocsToDelete.forEach(doc => batch.delete(doc.ref));
+              await batch.commit();
+              console.log(`Deleted ${sampleDocsToDelete.length} sample documents`);
+            }
+
+            // Delete sample course units
+            const allUnitsQuery = query(collectionGroup(db, 'courseunits'));
+            const unitsSnapshot = await getDocs(allUnitsQuery);
+            const sampleUnitsToDelete = unitsSnapshot.docs.filter(doc =>
+              sampleCourseUnits.includes(doc.data().name)
+            );
+            if (sampleUnitsToDelete.length > 0) {
+              const batch = writeBatch(db);
+              sampleUnitsToDelete.forEach(unit => batch.delete(unit.ref));
+              await batch.commit();
+              console.log(`Deleted ${sampleUnitsToDelete.length} sample course units`);
+            }
+
+            // Delete sample semesters
+            const allSemestersQuery = query(collectionGroup(db, 'semesters'));
+            const semestersSnapshot = await getDocs(allSemestersQuery);
+            const sampleSemestersToDelete = semestersSnapshot.docs.filter(doc =>
+              sampleSemesters.includes(doc.data().name)
+            );
+            if (sampleSemestersToDelete.length > 0) {
+              const batch = writeBatch(db);
+              sampleSemestersToDelete.forEach(sem => batch.delete(sem.ref));
+              await batch.commit();
+              console.log(`Deleted ${sampleSemestersToDelete.length} sample semesters`);
+            }
+
+            // Delete sample courses
+            const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+            const coursesSnapshot = await getDocs(coursesRef);
+            const sampleCoursesToDelete = coursesSnapshot.docs.filter(doc =>
+              sampleCourses.includes(doc.data().name)
+            );
+            if (sampleCoursesToDelete.length > 0) {
+              const batch = writeBatch(db);
+              sampleCoursesToDelete.forEach(course => batch.delete(course.ref));
+              await batch.commit();
+              console.log(`Deleted ${sampleCoursesToDelete.length} sample courses`);
+            }
+
+            console.log('Targeted cleanup of sample data completed!');
+            return true;
+          } catch (error) {
+            console.error('Error in targeted cleanup:', error);
+            throw error;
+          }
+        }
+
+        // Perform targeted deletion of sample data only
+        const success = await deleteSampleDataOnly();
+        if (success) {
+          // Hide the cleanup button after successful deletion
+          const button = document.getElementById('clear-sample-data');
+          if (button) {
+            button.style.display = 'none';
+          }
+          alert('Sample data cleared successfully! Only your manually saved data remains. Refresh the page to see the updated state.');
+          location.reload(); // Refresh to update the UI
+        }
+      } catch (error) {
+        console.error('Error during cleanup:', error);
+        alert('Error clearing sample data. Check console for details: ' + error.message);
+      }
+    }
+
+    function renderLoading(message) {
+      return `
                 <div class="text-center py-8">
                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
                     <p class="mt-4 text-gray-500">${message}</p>
                 </div>
             `;
-        }
+    }
 
-        function renderContent() {
-            let contentHTML = '';
-            switch (currentPage) {
-                case 'home':
-                    contentHTML = `
+    function renderContent() {
+      let contentHTML = '';
+      switch (currentPage) {
+        case 'home':
+          contentHTML = `
                         <div class="text-center p-8 flex flex-col items-center justify-center h-full">
                             <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 animate-fade-in drop-shadow-lg">Studypedia Uganda</h1>
                             <p class="text-xl md:text-2xl text-white mb-8 animate-fade-in delay-100 drop-shadow-lg">Your online medical resource hub for students in Uganda.</p>
@@ -570,6 +809,7 @@
                                 <button id="courses-button" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-blue-700 hover:to-indigo-800 transform hover:scale-105 transition-all duration-300">Browse Courses</button>
                                 <button id="about-button" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300">About Us</button>
                                 <button id="privacy-button" class="bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-green-600 hover:to-cyan-600 transform hover:scale-105 transition-all duration-300">Privacy Policy</button>
+                                <button id="seed-dcm-semesters" class="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 hidden md:block">Seed DCM Semesters</button>
                             </div>
                             
                             
@@ -581,40 +821,50 @@
                         
                         </div>
                     `;
-                    break;
-                case 'courses':
-                    contentHTML = `
-                        <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
-                            <!-- AdSense Rectangle Ad Space Above Courses -->
-                            <div id="courses-ad-top" class="mb-6 text-center">
-                                <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
-                            </div>
-                            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
-                            <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
-                            ${courses.length > 0 ? `
-                                <div class="space-y-4">
-                                    ${courses.map((course) => `
-                                        <div class="course-item-main bg-gray-100 rounded-lg shadow-sm overflow-hidden cursor-pointer" data-course-id="${course.id}">
-                                            <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gray-200 transition-colors cursor-pointer ${selectedCourse === course.id ? 'bg-blue-100' : ''}" data-course-id="${course.id}" style="user-select: none;">
-                                                ${course.name || 'Unknown Course'}
-                                            </div>
-                                            <div class="semesters-list-main bg-white hidden px-4 pb-4 space-y-2"></div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : `<div class="text-center py-8">
-                                    ${renderLoading('Loading courses from database...')}
-                                </div>`}
-                           <!-- AdSense Rectangle Ad Space Below Courses -->
-                           <div id="courses-ad-bottom" class="mt-6 text-center">
-                               <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
-                           </div>
+          break;
+        case 'courses':
+          if (!user || user.isAnonymous) {
+            contentHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Available Courses</h2>
+                <p class="text-gray-600 mb-6">Login required to access courses and study materials.</p>
+                <button id="login-from-courses" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg transition-colors">Login to Browse Courses</button>
+              </div>
+            `;
+          } else {
+            contentHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
+                <!-- AdSense Rectangle Ad Space Above Courses -->
+                <div id="courses-ad-top" class="mb-6 text-center">
+                  <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
+                <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
+                ${courses.length > 0 ? `
+                  <div class="space-y-4">
+                    ${courses.map((course) => `
+                      <div class="course-item-main bg-gray-100 rounded-lg shadow-sm overflow-hidden cursor-pointer" data-course-id="${course.id}">
+                        <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gray-200 transition-colors cursor-pointer ${selectedCourse === course.id ? 'bg-blue-100' : ''}" data-course-id="${course.id}" style="user-select: none;">
+                          ${course.name || 'Unknown Course'}
                         </div>
-                    `;
-                    break;
-                case 'course-semesters':
-                    const selectedCourseData = courses.find(c => c.id === selectedCourse);
-                    contentHTML = `
+                        <div class="semesters-list-main bg-white hidden px-4 pb-4 space-y-2"></div>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : `<div class="text-center py-8">
+                  ${renderLoading('Loading courses from database...')}
+                </div>`}
+               <!-- AdSense Rectangle Ad Space Below Courses -->
+               <div id="courses-ad-bottom" class="mt-6 text-center">
+                  <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            `;
+          }
+          break;
+        case 'course-semesters':
+          const selectedCourseData = courses.find(c => c.id === selectedCourse);
+          contentHTML = `
                         <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
                             <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseData?.name || 'Unknown Course'}</h2>
                             ${semesters.length > 0 ? `
@@ -628,10 +878,10 @@
                             ` : `<p class="text-center text-gray-500 py-8">No semesters found for this course.</p>`}
                         </div>
                     `;
-                    break;
-                case 'semester-courseunits':
-                    const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
-                    contentHTML = `
+          break;
+        case 'semester-courseunits':
+          const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
+          contentHTML = `
                         <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
                             <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedSemesterData?.name || 'Unknown Semester'}</h2>
                             <p class="text-gray-600 mb-6">Select a course unit to view documents.</p>
@@ -646,50 +896,60 @@
                             ` : `<p class="text-center text-gray-500 py-8">No course units available for this semester. Please contact support to add content.</p>`}
                         </div>
                     `;
-                    break;
-                case 'document-viewer':
-                    const selectedCourseUnitData = courseUnits.find(u => u.id === selectedCourseUnit);
-                    contentHTML = `
-                        <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseUnitData?.name || 'Unknown Course Unit'}</h2>
-                            <p class="text-gray-600 mb-6">Showing documents for ${courses.find(c => c.id === selectedCourse)?.name || 'Unknown Course'} - ${semesters.find(s => s.id === selectedSemester)?.name || 'Unknown Semester'} - ${selectedCourseUnitData?.name || 'Unknown Course Unit'}</p>
-                            ${documents.length > 0 ? `
-                                <div class="space-y-4">
-                                    ${documents.map(doc => {
-                                        const displayTitle = doc.title || doc.id || 'Untitled Document';
-                                        if (!doc.filePath) {
-                                            console.warn(`Document ${doc.id} is missing 'filePath' field. Buttons will not be shown. Add 'title' (string) and 'filePath' (URL or Storage path) in Firebase.`);
-                                            return `
-                                                <div class="bg-white p-4 rounded-lg shadow-md text-center text-gray-500 border border-gray-300">
-                                                    <span class="font-medium text-gray-700 mb-2 block">${displayTitle}</span>
-                                                    <p class="text-sm">Missing file path. Update this document in Firebase with 'title' and 'filePath' fields to enable read/download.</p>
-                                                </div>
-                                            `;
-                                        }
-                                        const safeDoc = { ...doc, title: displayTitle };
-                                        const jsonStr = JSON.stringify(safeDoc).replace(/"/g, '"');
-                                        return `
-                                            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-all duration-200 hover:shadow-lg">
-                                                <span class="font-medium text-gray-700 text-center sm:text-left mb-2 sm:mb-0">${displayTitle}</span>
-                                                ${doc.description ? `<p class="text-sm text-gray-500 text-center sm:text-left mt-1">${doc.description}</p>` : ''}
-                                                <div class="flex flex-row space-x-2 mt-2">
-                                                    <button class="view-doc bg-green-500 text-white text-sm py-2 px-4 rounded-full hover:bg-green-600 transition-colors" data-doc='${jsonStr}'>
-                                                        Read Online
-                                                    </button>
-                                                    <button class="download-doc bg-blue-600 text-white text-sm py-2 px-4 rounded-full hover:bg-blue-700 transition-colors" data-doc='${jsonStr}'>
-                                                        Download
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            ` : `<p class="text-center text-gray-500 py-8">No documents found for this course unit. Add documents to Firebase with required fields: 'title' (string for name) and 'filePath' (URL or Storage path).</p>`}
+          break;
+        case 'document-viewer':
+          const selectedCourseUnitData = courseUnits.find(u => u.id === selectedCourseUnit);
+          if (!user || user.isAnonymous) {
+            contentHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseUnitData?.name || 'Unknown Course Unit'}</h2>
+                <p class="text-gray-600 mb-6">Login required to access documents for ${courses.find(c => c.id === selectedCourse)?.name || 'Unknown Course'} - ${semesters.find(s => s.id === selectedSemester)?.name || 'Unknown Semester'}.</p>
+                <button id="login-from-viewer" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg transition-colors">Login to View Documents</button>
+              </div>
+            `;
+          } else {
+            contentHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseUnitData?.name || 'Unknown Course Unit'}</h2>
+                <p class="text-gray-600 mb-6">Showing documents for ${courses.find(c => c.id === selectedCourse)?.name || 'Unknown Course'} - ${semesters.find(s => s.id === selectedSemester)?.name || 'Unknown Semester'} - ${selectedCourseUnitData?.name || 'Unknown Course Unit'}</p>
+                ${documents.length > 0 ? `
+                  <div class="space-y-4">
+                    ${documents.map(doc => {
+              const displayTitle = doc.title || doc.id || 'Untitled Document';
+              if (!doc.filePath) {
+                console.warn(`Document ${doc.id} is missing 'filePath' field. Buttons will not be shown. Add 'title' (string) and 'filePath' (URL or Storage path) in Firebase.`);
+                return `
+                        <div class="bg-white p-4 rounded-lg shadow-md text-center text-gray-500 border border-gray-300">
+                          <span class="font-medium text-gray-700 mb-2 block">${displayTitle}</span>
+                          <p class="text-sm">Missing file path. Update this document in Firebase with 'title' and 'filePath' fields to enable read/download.</p>
                         </div>
+                      `;
+              }
+              const safeDoc = { ...doc, title: displayTitle };
+              const jsonStr = JSON.stringify(safeDoc).replace(/"/g, '"');
+              return `
+                      <div class="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-all duration-200 hover:shadow-lg">
+                        <span class="font-medium text-gray-700 text-center sm:text-left mb-2 sm:mb-0">${displayTitle}</span>
+                        ${doc.description ? `<p class="text-sm text-gray-500 text-center sm:text-left mt-1">${doc.description}</p>` : ''}
+                        <div class="flex flex-row space-x-2 mt-2">
+                          <button class="view-doc bg-green-500 text-white text-sm py-2 px-4 rounded-full hover:bg-green-600 transition-colors" data-doc="${jsonStr}">
+                            Read Online
+                          </button>
+                          <button class="download-doc bg-blue-600 text-white text-sm py-2 px-4 rounded-full hover:bg-blue-700 transition-colors" data-doc="${jsonStr}">
+                            Download
+                          </button>
+                        </div>
+                      </div>
                     `;
-                    break;
-                case 'about':
-                    contentHTML = `
+            }).join('')}
+                  </div>
+                ` : `<p class="text-center text-gray-500 py-8">No documents found for this course unit. Add documents to Firebase with required fields: 'title' (string for name) and 'filePath' (URL or Storage path).</p>`}
+              </div>
+            `;
+          }
+          break;
+        case 'about':
+          contentHTML = `
                         <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
                             <h2 class="text-3xl font-bold text-gray-800 mb-4">About Studypedia Uganda</h2>
                             <p class="text-gray-600 mb-4">Studypedia Uganda is a dedicated platform for medical students, offering a centralized repository of study materials and resources to help them excel in their Diploma and Certificate courses. We are committed to providing easy access to quality educational content.</p>
@@ -733,9 +993,9 @@
                             </div>
                         </div>
                     `;
-                    break;
-                case 'privacy':
-                    contentHTML = `
+          break;
+        case 'privacy':
+          contentHTML = `
                         <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
                             <h2 class="text-3xl font-bold text-gray-800 mb-4">Privacy Policy</h2>
                             <p class="text-gray-600 mb-4">Your privacy is important to us. This policy outlines how Studypedia Uganda collects, uses, and protects your information. We do not share your personal data with third parties. All access and usage data is anonymized to improve our service. Your documents are stored securely with Firebase Firestore and Storage, with public documents accessible to all logged-in users and private documents restricted to the authenticated user's ID.</p>
@@ -744,35 +1004,35 @@
                             </div>
                         </div>
                     `;
-                    break;
-            }
-            mainContent.innerHTML = contentHTML;
-        }
+          break;
+      }
+      mainContent.innerHTML = contentHTML;
+    }
 
-        // Fetching functions
-        function fetchCourses() {
-            courseList.innerHTML = `<li class="text-gray-500">Loading...</li>`;
-            const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-            onSnapshot(coursesRef, (querySnapshot) => {
-                courses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderCourseList();
-                // Re-render main content if on courses page to handle async loading
-                if (currentPage === 'courses') {
-                    renderContent();
-                }
-            }, (error) => {
-                console.error("Error fetching courses:", error);
-                courseList.innerHTML = `<li class="text-red-500">Failed to load courses.</li>`;
-                // Also re-render if error on courses page
-                if (currentPage === 'courses') {
-                    renderContent();
-                }
-            });
+    // Fetching functions
+    function fetchCourses() {
+      courseList.innerHTML = `<li class="text-gray-500">Loading...</li>`;
+      const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+      onSnapshot(coursesRef, (querySnapshot) => {
+        courses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderCourseList();
+        // Re-render main content if on courses page to handle async loading
+        if (currentPage === 'courses') {
+          renderContent();
         }
+      }, (error) => {
+        console.error("Error fetching courses:", error);
+        courseList.innerHTML = `<li class="text-red-500">Failed to load courses.</li>`;
+        // Also re-render if error on courses page
+        if (currentPage === 'courses') {
+          renderContent();
+        }
+      });
+    }
 
-        function renderCourseList() {
-            if (courses.length > 0) {
-                courseList.innerHTML = courses.map(course => `
+    function renderCourseList() {
+      if (courses.length > 0) {
+        courseList.innerHTML = courses.map(course => `
                     <li class="course-item" data-course-id="${course.id}">
                         <button class="select-course w-full text-left text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-colors py-2 px-3 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${selectedCourse === course.id ? 'active-menu' : ''}" data-course-id="${course.id}">
                             ${course.name || 'Unknown Course'}
@@ -780,92 +1040,106 @@
                         <ul class="semesters-list pl-4 space-y-1 hidden"></ul>
                     </li>
                 `).join('');
-            } else {
-                courseList.innerHTML = `<li class="text-gray-500">No courses found.</li>`;
-            }
+      } else {
+        courseList.innerHTML = `<li class="text-gray-500">No courses found.</li>`;
+      }
+    }
+
+    function fetchSemesters() {
+      if (!selectedCourse) {
+        console.error('selectedCourse is undefined in fetchSemesters');
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid course selection. Please try again.</p></div>`;
+        return;
+      }
+      mainContent.innerHTML = renderLoading('Loading semesters...');
+      const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters`);
+      onSnapshot(semestersRef, (querySnapshot) => {
+        semesters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (currentPage === 'course-semesters') {
+          renderContent();
         }
+      }, (error) => {
+        console.error("Error fetching semesters:", error);
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load semesters. Please try again.</p></div>`;
+      });
+    }
 
-        function fetchSemesters() {
-            if (!selectedCourse) {
-                console.error('selectedCourse is undefined in fetchSemesters');
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid course selection. Please try again.</p></div>`;
-                return;
-            }
-            mainContent.innerHTML = renderLoading('Loading semesters...');
-            const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters`);
-            onSnapshot(semestersRef, (querySnapshot) => {
-                semesters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (currentPage === 'course-semesters') {
-                    renderContent();
-                }
-            }, (error) => {
-                console.error("Error fetching semesters:", error);
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load semesters. Please try again.</p></div>`;
-            });
+    function fetchCourseUnits() {
+      if (!selectedCourse || !selectedSemester) {
+        console.error('selectedCourse or selectedSemester is undefined in fetchCourseUnits', { selectedCourse, selectedSemester });
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid selection. Please go back and try again.</p></div>`;
+        return;
+      }
+      mainContent.innerHTML = renderLoading('Loading course units...');
+      const courseUnitsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits`);
+      onSnapshot(courseUnitsRef, (querySnapshot) => {
+        courseUnits = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (currentPage === 'semester-courseunits') {
+          renderContent();
         }
+      }, (error) => {
+        console.error("Error fetching course units:", error);
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load course units. Please try again.</p></div>`;
+      });
+    }
 
-        function fetchCourseUnits() {
-            if (!selectedCourse || !selectedSemester) {
-                console.error('selectedCourse or selectedSemester is undefined in fetchCourseUnits', { selectedCourse, selectedSemester });
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid selection. Please go back and try again.</p></div>`;
-                return;
-            }
-            mainContent.innerHTML = renderLoading('Loading course units...');
-            const courseUnitsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits`);
-            onSnapshot(courseUnitsRef, (querySnapshot) => {
-                courseUnits = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (currentPage === 'semester-courseunits') {
-                    renderContent();
-                }
-            }, (error) => {
-                console.error("Error fetching course units:", error);
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load course units. Please try again.</p></div>`;
-            });
+    function fetchDocuments() {
+      if (!selectedCourse || !selectedSemester || !selectedCourseUnit) {
+        console.error('selectedCourse, selectedSemester, or selectedCourseUnit is undefined in fetchDocuments', { selectedCourse, selectedSemester, selectedCourseUnit });
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid selection. Please go back and try again.</p></div>`;
+        return;
+      }
+      mainContent.innerHTML = renderLoading('Loading documents...');
+      const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits/${selectedCourseUnit}/documents`);
+      onSnapshot(docsRef, (querySnapshot) => {
+        documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (currentPage === 'document-viewer') {
+          renderContent();
         }
-
-        function fetchDocuments() {
-            if (!selectedCourse || !selectedSemester || !selectedCourseUnit) {
-                console.error('selectedCourse, selectedSemester, or selectedCourseUnit is undefined in fetchDocuments', { selectedCourse, selectedSemester, selectedCourseUnit });
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Invalid selection. Please go back and try again.</p></div>`;
-                return;
-            }
-            mainContent.innerHTML = renderLoading('Loading documents...');
-            const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits/${selectedCourseUnit}/documents`);
-            onSnapshot(docsRef, (querySnapshot) => {
-                documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (currentPage === 'document-viewer') {
-                    renderContent();
-                }
-            }, (error) => {
-                console.error("Error fetching documents:", error);
-                mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load documents. Please try again.</p></div>`;
-            });
-        }
+      }, (error) => {
+        console.error("Error fetching documents:", error);
+        mainContent.innerHTML = `<div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg"><p class="text-center text-red-500 py-8">Failed to load documents. Please try again.</p></div>`;
+      });
+    }
 
 
-// Function to seed specific semesters for Pharmacy course
-async function seedSpecificSemesters() {
-    // Temporarily bypass localStorage to allow re-seeding
-    // localStorage.removeItem('specificSemestersSeeded'); // Uncomment to force re-run
+    // Function to seed specific semesters for Pharmacy course
+    async function seedSpecificSemesters() {
+      if (localStorage.getItem('specificSemestersSeeded')) {
+        console.log('Specific semesters already seeded. Skipping.');
+        return;
+      }
 
-    try {
-        console.log('Starting/Forcing specific seeding for CPHA semesters...');
+      // Temporarily bypass localStorage to allow re-seeding
+      // localStorage.removeItem('specificSemestersSeeded'); // Uncomment to force re-run
 
-        // Find Pharmacy course
+      try {
+        console.log('Starting/Forcing specific seeding for CPHA,DCM & DPHA semesters...');
+
+        // Find Pharmacy course,clinical medicine ,medical laboratory science,medical records
         const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
         const coursesSnapshot = await getDocs(coursesRef);
-        const pharmacyCourse = coursesSnapshot.docs.find(doc =>
-            doc.data().name && doc.data().name.toLowerCase().includes('pharmacy')
+        // Find diploma pharmacy course specifically for DPHA seeding
+        const diplomaPharmacyCourses = coursesSnapshot.docs.filter(doc =>
+          doc.data().name &&
+          doc.data().name.toLowerCase().includes('diploma') &&
+          doc.data().name.toLowerCase().includes('pharmacy')
         );
-        if (!pharmacyCourse) {
-            console.log('No Pharmacy course found.');
-            return;
+        
+        if (diplomaPharmacyCourses.length === 0) {
+          console.log('No Diploma Pharmacy course found for specific DPHA seeding.');
+          return;
         }
-        const courseId = pharmacyCourse.id;
-        console.log(`Found Pharmacy course: ${courseId}`);
 
-        const targetSemesters = ['CPHA1:2', 'CPHA2:1', 'CPHA2:2'];
-        const sampleUnits = [
+        // Process each diploma pharmacy course (in case multiple)
+        for (const pharmacyCourse of diplomaPharmacyCourses) {
+          const courseId = pharmacyCourse.id;
+          console.log(`Found Diploma Pharmacy course for specific seeding: ${courseId} (${pharmacyCourse.data().name})`);
+
+          const targetSemesters = ['CPHA1:2', 'CPHA2:1', 'CPHA2:2', 'DPHA1:1', 'DPHA1:2', 'DPHA2:1', 'DPHA2:2', 'DPHA3:1', 'DPHA3:2', 'DCM1:1', 'DCM1:2', 'DCM2:1', 'DCM2:2', 'DCM3:1', 'DCM3:2'];
+
+          // Force seed 10 units for DPHA1:1 (10 base + 0 more), 10 for others; each with 10 documents
+          const baseSampleUnits = [
             { name: 'Human Anatomy', description: 'Structure of the human body.' },
             { name: 'Physiology Fundamentals', description: 'Functions of body systems.' },
             { name: 'Basic Pharmacology', description: 'Introduction to drugs and effects.' },
@@ -876,221 +1150,190 @@ async function seedSpecificSemesters() {
             { name: 'Laboratory Techniques', description: 'Sample analysis methods.' },
             { name: 'Patient Care Skills', description: 'Nursing and support procedures.' },
             { name: 'Health Informatics', description: 'Medical record management.' }
-        ];
-        const sampleDocuments = [
+          ];
+
+          const additionalSampleUnits = [
+            { name: 'Advanced Pharmacology', description: 'In-depth drug interactions.' },
+            { name: 'Diagnostic Imaging', description: 'X-ray and ultrasound basics.' },
+            { name: 'Surgical Principles', description: 'Intro to surgical techniques.' },
+            { name: 'Public Health', description: 'Community health strategies.' },
+            { name: 'Nutrition in Medicine', description: 'Dietary impacts on health.' },
+            { name: 'Emergency Medicine', description: 'First response procedures.' },
+            { name: 'Research Methods', description: 'Scientific inquiry in healthcare.' }
+          ];
+
+          const sampleDocuments = [
             { title: 'Lecture Notes Chapter 1', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Introduction to module concepts.' },
             { title: 'Past Paper 2023', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam questions from previous year.' },
             { title: 'Study Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key summaries for revision.' },
             { title: 'Diagrams and Charts', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Visual learning aids.' },
-            { title: 'Case Studies', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practical examples.' }
-        ];
+            { title: 'Case Studies', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practical examples.' },
+            { title: 'Glossary of Terms', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key terminology defined.' },
+            { title: 'Lab Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Laboratory procedures.' },
+            { title: 'Review Questions', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Self-assessment materials.' },
+            { title: 'Midterm Prep Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam preparation guide.' },
+            { title: 'References', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Further reading sources.' }
+          ];
 
-        for (const semesterId of targetSemesters) {
+          for (const semesterId of targetSemesters) {
             console.log(`Processing semester ${semesterId}...`);
-            
-            // Delete existing units and docs to force fresh seeding
+
+            // Create semester if it doesn't exist
+            const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
+            const semesterDocSnap = await getDoc(semesterDocRef);
+            if (!semesterDocSnap.exists()) {
+              const semesterName = semesterId.replace('DPHA', 'Diploma Pharmacy ').replace('DCM', 'Diploma Clinical Medicine ').replace('CPHA', 'Certificate Pharmacy ');
+              await setDoc(semesterDocRef, {
+                name: semesterName,
+                description: `Content for ${semesterName}.`
+              });
+              console.log(`Created semester ${semesterId} for course ${courseId}`);
+            }
+
+            const sampleUnits = [...baseSampleUnits, ...additionalSampleUnits];
+            const numUnits = semesterId === 'DPHA1:1' ? 17 : 10;
+
             const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
             const existingUnitsSnapshot = await getDocs(unitsRef);
-            const batch = writeBatch(db);
-            existingUnitsSnapshot.docs.forEach(unitDoc => {
-                // Also delete all docs in each unit
-                const unitId = unitDoc.id;
-                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-                // Note: To delete subcollection, we'd need to query and batch, but for simplicity, we'll just delete units (docs will be orphaned but not visible)
-                batch.delete(unitDoc.ref);
-            });
-            await batch.commit();
-            console.log(`Cleared existing units in semester ${semesterId}`);
-            
-            // Now seed 10 units
-            for (let u = 0; u < 10; u++) {
-                const unitId = `unit${u + 1}`;
-                const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-                await setDoc(unitDocRef, sampleUnits[u], { merge: true });
-                console.log(`Created/Updated unit ${sampleUnits[u].name} in semester ${semesterId}`);
-                
-                // Seed exactly 5 documents for this unit
-                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-                const docsBatch = writeBatch(db);
-                
-                // Clear any existing docs (query and delete)
-                const existingDocsSnapshot = await getDocs(docsRef);
-                existingDocsSnapshot.docs.forEach(doc => docsBatch.delete(doc.ref));
-                await docsBatch.commit();
-                
-                const seedBatch = writeBatch(db);
-                for (let d = 0; d < 5; d++) {
-                    const docData = sampleDocuments[d];
-                    const docId = docData.title.replace(/[^a-zA-Z0-9]/g, '_');
-                    const docDocRef = doc(db, docsRef.path, docId);
-                    seedBatch.set(docDocRef, docData);
-                }
-                await seedBatch.commit();
-                console.log(`Seeded 5 documents to unit ${unitId} in semester ${semesterId}`);
+            if (existingUnitsSnapshot.size > 0) {
+              const deleteBatch = writeBatch(db);
+              existingUnitsSnapshot.docs.forEach((doc) => {
+                deleteBatch.delete(doc.ref);
+              });
+              await deleteBatch.commit();
+              console.log(`Deleted existing units in semester ${semesterId} for course ${courseId}`);
             }
+
+            for (let u = 0; u < numUnits; u++) {
+              const unitId = `unit${u + 10}`;
+              const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+              await setDoc(unitDocRef, sampleUnits[u], { merge: false });
+              console.log(`Forced unit ${sampleUnits[u].name} in semester ${semesterId} for course ${courseId}`);
+
+              const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+              const existingDocsSnapshot = await getDocs(docsRef);
+              if (existingDocsSnapshot.size > 0) {
+                const deleteDocsBatch = writeBatch(db);
+                existingDocsSnapshot.docs.forEach((doc) => {
+                  deleteDocsBatch.delete(doc.ref);
+                });
+                await deleteDocsBatch.commit();
+                console.log(`Deleted existing documents for unit ${unitId} in semester ${semesterId} for course ${courseId}`);
+              }
+
+              for (const docData of sampleDocuments) {
+                await addDoc(docsRef, docData);
+              }
+              console.log(`Forced 10 documents to unit ${unitId} in semester ${semesterId} for course ${courseId}`);
+            }
+          }
         }
 
-        console.log('Specific seeding completed for CPHA semesters with 5 documents per unit.');
-        alert('Forced seeding: Cleared and added 10 course units with exactly 5 documents each (Read Online/Download enabled) for CPHA1:2, CPHA2:1, CPHA2:2. Check browser console for logs. Refresh to view.');
-    } catch (error) {
+      } catch (error) {
         console.error('Specific seeding error:', error);
         alert(`Specific seeding failed: ${error.message}. Check console.`);
+      }
     }
-}
 
-// Initialize App on load
-document.addEventListener('DOMContentLoaded', () => {
-    try {
+    // Initialize App on load
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
         const app = initializeApp(firebaseConfig);
         db = getFirestore(app);
         auth = getAuth(app);
         setLogLevel('debug');
-        
+
         onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                user = currentUser;
-                console.log("User authenticated:", user.uid);
-                
-                // One-time comprehensive seeding: Specific semester IDs (e.g., CPHA1:1 for Certificate Pharmacy), 10 courseunits per semester, 10 documents per unit
-                let demoSeeded = localStorage.getItem('demoSeededFull');
-                if (!demoSeeded) {
-                    setTimeout(async () => {
-                        try {
-                            const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-                            const coursesSnapshot = await getDocs(coursesRef);
-                            if (coursesSnapshot.size > 0) {
-                                for (const courseDoc of coursesSnapshot.docs) {
-                                    const courseId = courseDoc.id;
-                                    const courseName = courseDoc.data().name || '';
-                                    const isDiploma = courseName.toLowerCase().includes('diploma');
-                                    const numSemesters = isDiploma ? 6 : 4;
-                                    
-                                    // Generate course acronym for semester IDs (e.g., 'CPHA' for Certificate Pharmacy, 'DMLS' for Diploma Medical Lab)
-                                    let courseAcronym = '';
-                                    if (courseName.toLowerCase().includes('pharmacy')) {
-                                        courseAcronym = 'CPHA';
-                                    } else if (courseName.toLowerCase().includes('nursing')) {
-                                        courseAcronym = isDiploma ? 'DNUR' : 'CNUR';
-                                    } else if (courseName.toLowerCase().includes('laboratory') || courseName.toLowerCase().includes('lab')) {
-                                        courseAcronym = isDiploma ? 'DMLS' : 'CMLS';
-                                    } else if (courseName.toLowerCase().includes('clinical') || courseName.toLowerCase().includes('medicine')) {
-                                        courseAcronym = isDiploma ? 'DCM' : 'CCM';
-                                    } else {
-                                        // Fallback: first 4 letters uppercased
-                                        courseAcronym = courseName.substring(0, 4).toUpperCase();
-                                    }
-                                    
-                                    const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`);
-                                    const existingSemestersSnapshot = await getDocs(semestersRef);
-                                    
-                                    if (existingSemestersSnapshot.size < numSemesters) {
-                                        // Create missing semesters with specific IDs like CPHA1:1
-                                        for (let year = 1; year <= Math.ceil(numSemesters / 2); year++) {
-                                            for (let sem = 1; sem <= 2; sem++) {
-                                                const totalSem = (year - 1) * 2 + sem;
-                                                if (totalSem > numSemesters) break;
-                                                const semesterId = `${courseAcronym}${year}:${sem}`;
-                                                const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
-                                                const semesterDocSnap = await getDoc(semesterDocRef);
-                                                if (!semesterDocSnap.exists()) {
-                                                    await setDoc(semesterDocRef, {
-                                                        name: `${isDiploma ? 'Diploma' : 'Certificate'} ${courseName} Year ${year} Semester ${sem}`,
-                                                        description: `Year ${year} Semester ${sem} content for ${courseName}.`
-                                                    });
-                                                    console.log(`Created semester ${semesterId} for course ${courseId}`);
-                                                }
-                                            }
-                                        }
-                                        
-                                        // Now seed courseunits and documents for each semester
-                                        for (let year = 1; year <= Math.ceil(numSemesters / 2); year++) {
-                                            for (let sem = 1; sem <= 2; sem++) {
-                                                const totalSem = (year - 1) * 2 + sem;
-                                                if (totalSem > numSemesters) break;
-                                                const semesterId = `${courseAcronym}${year}:${sem}`;
-                                                const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
-                                                const existingUnitsSnapshot = await getDocs(unitsRef);
-                                                
-                                                if (existingUnitsSnapshot.size < 10) {
-                                                    // Create 10 sample courseunits if fewer than 10
-                                                    const sampleUnits = [
-                                                        { name: 'Human Anatomy', description: 'Structure of the human body.' },
-                                                        { name: 'Physiology Fundamentals', description: 'Functions of body systems.' },
-                                                        { name: 'Basic Pharmacology', description: 'Introduction to drugs and effects.' },
-                                                        { name: 'Clinical Procedures', description: 'Patient assessment techniques.' },
-                                                        { name: 'Medical Ethics and Law', description: 'Ethical standards in practice.' },
-                                                        { name: 'Pathophysiology', description: 'Mechanisms of disease.' },
-                                                        { name: 'Microbiology Basics', description: 'Infectious agents and control.' },
-                                                        { name: 'Laboratory Techniques', description: 'Sample analysis methods.' },
-                                                        { name: 'Patient Care Skills', description: 'Nursing and support procedures.' },
-                                                        { name: 'Health Informatics', description: 'Medical record management.' }
-                                                    ];
-                                                    
-                                                    for (let u = 0; u < 10; u++) {
-                                                        const unitId = `unit${u + 1}`;
-                                                        const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-                                                        const unitDocSnap = await getDoc(unitDocRef);
-                                                        if (!unitDocSnap.exists()) {
-                                                            await setDoc(unitDocRef, sampleUnits[u]);
-                                                            console.log(`Created unit ${sampleUnits[u].name} in semester ${semesterId} for course ${courseId}`);
-                                                        }
-                                                        
-                                                        // Seed 10 documents for this unit
-                                                        const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-                                                        const docsSnapshot = await getDocs(docsRef);
-                                                        if (docsSnapshot.empty) {
-                                                            const sampleDocuments = [
-                                                                { title: `${sampleUnits[u].name} Lecture Notes Ch. 1`, filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Introduction to module concepts.' },
-                                                                { title: 'Past Paper 2023', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam questions from previous year.' },
-                                                                { title: 'Study Guide', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key summaries for revision.' },
-                                                                { title: 'Diagrams and Charts', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Visual learning aids.' },
-                                                                { title: 'Case Studies', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practical examples.' },
-                                                                { title: 'Glossary of Terms', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key terminology defined.' },
-                                                                { title: 'Lab Manual', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Laboratory procedures.' },
-                                                                { title: 'Review Questions', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Self-assessment materials.' },
-                                                                { title: 'Midterm Prep Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Exam preparation guide.' },
-                                                                { title: 'References', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Further reading sources.' }
-                                                            ];
-                                                            
-                                                            for (const docData of sampleDocuments) {
-                                                                await addDoc(docsRef, docData);
-                                                            }
-                                                            console.log(`Seeded 10 documents to unit ${unitId} in semester ${semesterId} for course ${courseId}`);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                localStorage.setItem('demoSeededFull', 'true');
-                                console.log('Full demo seeding completed: Specific semester IDs, 10 units per semester, and documents for all courses.');
-                                alert('Seeded full structure with specific semester IDs (e.g., CPHA1:1 for Certificate Pharmacy): 6 for Diploma, 4 for Certificate, with 10 course units and 10 documents each per unit. Refresh the page to view.');
-                            } else {
-                                console.log('No courses found. Please add courses to RESOURCES_STUDYPEDIA first.');
-                                alert('No courses found in database. Add at least one course to start seeding.');
-                            }
-                        } catch (error) {
-                            console.error('Full seeding error:', error);
-                            alert('Seeding failed. Check console for details.');
+          user = currentUser;
+          if (user) {
+            console.log("User authenticated:", user.uid);
+            updateUserInfo();
+            updateAuthUI(!user.isAnonymous, user);
+
+            // Targeted seeding for specific semesters like DCM3:1 and DCM3:2 (one-time, preserves existing data)
+            setTimeout(async () => {
+              try {
+                const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+                const coursesSnapshot = await getDocs(coursesRef);
+                const clinicalMedicineCourses = coursesSnapshot.docs.filter(doc =>
+                  doc.data().name?.toLowerCase().includes('diploma') &&
+                  (doc.data().name?.toLowerCase().includes('clinical') || doc.data().name?.toLowerCase().includes('medicine'))
+                );
+
+                if (clinicalMedicineCourses.length > 0) {
+                  const courseId = clinicalMedicineCourses[0].id; // Assume first matching course
+                  const targetSemesters = ['DCM3:1', 'DCM3:2'];
+
+                  const baseSampleUnits = [
+                    { name: 'Advanced Clinical Skills', description: 'Advanced patient care techniques.' },
+                    { name: 'Specialized Diagnostics', description: 'In-depth diagnostic methods.' },
+                    { name: 'Therapeutic Interventions', description: 'Treatment strategies.' },
+                    { name: 'Medical Research', description: 'Research in clinical practice.' },
+                    { name: 'Public Health Policy', description: 'Health policy and ethics.' },
+                    { name: 'Emergency Response', description: 'Crisis management.' },
+                    { name: 'Surgical Assistance', description: 'Supporting surgical procedures.' },
+                    { name: 'Community Medicine', description: 'Community health initiatives.' },
+                    { name: 'Quality Assurance', description: 'Healthcare quality standards.' },
+                    { name: 'Professional Development', description: 'Career growth in medicine.' }
+                  ];
+
+                  const sampleDocuments = [
+                    { title: 'Advanced Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Key concepts overview.' },
+                    { title: 'Case Study Examples', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Real-world applications.' },
+                    { title: 'Past Exam Papers', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Practice questions.' },
+                    { title: 'Study Guide Summary', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Quick revision notes.' },
+                    { title: 'Reference Materials', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Additional resources.' }
+                  ];
+
+                  for (const semesterId of targetSemesters) {
+                    const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+                    const existingUnitsSnapshot = await getDocs(unitsRef);
+                    if (existingUnitsSnapshot.size === 0) {
+                      console.log(`Seeding 10 units for empty semester ${semesterId} in course ${courseId}`);
+
+                      for (let u = 0; u < 10; u++) {
+                        const unitId = `unit${u + 1}`;
+                        const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+                        await setDoc(unitDocRef, baseSampleUnits[u], { merge: false });
+                        console.log(`Added unit ${baseSampleUnits[u].name} to semester ${semesterId}`);
+
+                        const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+
+                        for (const docData of sampleDocuments) {
+                          await addDoc(docsRef, docData);
                         }
-                    }, 5000); // Increased delay for more async operations
+                        console.log(`Added 5 documents to unit ${unitId} in semester ${semesterId}`);
+                      }
+                    } else {
+                      console.log(`Semester ${semesterId} already has units; skipping.`);
+                    }
+                  }
+
+                  console.log('Targeted seeding for DCM3:1 and DCM3:2 completed.');
                 }
-                
-                fetchCourses();
-                
-                // Seed specific semesters after main seeding
-                setTimeout(async () => {
-                    await seedSpecificSemesters();
-                }, 10000); // Delay to allow main seeding to complete
-            } else {
-                try {
-                    console.log("No user found. Signing in anonymously...");
-                    await signInAnonymously(auth);
-                } catch (error) {
-                    console.error("Firebase auth error:", error);
-                }
+              } catch (error) {
+                console.error('Targeted seeding error:', error);
+              }
+            }, 2000);
+
+            fetchCourses();
+
+            // Seed specific semesters after main seeding (commented out)
+            /*
+            setTimeout(async () => {
+              await seedSpecificSemesters();
+            }, 10000);
+            */
+          } else {
+            updateUserInfo();
+            updateAuthUI(false, null);
+            try {
+              console.log("No user found. Signing in anonymously...");
+              await signInAnonymously(auth);
+            } catch (error) {
+              console.error("Firebase auth error:", error);
             }
+          }
         });
 
         renderContent();
@@ -1098,119 +1341,174 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Single event delegation for all elements (static and dynamic)
         document.addEventListener('click', async (e) => {
-            if (e.target.id === 'courses-button') {
-                e.preventDefault();
-                goToPage('courses', false);
-                console.log('Courses button clicked');
-            } else if (e.target.id === 'about-button') {
-                e.preventDefault();
-                goToPage('about', false);
-                console.log('About button clicked');
-            } else if (e.target.id === 'privacy-button') {
-                e.preventDefault();
-                goToPage('privacy', false);
-                console.log('Privacy button clicked');
-            } else if (e.target.id === 'menu-button') {
-                e.preventDefault();
-                toggleMenu();
-            } else if (e.target.id === 'close-menu-button') {
-                toggleMenu();
-            } else if (e.target.id === 'menu-overlay') {
-                toggleMenu();
-            } else if (e.target.id === 'home-button') {
-                e.preventDefault();
-                goToPage('home');
-            } else if (e.target.id === 'back-button') {
-                e.preventDefault();
-                handleBack();
-                // Add visual feedback
-                e.target.style.transform = 'scale(0.95)';
-                setTimeout(() => { e.target.style.transform = ''; }, 150);
-            } else if (e.target.id === 'about-nav-button') {
-                e.preventDefault();
-                goToPage('about', true); // Keep menu open for sidebar nav
-            } else if (e.target.id === 'privacy-nav-button') {
-                e.preventDefault();
-                goToPage('privacy', true); // Keep menu open for sidebar nav
+          if (e.target.id === 'courses-button') {
+            e.preventDefault();
+            if (!user || user.isAnonymous) {
+              showModal(loginModal);
             } else {
-                const courseBtn = e.target.closest('.select-course');
-                if (courseBtn) {
-                    handleCourseSelection(courseBtn.dataset.courseId);
-                    return;
-                }
-                const mainCourseItem = e.target.closest('.course-item-main');
-                if (mainCourseItem && !e.target.closest('.semesters-list-main')) {
-                    const courseId = mainCourseItem.dataset.courseId;
-                    handleCourseSelection(courseId);
-                    return;
-                }
-                const semesterBtn = e.target.closest('.select-semester');
-                if (semesterBtn) {
-                    e.preventDefault();
-                    handleSemesterSelection(semesterBtn.dataset.semesterId);
-                    return;
-                }
-                const mainSemesterDiv = e.target.closest('.select-semester-main');
-                if (mainSemesterDiv) {
-                    handleSemesterSelection(mainSemesterDiv.dataset.semesterId, false, true);
-                    return;
-                }
-                const sidebarSemesterBtn = e.target.closest('.sidebar-semester');
-                if (sidebarSemesterBtn) {
-                    handleSemesterSelection(sidebarSemesterBtn.dataset.semesterId, true);
-                    return;
-                }
-                const courseUnitBtn = e.target.closest('.select-courseunit');
-                if (courseUnitBtn) {
-                    e.preventDefault();
-                    handleCourseUnitSelection(courseUnitBtn.dataset.courseunitId);
-                    return;
-                }
-                const viewDocBtn = e.target.closest('.view-doc');
-                if (viewDocBtn) {
-                    e.preventDefault();
-                    try {
-                        const docData = JSON.parse(viewDocBtn.dataset.doc.replace(/"/g, '"'));
-                        await handleDocumentDownload(docData);
-                    } catch (err) {
-                        console.error('Error parsing or accessing document data:', err);
-                    }
-                    return;
-                }
-                const downloadDocBtn = e.target.closest('.download-doc');
-                if (downloadDocBtn) {
-                    e.preventDefault();
-                    try {
-                        const docData = JSON.parse(downloadDocBtn.dataset.doc.replace(/"/g, '"'));
-                        await handleDocumentDownload(docData);
-                    } catch (err) {
-                        console.error('Error parsing or accessing document data:', err);
-                    }
-                    return;
-                }
-                const backHomeBtn = e.target.closest('.back-home');
-                if (backHomeBtn) {
-                    e.preventDefault();
-                    goToPage('home');
-                    return;
-                }
-                if (e.target.id === 'clear-sample-data') {
-                    e.preventDefault();
-                    if (confirm('This will permanently delete only the seeded sample data from the RESOURCES_STUDYPEDIA collection in Firebase, preserving your manually added content. This cannot be undone. Are you sure?')) {
-                        e.target.disabled = true;
-                        e.target.textContent = 'Clearing... Please wait';
-                        cleanupSampleData();
-                    }
-                    return;
-                }
+              goToPage('courses', false);
+              console.log('Courses button clicked');
             }
+          } else if (e.target.id === 'about-button') {
+            e.preventDefault();
+            goToPage('about', false);
+            console.log('About button clicked');
+          } else if (e.target.id === 'privacy-button') {
+            e.preventDefault();
+            goToPage('privacy', false);
+            console.log('Privacy button clicked');
+          } else if (e.target.id === 'menu-button') {
+            e.preventDefault();
+            toggleMenu();
+          } else if (e.target.id === 'close-menu-button') {
+            toggleMenu();
+          } else if (e.target.id === 'menu-overlay') {
+            toggleMenu();
+          } else if (e.target.id === 'home-button') {
+            e.preventDefault();
+            goToPage('home');
+          } else if (e.target.id === 'back-button') {
+            e.preventDefault();
+            handleBack();
+            // Add visual feedback
+            e.target.style.transform = 'scale(0.95)';
+            setTimeout(() => { e.target.style.transform = ''; }, 150);
+          } else if (e.target.id === 'about-nav-button') {
+            e.preventDefault();
+            goToPage('about', true); // Keep menu open for sidebar nav
+          } else if (e.target.id === 'privacy-nav-button') {
+            e.preventDefault();
+            goToPage('privacy', true); // Keep menu open for sidebar nav
+          } else {
+            const courseBtn = e.target.closest('.select-course');
+            if (courseBtn) {
+              handleCourseSelection(courseBtn.dataset.courseId);
+              return;
+            }
+            const mainCourseItem = e.target.closest('.course-item-main');
+            if (mainCourseItem && !e.target.closest('.semesters-list-main')) {
+              const courseId = mainCourseItem.dataset.courseId;
+              handleCourseSelection(courseId);
+              return;
+            }
+            const semesterBtn = e.target.closest('.select-semester');
+            if (semesterBtn) {
+              e.preventDefault();
+              handleSemesterSelection(semesterBtn.dataset.semesterId);
+              return;
+            }
+            const mainSemesterDiv = e.target.closest('.select-semester-main');
+            if (mainSemesterDiv) {
+              handleSemesterSelection(mainSemesterDiv.dataset.semesterId, false, true);
+              return;
+            }
+            const sidebarSemesterBtn = e.target.closest('.sidebar-semester');
+            if (sidebarSemesterBtn) {
+              handleSemesterSelection(sidebarSemesterBtn.dataset.semesterId, true);
+              return;
+            }
+            const courseUnitBtn = e.target.closest('.select-courseunit');
+            if (courseUnitBtn) {
+              e.preventDefault();
+              handleCourseUnitSelection(courseUnitBtn.dataset.courseunitId);
+              return;
+            }
+            const viewDocBtn = e.target.closest('.view-doc');
+            if (viewDocBtn) {
+              e.preventDefault();
+              try {
+                const docData = JSON.parse(viewDocBtn.dataset.doc);
+                await handleDocumentDownload(docData);
+              } catch (err) {
+                console.error('Error parsing or accessing document data:', err);
+              }
+              return;
+            }
+            const downloadDocBtn = e.target.closest('.download-doc');
+            if (downloadDocBtn) {
+              e.preventDefault();
+              try {
+                const docData = JSON.parse(downloadDocBtn.dataset.doc);
+                await handleDocumentDownload(docData);
+              } catch (err) {
+                console.error('Error parsing or accessing document data:', err);
+              }
+              return;
+            }
+            const backHomeBtn = e.target.closest('.back-home');
+            if (backHomeBtn) {
+              e.preventDefault();
+              goToPage('home');
+              return;
+            }
+            if (e.target.id === 'clear-sample-data') {
+              e.preventDefault();
+              if (confirm('This will permanently delete only the seeded sample data from the RESOURCES_STUDYPEDIA collection in Firebase, preserving your manually added content. This cannot be undone. Are you sure?')) {
+                e.target.disabled = true;
+                e.target.textContent = 'Clearing... Please wait';
+                cleanupSampleData();
+              }
+              return;
+            }
+
+            // Auth button handlers
+            if (e.target.id === 'login-button') {
+              showModal(loginModal);
+            } else if (e.target.id === 'register-button') {
+              showModal(registerModal);
+            } else if (e.target.id === 'logout-button') {
+              if (confirm('Are you sure you want to logout?')) {
+                auth.signOut();
+              }
+            } else if (e.target.id === 'close-login-modal' || e.target.closest('#menu-overlay')) {
+              hideModal(loginModal);
+            } else if (e.target.id === 'close-register-modal' || e.target.closest('#menu-overlay')) {
+              hideModal(registerModal);
+            } else if (e.target.id === 'switch-to-register') {
+              hideModal(loginModal);
+              showModal(registerModal);
+            } else if (e.target.id === 'switch-to-login') {
+              hideModal(registerModal);
+              showModal(loginModal);
+            } else if (loginForm && loginForm.contains(e.target) && e.target.type === 'submit') {
+              e.preventDefault();
+              const email = document.getElementById('login-email').value;
+              const password = document.getElementById('login-password').value;
+              if (email && password) {
+                loginUser(email, password);
+              } else {
+                alert('Please fill in all fields.');
+              }
+            } else if (registerForm && registerForm.contains(e.target) && e.target.type === 'submit') {
+              e.preventDefault();
+              const email = document.getElementById('register-email').value;
+              const password = document.getElementById('register-password').value;
+              const confirmPassword = document.getElementById('register-confirm-password').value;
+              if (email && password && confirmPassword) {
+                if (password !== confirmPassword) {
+                  alert('Passwords do not match.');
+                  return;
+                }
+                if (password.length < 6) {
+                  alert('Password must be at least 6 characters.');
+                  return;
+                }
+                registerUser(email, password);
+              } else {
+                alert('Please fill in all fields.');
+              }
+            } else if (e.target.id === 'login-from-viewer') {
+              showModal(loginModal);
+            }
+          }
         });
 
-    } catch (e) {
+      } catch (e) {
         console.error("Firebase initialization failed:", e);
         mainContent.innerHTML = `<div class="p-8 bg-red-100 text-red-800 rounded-xl shadow-lg w-full"><h2 class="font-bold text-xl mb-2">Initialization Failed</h2><p>Could not initialize Firebase. Please check your configuration and network connection.</p></div>`;
-    }
-});
-    </script>
+      }
+    });
+  </script>
 </body>
+
 </html>
