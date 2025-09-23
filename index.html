@@ -338,59 +338,60 @@
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const seedButton = document.getElementById('seed-clt-button');
-// Auth functions
-async function registerUser(email, password) {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    console.log('User registered:', userCredential.user);
-    alert('Registration successful! You can now login.');
-    hideModal(registerModal);
-    return userCredential.user;
-  } catch (error) {
-    console.error('Registration error:', error);
-    alert('Registration failed: ' + error.message);
-  }
-}
 
-async function loginUser(email, password) {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log('User logged in:', userCredential.user);
-    alert('Login successful!');
-    hideModal(loginModal);
-    return userCredential.user;
-  } catch (error) {
-    console.error('Login error:', error);
-    alert('Login failed: ' + error.message);
-  }
-}
+    // Auth functions
+    async function registerUser(email, password) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User registered:', userCredential.user);
+        alert('Registration successful! You can now login.');
+        hideModal(registerModal);
+        return userCredential.user;
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('Registration failed: ' + error.message);
+      }
+    }
 
-async function logoutUser() {
-  try {
-    await signOut(auth);
-    console.log('User logged out');
-    alert('Logged out successfully.');
-  } catch (error) {
-    console.error('Logout error:', error);
-    alert('Logout failed: ' + error.message);
-  }
-}
+    async function loginUser(email, password) {
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('User logged in:', userCredential.user);
+        alert('Login successful!');
+        hideModal(loginModal);
+        return userCredential.user;
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed: ' + error.message);
+      }
+    }
 
-function updateAuthUI(isLoggedIn, user) {
-  if (isLoggedIn && user) {
-    loginButton.classList.add('hidden');
-    registerButton.classList.add('hidden');
-    logoutButton.classList.remove('hidden');
-    // Seed button deactivated - documents already added to database
-    seedButton.classList.add('hidden');
-    logoutButton.textContent = `Logout (${user.email || user.uid.substring(0,8)}...)`;
-  } else {
-    loginButton.classList.remove('hidden');
-    registerButton.classList.remove('hidden');
-    logoutButton.classList.add('hidden');
-    seedButton.classList.add('hidden');
-  }
-}
+    async function logoutUser() {
+      try {
+        await signOut(auth);
+        console.log('User logged out');
+        alert('Logged out successfully.');
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Logout failed: ' + error.message);
+      }
+    }
+
+    function updateAuthUI(isLoggedIn, user) {
+      if (isLoggedIn && user) {
+        loginButton.classList.add('hidden');
+        registerButton.classList.add('hidden');
+        logoutButton.classList.remove('hidden');
+        // Seed button deactivated - documents already added to database
+        seedButton.classList.add('hidden');
+        logoutButton.textContent = `Logout (${user.email || user.uid.substring(0,8)}...)`;
+      } else {
+        loginButton.classList.remove('hidden');
+        registerButton.classList.remove('hidden');
+        logoutButton.classList.add('hidden');
+        seedButton.classList.add('hidden');
+      }
+    }
 
     // Modal functions
     function showModal(modal) {
@@ -398,39 +399,39 @@ function updateAuthUI(isLoggedIn, user) {
       document.body.style.overflow = 'hidden';
     }
 
-function updateUserInfo() {
-  const userInfo = document.getElementById('user-info');
-  if (user && !user.isAnonymous) {
-    userInfo.innerHTML = `
-      <div class="flex items-center space-x-2">
-        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <span>Logged in as: ${user.email}</span>
-      </div>
-    `;
-    userInfo.classList.remove('bg-gray-50');
-    userInfo.classList.add('bg-blue-50', 'border', 'border-blue-200');
-  } else if (user && user.isAnonymous) {
-    userInfo.innerHTML = `
-      <div class="flex items-center space-x-2">
-        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <span>Guest User</span>
-      </div>
-    `;
-    userInfo.classList.remove('bg-blue-50', 'border', 'border-blue-200');
-    userInfo.classList.add('bg-gray-50');
-  } else {
-    userInfo.textContent = 'Loading user...';
-  }
-}
+    function updateUserInfo() {
+      const userInfo = document.getElementById('user-info');
+      if (user && !user.isAnonymous) {
+        userInfo.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span>Logged in as: ${user.email}</span>
+          </div>
+        `;
+        userInfo.classList.remove('bg-gray-50');
+        userInfo.classList.add('bg-blue-50', 'border', 'border-blue-200');
+      } else if (user && user.isAnonymous) {
+        userInfo.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span>Guest User</span>
+          </div>
+        `;
+        userInfo.classList.remove('bg-blue-50', 'border', 'border-blue-200');
+        userInfo.classList.add('bg-gray-50');
+      } else {
+        userInfo.textContent = 'Loading user...';
+      }
+    }
+
     function hideModal(modal) {
       modal.classList.add('hidden');
       document.body.style.overflow = '';
     }
-
 
     const bgImages = Array.from({ length: 30 }, (_, i) => `https://picsum.photos/1920/1080?random=${i + 1}&blur=2`);
     let bgImageIndex = 0;
@@ -450,6 +451,7 @@ function updateUserInfo() {
       if (isMenuOpen) {
         document.body.style.overflow = 'hidden'; // Lock background scroll
         fetchCourses();  // Load courses when menu opens
+        updateMenuHighlights(); // Update highlights when menu opens
       } else {
         document.body.style.overflow = ''; // Restore scroll
       }
@@ -577,6 +579,16 @@ function updateUserInfo() {
                             </button>
                         </li>
                     `).join('');
+                    
+          // Add event listeners to semester buttons
+          semestersList.querySelectorAll('.sidebar-semester').forEach(button => {
+            button.addEventListener('click', function() {
+              const semesterId = this.dataset.semesterId;
+              const courseId = this.dataset.courseId;
+              selectedCourse = courseId; // Set the selected course
+              handleSemesterSelection(semesterId, true); // From sidebar
+            });
+          });
         } catch (error) {
           console.error('Error loading semesters in sidebar:', error);
           semestersList.innerHTML = '<li class="text-red-500 pl-6">Error loading semesters</li>';
@@ -588,11 +600,11 @@ function updateUserInfo() {
       selectedSemester = semesterId;
       selectedCourseUnit = null;
       if (fromSidebar) {
-        // From sidebar, navigate but keep menu open
-        goToPage('semester-courseunits', true);
+        // From sidebar, navigate and close menu
+        goToPage('semester-courseunits', false);
         fetchCourseUnits();
       } else if (fromMain) {
-        // From main page, navigate and close any expansions if needed
+        // From main page, navigate
         goToPage('semester-courseunits');
         fetchCourseUnits();
       } else {
@@ -884,7 +896,6 @@ function updateUserInfo() {
                               <button id="privacy-button" class="bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-green-600 hover:via-teal-600 hover:to-cyan-600 transform hover:scale-110 transition-all duration-500 ease-out">Privacy Policy</button>
                             </div>
                             
-                            
                         
                             <!-- AdSense Banner Ad Space at Bottom of Home -->
                             <div id="home-ad-bottom" class="mt-12 text-center">
@@ -1112,6 +1123,14 @@ function updateUserInfo() {
                         <ul class="semesters-list pl-4 space-y-1 hidden"></ul>
                     </li>
                 `).join('');
+                
+        // Add event listeners to course buttons
+        document.querySelectorAll('.select-course').forEach(button => {
+          button.addEventListener('click', function() {
+            const courseId = this.dataset.courseId;
+            handleCourseSelection(courseId);
+          });
+        });
       } else {
         courseList.innerHTML = `<li class="text-gray-500">No courses found.</li>`;
       }
@@ -1264,116 +1283,115 @@ function updateUserInfo() {
       }
     }
 
+    // Function to seed 9 course units for Certificate in Medical Lab Science semesters (one-time only, clears existing, no creation)
+    async function seedDCM31Units() {
+      // Temporarily remove localStorage check to force re-seeding
+      // localStorage.removeItem('cml_all_seeded');
 
-        // Function to seed 9 course units for Certificate in Medical Lab Science semesters (one-time only, clears existing, no creation)
-        async function seedDCM31Units() {
-          // Temporarily remove localStorage check to force re-seeding
-          // localStorage.removeItem('cml_all_seeded');
+      try {
+        console.log('Starting one-time seeding for all Certificate in Medical Lab Science semesters with 9 units each...');
 
-          try {
-            console.log('Starting one-time seeding for all Certificate in Medical Lab Science semesters with 9 units each...');
+        const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
+        const coursesSnapshot = await getDocs(coursesRef);
 
-            const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
-            const coursesSnapshot = await getDocs(coursesRef);
+        // Define only CLT course and its semesters - no creation, only seed if found
+        const courseConfig = {
+          filter: (doc) => doc.data().name && doc.data().name.toLowerCase().includes('certificate') &&
+            (doc.data().name.toLowerCase().includes('medical lab') || doc.data().name.toLowerCase().includes('lab science') || doc.data().name.toLowerCase().includes('clt')),
+          name: 'Certificate in Medical Lab Science',
+          prefix: 'CLT',
+          semesters: ['CLT1:1', 'CLT1:2', 'CLT2:1', 'CLT2:2']
+        };
 
-            // Define only CLT course and its semesters - no creation, only seed if found
-            const courseConfig = {
-              filter: (doc) => doc.data().name && doc.data().name.toLowerCase().includes('certificate') &&
-                (doc.data().name.toLowerCase().includes('medical lab') || doc.data().name.toLowerCase().includes('lab science') || doc.data().name.toLowerCase().includes('clt')),
-              name: 'Certificate in Medical Lab Science',
-              prefix: 'CLT',
-              semesters: ['CLT1:1', 'CLT1:2', 'CLT2:1', 'CLT2:2']
-            };
+        let courseDocs = coursesSnapshot.docs.filter(courseConfig.filter);
 
-            let courseDocs = coursesSnapshot.docs.filter(courseConfig.filter);
+        if (courseDocs.length === 0) {
+          console.log(`No ${courseConfig.name} course found. Skipping.`);
+          alert('No Certificate in Medical Lab Science course found. Please create it first.');
+          return false;
+        }
 
-            if (courseDocs.length === 0) {
-              console.log(`No ${courseConfig.name} course found. Skipping.`);
-              alert('No Certificate in Medical Lab Science course found. Please create it first.');
-              return false;
+        const courseId = courseDocs[0].id;
+        console.log(`Using ${courseConfig.name} course for seeding: ${courseId}`);
+        let seededCourses = 1;
+
+        // 9 sample units (tailored for lab science)
+        const sampleUnits = [
+          { name: 'Basic Laboratory Sciences', description: 'Foundational lab knowledge.' },
+          { name: 'Microbiology Techniques', description: 'Microbial identification skills.' },
+          { name: 'Hematology', description: 'Blood analysis fundamentals.' },
+          { name: 'Clinical Chemistry', description: 'Chemical testing methods.' },
+          { name: 'Immunology', description: 'Immune system lab procedures.' },
+          { name: 'Urinalysis and Body Fluids', description: 'Fluid analysis techniques.' },
+          { name: 'Lab Safety and Quality Control', description: 'Safety protocols and standards.' },
+          { name: 'Instrumentation', description: 'Lab equipment operation.' },
+          { name: 'Phlebotomy and Specimen Collection', description: 'Sample handling practices.' }
+        ];
+
+        // 5 sample documents per unit
+        const sampleDocuments = [
+          { title: 'Lab Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Core lab material.' },
+          { title: 'Practical Exercises', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Hands-on lab activities.' },
+          { title: 'Past Lab Exams', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Previous assessments.' },
+          { title: 'Safety Guidelines', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Protocol summaries.' },
+          { title: 'Case Studies in Diagnostics', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Real lab scenarios.' }
+        ];
+
+        // For each semester in this course
+        for (const semesterId of courseConfig.semesters) {
+          console.log(`Processing semester ${semesterId} for ${courseConfig.name}...`);
+
+          // Check if semester exists
+          const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
+          const semesterDocSnap = await getDoc(semesterDocRef);
+          if (!semesterDocSnap.exists()) {
+            console.log(`Semester ${semesterId} not found in ${courseConfig.name}. Skipping.`);
+            continue;
+          }
+
+          // Clear all existing units in this semester
+          const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
+          const existingUnitsSnapshot = await getDocs(unitsRef);
+          if (existingUnitsSnapshot.size > 0) {
+            const deleteBatch = writeBatch(db);
+            for (const doc of existingUnitsSnapshot.docs) {
+              const unitDocsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${doc.id}/documents`);
+              const unitDocsSnapshot = await getDocs(unitDocsRef);
+              unitDocsSnapshot.docs.forEach((docSnap) => {
+                deleteBatch.delete(docSnap.ref);
+              });
+              deleteBatch.delete(doc.ref);
             }
+            await deleteBatch.commit();
+            console.log(`Cleared ${existingUnitsSnapshot.size} units and documents in ${semesterId}`);
+          }
 
-            const courseId = courseDocs[0].id;
-            console.log(`Using ${courseConfig.name} course for seeding: ${courseId}`);
-            let seededCourses = 1;
+          // Seed 9 units for this semester
+          for (let u = 0; u < 9; u++) {
+            const unitId = `unit${u + 1}`;
+            const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
+            await setDoc(unitDocRef, sampleUnits[u % sampleUnits.length], { merge: false });
+            console.log(`Added unit ${sampleUnits[u % sampleUnits.length].name} to ${semesterId}`);
 
-            // 9 sample units (tailored for lab science)
-            const sampleUnits = [
-              { name: 'Basic Laboratory Sciences', description: 'Foundational lab knowledge.' },
-              { name: 'Microbiology Techniques', description: 'Microbial identification skills.' },
-              { name: 'Hematology', description: 'Blood analysis fundamentals.' },
-              { name: 'Clinical Chemistry', description: 'Chemical testing methods.' },
-              { name: 'Immunology', description: 'Immune system lab procedures.' },
-              { name: 'Urinalysis and Body Fluids', description: 'Fluid analysis techniques.' },
-              { name: 'Lab Safety and Quality Control', description: 'Safety protocols and standards.' },
-              { name: 'Instrumentation', description: 'Lab equipment operation.' },
-              { name: 'Phlebotomy and Specimen Collection', description: 'Sample handling practices.' }
-            ];
-
-            // 5 sample documents per unit
-            const sampleDocuments = [
-              { title: 'Lab Lecture Notes', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Core lab material.' },
-              { title: 'Practical Exercises', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Hands-on lab activities.' },
-              { title: 'Past Lab Exams', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Previous assessments.' },
-              { title: 'Safety Guidelines', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Protocol summaries.' },
-              { title: 'Case Studies in Diagnostics', filePath: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', description: 'Real lab scenarios.' }
-            ];
-
-            // For each semester in this course
-            for (const semesterId of courseConfig.semesters) {
-              console.log(`Processing semester ${semesterId} for ${courseConfig.name}...`);
-
-              // Check if semester exists
-              const semesterDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters`, semesterId);
-              const semesterDocSnap = await getDoc(semesterDocRef);
-              if (!semesterDocSnap.exists()) {
-                console.log(`Semester ${semesterId} not found in ${courseConfig.name}. Skipping.`);
-                continue;
-              }
-
-              // Clear all existing units in this semester
-              const unitsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`);
-              const existingUnitsSnapshot = await getDocs(unitsRef);
-              if (existingUnitsSnapshot.size > 0) {
-                const deleteBatch = writeBatch(db);
-                for (const doc of existingUnitsSnapshot.docs) {
-                  const unitDocsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${doc.id}/documents`);
-                  const unitDocsSnapshot = await getDocs(unitDocsRef);
-                  unitDocsSnapshot.docs.forEach((docSnap) => {
-                    deleteBatch.delete(docSnap.ref);
-                  });
-                  deleteBatch.delete(doc.ref);
-                }
-                await deleteBatch.commit();
-                console.log(`Cleared ${existingUnitsSnapshot.size} units and documents in ${semesterId}`);
-              }
-
-              // Seed 9 units for this semester
-              for (let u = 0; u < 9; u++) {
-                const unitId = `unit${u + 1}`;
-                const unitDocRef = doc(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits`, unitId);
-                await setDoc(unitDocRef, sampleUnits[u % sampleUnits.length], { merge: false });
-                console.log(`Added unit ${sampleUnits[u % sampleUnits.length].name} to ${semesterId}`);
-
-                const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
-                for (const docData of sampleDocuments) {
-                  await addDoc(docsRef, docData);
-                }
-                console.log(`Added 5 documents to unit ${unitId} in ${semesterId}`);
-              }
+            const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${courseId}/semesters/${semesterId}/courseunits/${unitId}/documents`);
+            for (const docData of sampleDocuments) {
+              await addDoc(docsRef, docData);
             }
-
-            // Mark as seeded (commented to allow re-run if needed)
-            // localStorage.setItem('cml_all_seeded', 'true');
-            console.log('Certificate in Medical Lab Science all semesters seeding completed successfully (one-time).');
-            alert(`Successfully seeded 9 course units with 5 documents each for all existing semesters in ${courseConfig.name}! Refresh to see changes.`);
-            return true;
-          } catch (error) {
-            console.error('Certificate in Medical Lab Science seeding error:', error);
-            alert(`Seeding failed: ${error.message}. Check console for details.`);
-            return false;
+            console.log(`Added 5 documents to unit ${unitId} in ${semesterId}`);
           }
         }
+
+        // Mark as seeded (commented to allow re-run if needed)
+        // localStorage.setItem('cml_all_seeded', 'true');
+        console.log('Certificate in Medical Lab Science all semesters seeding completed successfully (one-time).');
+        alert(`Successfully seeded 9 course units with 5 documents each for all existing semesters in ${courseConfig.name}! Refresh to see changes.`);
+        return true;
+      } catch (error) {
+        console.error('Certificate in Medical Lab Science seeding error:', error);
+        alert(`Seeding failed: ${error.message}. Check console for details.`);
+        return false;
+      }
+    }
 
     // Initialize App on load
     document.addEventListener('DOMContentLoaded', () => {
@@ -1443,10 +1461,12 @@ function updateUserInfo() {
             setTimeout(() => { e.target.style.transform = ''; }, 150);
           } else if (e.target.id === 'about-nav-button') {
             e.preventDefault();
-            goToPage('about', true); // Keep menu open for sidebar nav
+            goToPage('about', false); // Close menu after selection
+            console.log('About button clicked');
           } else if (e.target.id === 'privacy-nav-button') {
             e.preventDefault();
-            goToPage('privacy', true); // Keep menu open for sidebar nav
+            goToPage('privacy', false); // Close menu after selection
+            console.log('Privacy button clicked');
           } else {
             const courseBtn = e.target.closest('.select-course');
             if (courseBtn) {
@@ -1472,7 +1492,10 @@ function updateUserInfo() {
             }
             const sidebarSemesterBtn = e.target.closest('.sidebar-semester');
             if (sidebarSemesterBtn) {
-              handleSemesterSelection(sidebarSemesterBtn.dataset.semesterId, true);
+              const semesterId = sidebarSemesterBtn.dataset.semesterId;
+              const courseId = sidebarSemesterBtn.dataset.courseId;
+              selectedCourse = courseId; // Set the selected course
+              handleSemesterSelection(semesterId, true); // From sidebar
               return;
             }
             const courseUnitBtn = e.target.closest('.select-courseunit');
