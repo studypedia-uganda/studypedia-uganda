@@ -107,6 +107,66 @@
     #sidebar::-webkit-scrollbar-thumb:hover {
       background: #a8a8a8;
     }
+    
+    /* Enhanced back button styles */
+    .back-button {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button:active {
+      transform: scale(0.95);
+    }
+    
+    .back-button-large {
+      width: 56px;
+      height: 56px;
+    }
+    
+    .back-button-content {
+      padding: 1rem 2rem;
+      font-size: 1.125rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .back-button-content:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .back-button-content:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* Enhanced menu button for better sensitivity */
+    .menu-button {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .menu-button:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+    
+    .menu-button:active {
+      transform: scale(0.95);
+    }
   </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
      crossorigin="anonymous"></script>
@@ -125,7 +185,8 @@
     <div class="relative z-10 flex flex-col min-h-screen">
       <header class="bg-white shadow-md p-4 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <button id="menu-button" class="focus:outline-none p-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md">
+          <!-- Enhanced menu button with larger clickable area -->
+          <button id="menu-button" class="menu-button focus:outline-none shadow-md">
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -153,12 +214,12 @@
           <div id="header-ad" class="ml-auto hidden md:block w-64 h-12 bg-gradient-to-r from-gray-200 to-gray-300 rounded shadow-md"></div>
         </div>
         <div class="flex space-x-2">
+          <!-- Enhanced back button -->
           <button id="back-button"
-            class="hidden bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            class="hidden back-button back-button-large bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors shadow-md hover:shadow-lg">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
-              </path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
           </button>
         </div>
@@ -451,7 +512,6 @@
       if (isMenuOpen) {
         document.body.style.overflow = 'hidden'; // Lock background scroll
         fetchCourses();  // Load courses when menu opens
-        updateMenuHighlights(); // Update highlights when menu opens
       } else {
         document.body.style.overflow = ''; // Restore scroll
       }
@@ -486,19 +546,9 @@
       selectedCourse = courseId;
       selectedSemester = null;
       selectedCourseUnit = null;
-      // For main page, expand semesters inline (prioritize over sidebar)
-      const mainCourseItem = document.querySelector('.course-item-main[data-course-id="' + courseId + '"]');
-      if (mainCourseItem) {
-        toggleMainCourseSemesters(courseId);
-        return;
-      }
-      // For sidebar, expand semesters in sidebar
-      const sidebarCourseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
-      if (sidebarCourseItem) {
-        toggleCourseSemesters(courseId);
-        return;
-      }
-      // Fallback navigation
+      
+      // For sidebar, close menu and navigate to course page
+      toggleMenu(); // Close the sidebar
       goToPage('course-semesters');
       fetchSemesters();
     }
@@ -579,16 +629,6 @@
                             </button>
                         </li>
                     `).join('');
-                    
-          // Add event listeners to semester buttons
-          semestersList.querySelectorAll('.sidebar-semester').forEach(button => {
-            button.addEventListener('click', function() {
-              const semesterId = this.dataset.semesterId;
-              const courseId = this.dataset.courseId;
-              selectedCourse = courseId; // Set the selected course
-              handleSemesterSelection(semesterId, true); // From sidebar
-            });
-          });
         } catch (error) {
           console.error('Error loading semesters in sidebar:', error);
           semestersList.innerHTML = '<li class="text-red-500 pl-6">Error loading semesters</li>';
@@ -600,11 +640,11 @@
       selectedSemester = semesterId;
       selectedCourseUnit = null;
       if (fromSidebar) {
-        // From sidebar, navigate and close menu
-        goToPage('semester-courseunits', false);
+        // From sidebar, navigate but keep menu open
+        goToPage('semester-courseunits', true);
         fetchCourseUnits();
       } else if (fromMain) {
-        // From main page, navigate
+        // From main page, navigate and close any expansions if needed
         goToPage('semester-courseunits');
         fetchCourseUnits();
       } else {
@@ -896,6 +936,7 @@
                               <button id="privacy-button" class="bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-green-600 hover:via-teal-600 hover:to-cyan-600 transform hover:scale-110 transition-all duration-500 ease-out">Privacy Policy</button>
                             </div>
                             
+                            
                         
                             <!-- AdSense Banner Ad Space at Bottom of Home -->
                             <div id="home-ad-bottom" class="mt-12 text-center">
@@ -922,7 +963,7 @@
                   <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
                 </div>
                 <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
-                <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
+                <p class="text-gray-600 mb-6 text-center">Click on a course to view its semesters and explore courseunits and documents.</p>
                 ${courses.length > 0 ? `
                   <div class="space-y-4">
                     ${courses.map((course) => `
@@ -1072,7 +1113,7 @@
                                 </li>
                             </ul>
                             <div class="mt-8 text-center">
-                                <button class="back-home bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-3 px-8 rounded-full hover:from-gray-400 hover:to-gray-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">Back to Home</button>
+                                <button class="back-button-content bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 hover:from-gray-400 hover:to-gray-500">Back to Home</button>
                             </div>
                         </div>
                     `;
@@ -1083,7 +1124,7 @@
                             <h2 class="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-6 animate-fade-in">Privacy Policy</h2>
                             <p class="text-gray-700 mb-6 leading-relaxed text-lg">Your privacy is important to us. This policy outlines how Studypedia Uganda collects, uses, and protects your information. We do not share your personal data with third parties. All access and usage data is anonymized to improve our service. Your documents are stored securely with Firebase Firestore and Storage, with public documents accessible to all logged-in users and private documents restricted to the authenticated user's ID.</p>
                             <div class="mt-8 text-center">
-                              <button class="back-home bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-3 px-8 rounded-full hover:from-gray-400 hover:to-gray-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">Back to Home</button>
+                                <button class="back-button-content bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 hover:from-gray-400 hover:to-gray-500">Back to Home</button>
                             </div>
                         </div>
                     `;
@@ -1123,14 +1164,6 @@
                         <ul class="semesters-list pl-4 space-y-1 hidden"></ul>
                     </li>
                 `).join('');
-                
-        // Add event listeners to course buttons
-        document.querySelectorAll('.select-course').forEach(button => {
-          button.addEventListener('click', function() {
-            const courseId = this.dataset.courseId;
-            handleCourseSelection(courseId);
-          });
-        });
       } else {
         courseList.innerHTML = `<li class="text-gray-500">No courses found.</li>`;
       }
@@ -1285,9 +1318,6 @@
 
     // Function to seed 9 course units for Certificate in Medical Lab Science semesters (one-time only, clears existing, no creation)
     async function seedDCM31Units() {
-      // Temporarily remove localStorage check to force re-seeding
-      // localStorage.removeItem('cml_all_seeded');
-
       try {
         console.log('Starting one-time seeding for all Certificate in Medical Lab Science semesters with 9 units each...');
 
@@ -1381,8 +1411,6 @@
           }
         }
 
-        // Mark as seeded (commented to allow re-run if needed)
-        // localStorage.setItem('cml_all_seeded', 'true');
         console.log('Certificate in Medical Lab Science all semesters seeding completed successfully (one-time).');
         alert(`Successfully seeded 9 course units with 5 documents each for all existing semesters in ${courseConfig.name}! Refresh to see changes.`);
         return true;
@@ -1427,7 +1455,31 @@
 
         // Single event delegation for all elements (static and dynamic)
         document.addEventListener('click', async (e) => {
-          if (e.target.id === 'courses-button') {
+          // Handle menu button click with increased sensitivity
+          if (e.target.id === 'menu-button' || e.target.closest('#menu-button')) {
+            e.preventDefault();
+            toggleMenu();
+          } else if (e.target.id === 'close-menu-button') {
+            toggleMenu();
+          } else if (e.target.id === 'menu-overlay') {
+            toggleMenu();
+          } else if (e.target.id === 'home-button') {
+            e.preventDefault();
+            goToPage('home');
+          } else if (e.target.id === 'back-button' || e.target.closest('#back-button')) {
+            e.preventDefault();
+            handleBack();
+            // Add visual feedback
+            const btn = e.target.id === 'back-button' ? e.target : e.target.closest('#back-button');
+            btn.style.transform = 'scale(0.9)';
+            setTimeout(() => { btn.style.transform = ''; }, 150);
+          } else if (e.target.id === 'about-nav-button') {
+            e.preventDefault();
+            goToPage('about', true); // Keep menu open for sidebar nav
+          } else if (e.target.id === 'privacy-nav-button') {
+            e.preventDefault();
+            goToPage('privacy', true); // Keep menu open for sidebar nav
+          } else if (e.target.id === 'courses-button') {
             e.preventDefault();
             if (!user || user.isAnonymous) {
               showModal(loginModal);
@@ -1443,67 +1495,53 @@
             e.preventDefault();
             goToPage('privacy', false);
             console.log('Privacy button clicked');
-          } else if (e.target.id === 'menu-button') {
-            e.preventDefault();
-            toggleMenu();
-          } else if (e.target.id === 'close-menu-button') {
-            toggleMenu();
-          } else if (e.target.id === 'menu-overlay') {
-            toggleMenu();
-          } else if (e.target.id === 'home-button') {
-            e.preventDefault();
-            goToPage('home');
-          } else if (e.target.id === 'back-button') {
-            e.preventDefault();
-            handleBack();
-            // Add visual feedback
-            e.target.style.transform = 'scale(0.95)';
-            setTimeout(() => { e.target.style.transform = ''; }, 150);
-          } else if (e.target.id === 'about-nav-button') {
-            e.preventDefault();
-            goToPage('about', false); // Close menu after selection
-            console.log('About button clicked');
-          } else if (e.target.id === 'privacy-nav-button') {
-            e.preventDefault();
-            goToPage('privacy', false); // Close menu after selection
-            console.log('Privacy button clicked');
           } else {
+            // Handle course selection from sidebar
             const courseBtn = e.target.closest('.select-course');
             if (courseBtn) {
               handleCourseSelection(courseBtn.dataset.courseId);
               return;
             }
+            
+            // Handle course selection from main content
             const mainCourseItem = e.target.closest('.course-item-main');
             if (mainCourseItem && !e.target.closest('.semesters-list-main')) {
               const courseId = mainCourseItem.dataset.courseId;
               handleCourseSelection(courseId);
               return;
             }
+            
+            // Handle semester selection
             const semesterBtn = e.target.closest('.select-semester');
             if (semesterBtn) {
               e.preventDefault();
               handleSemesterSelection(semesterBtn.dataset.semesterId);
               return;
             }
+            
+            // Handle semester selection from main content
             const mainSemesterDiv = e.target.closest('.select-semester-main');
             if (mainSemesterDiv) {
               handleSemesterSelection(mainSemesterDiv.dataset.semesterId, false, true);
               return;
             }
+            
+            // Handle semester selection from sidebar
             const sidebarSemesterBtn = e.target.closest('.sidebar-semester');
             if (sidebarSemesterBtn) {
-              const semesterId = sidebarSemesterBtn.dataset.semesterId;
-              const courseId = sidebarSemesterBtn.dataset.courseId;
-              selectedCourse = courseId; // Set the selected course
-              handleSemesterSelection(semesterId, true); // From sidebar
+              handleSemesterSelection(sidebarSemesterBtn.dataset.semesterId, true);
               return;
             }
+            
+            // Handle course unit selection
             const courseUnitBtn = e.target.closest('.select-courseunit');
             if (courseUnitBtn) {
               e.preventDefault();
               handleCourseUnitSelection(courseUnitBtn.dataset.courseunitId);
               return;
             }
+            
+            // Handle document view
             const viewDocBtn = e.target.closest('.view-doc');
             if (viewDocBtn) {
               e.preventDefault();
@@ -1516,6 +1554,8 @@
               }
               return;
             }
+            
+            // Handle document download
             const downloadDocBtn = e.target.closest('.download-doc');
             if (downloadDocBtn) {
               e.preventDefault();
@@ -1528,12 +1568,19 @@
               }
               return;
             }
-            const backHomeBtn = e.target.closest('.back-home');
+            
+            // Handle back to home buttons in content
+            const backHomeBtn = e.target.closest('.back-button-content');
             if (backHomeBtn) {
               e.preventDefault();
               goToPage('home');
+              // Add visual feedback
+              backHomeBtn.style.transform = 'scale(0.95)';
+              setTimeout(() => { backHomeBtn.style.transform = ''; }, 150);
               return;
             }
+            
+            // Handle clear sample data
             if (e.target.id === 'clear-sample-data') {
               e.preventDefault();
               if (confirm('This will permanently delete only the seeded sample data from the RESOURCES_STUDYPEDIA collection in Firebase, preserving your manually added content. This cannot be undone. Are you sure?')) {
@@ -1600,6 +1647,8 @@
                 alert('Please fill in all fields.');
               }
             } else if (e.target.id === 'login-from-viewer') {
+              showModal(loginModal);
+            } else if (e.target.id === 'login-from-courses') {
               showModal(loginModal);
             }
           }
