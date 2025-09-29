@@ -254,6 +254,11 @@
                 class="w-full text-left text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-teal-600 transition-all duration-300 ease-in-out py-3 px-4 rounded-xl cursor-pointer focus:outline-none focus:ring-4 focus:ring-green-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">Privacy
                 Policy</button>
             </li>
+            <li class="pt-4 border-t border-blue-200">
+              <button id="admin-dashboard-button"
+                class="w-full text-left text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-600 transition-all duration-300 ease-in-out py-3 px-4 rounded-xl cursor-pointer focus:outline-none focus:ring-4 focus:ring-purple-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] hidden">Admin
+                Dashboard</button>
+            </li>
           </ul>
         </nav>
         <!-- AdSense Sidebar Skyscraper Ad Space -->
@@ -330,6 +335,52 @@
         </div>
       </div>
     </div>
+
+    <!-- Payment Prompt Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <svg class="w-6 h-6 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Payment Required
+          </h3>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <p class="text-gray-700 mb-2">To access Studypedia Uganda's premium educational resources, please complete the one-time registration payment.</p>
+            <div class="bg-white rounded p-3 border border-yellow-300">
+              <p class="text-lg font-bold text-gray-800">Amount: UGX 5,000</p>
+              <p class="text-sm text-gray-600">Mobile Money to: +256756454646</p>
+              <p class="text-sm text-gray-600">Account Name: KAIGWA AKRAM</p>
+            </div>
+          </div>
+          <form id="payment-form">
+            <div class="mb-4">
+              <label for="payment-reference" class="block text-sm font-medium text-gray-700 mb-2">Payment Reference/Transaction ID</label>
+              <input type="text" id="payment-reference" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your payment reference or transaction ID">
+            </div>
+            <div class="mb-6">
+              <label for="payment-method" class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+              <select id="payment-method" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Select Payment Method</option>
+                <option value="MTN Mobile Money">MTN Mobile Money</option>
+                <option value="Airtel Money">Airtel Money</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors">Submit Payment Details</button>
+          </form>
+          <p class="mt-4 text-center text-sm text-gray-600">
+            <button id="contact-admin" class="text-blue-500 hover:underline">Contact Admin</button> |
+            <button id="logout-instead" class="text-red-500 hover:underline">Logout Instead</button>
+          </p>
+          <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Firebase SDK Imports -->
@@ -368,6 +419,10 @@
     let courseUnits = [];
     let documents = [];
 
+    // Payment system variables
+    let paymentModalShown = false;
+    let paymentSubmitted = false;
+
     // UI elements
     const mainContent = document.getElementById('main-content');
     const sidebar = document.getElementById('sidebar');
@@ -385,20 +440,42 @@
     const logoutButton = document.getElementById('logout-button');
     const loginModal = document.getElementById('login-modal');
     const registerModal = document.getElementById('register-modal');
+    const paymentModal = document.getElementById('payment-modal');
     const closeLoginModal = document.getElementById('close-login-modal');
     const closeRegisterModal = document.getElementById('close-register-modal');
+    const closePaymentModal = document.getElementById('close-payment-modal');
     const switchToRegister = document.getElementById('switch-to-register');
     const switchToLogin = document.getElementById('switch-to-login');
+    const contactAdmin = document.getElementById('contact-admin');
+    const logoutInstead = document.getElementById('logout-instead');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
+    const paymentForm = document.getElementById('payment-form');
     const seedButton = document.getElementById('seed-clt-button');
 // Auth functions
 async function registerUser(email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     console.log('User registered:', userCredential.user);
-    alert('Registration successful! You can now login.');
+
+    // Initialize payment status for new user
+    await setDoc(doc(db, 'user_payments', userCredential.user.uid), {
+      userId: userCredential.user.uid,
+      userEmail: email,
+      status: 'pending',
+      amount: 5000,
+      registeredAt: new Date(),
+      isNewUser: true
+    });
+
+    alert('Registration successful! Please complete the payment to access the platform.');
     hideModal(registerModal);
+
+    // Show payment modal for new users only
+    setTimeout(() => {
+      showPaymentModal();
+    }, 500);
+
     return userCredential.user;
   } catch (error) {
     console.error('Registration error:', error);
@@ -410,8 +487,25 @@ async function loginUser(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     console.log('User logged in:', userCredential.user);
-    alert('Login successful!');
-    hideModal(loginModal);
+
+    // Check if user is new or existing
+    const paymentStatus = await checkPaymentStatus(userCredential.user.uid);
+
+    if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+      // Existing user with approved payment or no payment record (legacy user)
+      alert('Login successful! Welcome back.');
+      hideModal(loginModal);
+    } else {
+      // User with pending payment (new user who hasn't paid yet)
+      alert('Login successful! Please complete the payment to access the platform.');
+      hideModal(loginModal);
+
+      // Show payment modal
+      setTimeout(() => {
+        showPaymentModal();
+      }, 500);
+    }
+
     return userCredential.user;
   } catch (error) {
     console.error('Login error:', error);
@@ -439,12 +533,32 @@ function updateAuthUI(isLoggedIn, user) {
     seedButton.classList.add('hidden');
     document.getElementById('seed-diploma-button').classList.add('hidden');
     logoutButton.textContent = `Logout (${user.email || user.uid.substring(0,8)}...)`;
+
+    // Show admin buttons if user is admin
+    if (user.email === 'kaigwaakram123@gmail.com') {
+      showAdminAccessButton();
+    }
   } else {
     loginButton.classList.remove('hidden');
     registerButton.classList.remove('hidden');
     logoutButton.classList.add('hidden');
     seedButton.classList.add('hidden');
     document.getElementById('seed-diploma-button').classList.add('hidden');
+
+    // Hide admin buttons when logged out
+    hideAdminButtons();
+  }
+}
+
+function hideAdminButtons() {
+  const adminButton = document.getElementById('admin-dashboard-button');
+  if (adminButton) {
+    adminButton.classList.add('hidden');
+  }
+
+  const adminAccessSection = document.getElementById('admin-access-section');
+  if (adminAccessSection) {
+    adminAccessSection.classList.add('hidden');
   }
 }
 
@@ -485,6 +599,107 @@ function updateUserInfo() {
     function hideModal(modal) {
       modal.classList.add('hidden');
       document.body.style.overflow = '';
+    }
+
+    // Payment modal functions
+    function showPaymentModal() {
+      paymentModalShown = true;
+      showModal(paymentModal);
+    }
+
+    function hidePaymentModal() {
+      hideModal(paymentModal);
+    }
+
+    // Check if user has paid and been approved
+    async function checkPaymentStatus(userId) {
+      try {
+        const paymentDoc = await getDoc(doc(db, 'user_payments', userId));
+        if (paymentDoc.exists()) {
+          const paymentData = paymentDoc.data();
+          return {
+            hasPaid: paymentData.status === 'approved',
+            status: paymentData.status,
+            paymentDate: paymentData.paymentDate,
+            approvedDate: paymentData.approvedDate,
+            isNewUser: paymentData.isNewUser || false,
+            registeredAt: paymentData.registeredAt
+          };
+        }
+        return {
+          hasPaid: false,
+          status: 'none',
+          isNewUser: false
+        };
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        return {
+          hasPaid: false,
+          status: 'error',
+          isNewUser: false
+        };
+      }
+    }
+
+    // Submit payment details
+    async function submitPaymentDetails(reference, method) {
+      try {
+        console.log('🔄 Starting payment submission...');
+        console.log('Current user:', user);
+        console.log('User ID:', user?.uid);
+        console.log('User email:', user?.email);
+
+        if (!user || user.isAnonymous) {
+          throw new Error('User not authenticated. Please log in again.');
+        }
+
+        if (!user.uid) {
+          throw new Error('User ID is missing. Please log in again.');
+        }
+
+        if (!reference || reference.trim().length < 3) {
+          throw new Error('Please enter a valid payment reference (at least 3 characters)');
+        }
+
+        if (!method) {
+          throw new Error('Please select a payment method');
+        }
+
+        const paymentData = {
+          userId: user.uid,
+          userEmail: user.email,
+          paymentReference: reference,
+          paymentMethod: method,
+          amount: 5000,
+          status: 'pending',
+          paymentDate: new Date(),
+          submittedAt: new Date(),
+          isNewUser: true
+        };
+
+        console.log('📝 Payment data to be saved:', paymentData);
+
+        // Save to user_payments collection
+        console.log('💾 Saving to user_payments collection...');
+        await setDoc(doc(db, 'user_payments', user.uid), paymentData);
+        console.log('✅ Payment data saved successfully');
+
+        // Also add to admin notifications
+        console.log('🔔 Creating admin notification...');
+        await addDoc(collection(db, 'payment_notifications'), {
+          ...paymentData,
+          type: 'new_payment',
+          createdAt: new Date()
+        });
+        console.log('✅ Admin notification created');
+
+        return true;
+      } catch (error) {
+        console.error('❌ Error submitting payment:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        throw error;
+      }
     }
 
 
@@ -533,7 +748,15 @@ function updateUserInfo() {
       if (page === 'courses') {
         fetchCourses();
       }
+      if (page === 'admin-dashboard') {
+        loadAdminDashboard();
+      }
       renderContent();
+
+      // Ensure admin buttons remain visible for admin users when navigating
+      if (user && user.email === 'kaigwaakram123@gmail.com' && page === 'home') {
+        showAdminAccessButton();
+      }
     }
 
     function handleCourseSelection(courseId) {
@@ -558,6 +781,7 @@ function updateUserInfo() {
     }
 
     window.handleCourseSelection = handleCourseSelection;
+    window.goToPage = goToPage;
 
     function toggleCourseSemesters(courseId) {
       const courseItem = document.querySelector('.course-item[data-course-id="' + courseId + '"]');
@@ -705,7 +929,7 @@ function updateUserInfo() {
         goToPage('home');
       } else if (currentPage === 'courses') {
         goToPage('home');
-      } else if (currentPage === 'about' || currentPage === 'privacy') {
+      } else if (currentPage === 'about' || currentPage === 'privacy' || currentPage === 'admin-dashboard') {
         goToPage('home');
       }
     }
@@ -942,6 +1166,16 @@ function updateUserInfo() {
                             
                             
                         
+                            <!-- Admin Access Button (only visible to admin) -->
+                            <div id="admin-access-section" class="mt-12 text-center hidden">
+                              <button id="admin-access-button" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 text-white font-bold py-4 px-8 rounded-full shadow-xl hover:shadow-2xl hover:from-purple-700 hover:via-indigo-700 hover:to-purple-900 transform hover:scale-110 transition-all duration-500 ease-out">
+                                <svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                Admin Dashboard
+                              </button>
+                            </div>
+
                             <!-- AdSense Banner Ad Space at Bottom of Home -->
                             <div id="home-ad-bottom" class="mt-12 text-center">
                                 <div class="mx-auto w-full max-w-4xl h-16 bg-gray-200 rounded-lg"></div>
@@ -1129,6 +1363,132 @@ function updateUserInfo() {
                             <p class="text-gray-700 mb-6 leading-relaxed text-lg">Your privacy is important to us. This policy outlines how Studypedia Uganda collects, uses, and protects your information. We do not share your personal data with third parties. All access and usage data is anonymized to improve our service. Your documents are stored securely with Firebase Firestore and Storage, with public documents accessible to all logged-in users and private documents restricted to the authenticated user's ID.</p>
                             <div class="mt-8 text-center">
                               <button class="back-home bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-3 px-8 rounded-full hover:from-gray-400 hover:to-gray-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">Back to Home</button>
+                            </div>
+                        </div>
+                    `;
+          break;
+        case 'admin-dashboard':
+          contentHTML = `
+                        <div class="p-8 bg-gradient-to-br from-white via-purple-50 to-indigo-100 backdrop-blur-sm rounded-2xl shadow-2xl w-full border border-purple-200">
+                            <div class="flex justify-between items-center mb-6">
+                              <h2 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent animate-fade-in">Admin Dashboard</h2>
+                              <button onclick="window.goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors">
+                                Back to Home
+                              </button>
+                            </div>
+
+                            <!-- Admin Stats Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                              <div class="bg-white p-6 rounded-xl shadow-lg border border-purple-200">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <p class="text-sm font-medium text-gray-600">Total Users</p>
+                                    <p id="total-users" class="text-3xl font-bold text-purple-600">--</p>
+                                  </div>
+                                  <div class="bg-purple-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="bg-white p-6 rounded-xl shadow-lg border border-green-200">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <p class="text-sm font-medium text-gray-600">Approved Users</p>
+                                    <p id="approved-users" class="text-3xl font-bold text-green-600">--</p>
+                                  </div>
+                                  <div class="bg-green-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="bg-white p-6 rounded-xl shadow-lg border border-yellow-200">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <p class="text-sm font-medium text-gray-600">Pending Users</p>
+                                    <p id="pending-users" class="text-3xl font-bold text-yellow-600">--</p>
+                                  </div>
+                                  <div class="bg-yellow-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="bg-white p-6 rounded-xl shadow-lg border border-red-200">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <p class="text-sm font-medium text-gray-600">Rejected Users</p>
+                                    <p id="rejected-users" class="text-3xl font-bold text-red-600">--</p>
+                                  </div>
+                                  <div class="bg-red-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Search and Filter Section -->
+                            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-6">
+                              <div class="flex flex-col md:flex-row gap-4 items-center">
+                                <div class="flex-1 w-full">
+                                  <input type="text" id="user-search" placeholder="Search users by email..."
+                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="flex gap-2">
+                                  <select id="status-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                  </select>
+                                  <button id="refresh-users" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors" onclick="window.loadAdminDashboard()">
+                                    Refresh
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Bulk Actions -->
+                            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-6">
+                              <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                  <label class="flex items-center">
+                                    <input type="checkbox" id="select-all-users" class="mr-2">
+                                    <span class="text-sm font-medium">Select All</span>
+                                  </label>
+                                  <span id="selected-count" class="text-sm text-gray-600">0 selected</span>
+                                </div>
+                                <div class="flex gap-2">
+                                  <button id="bulk-approve" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors hidden" onclick="window.bulkApproveUsers()">
+                                    Approve Selected
+                                  </button>
+                                  <button id="bulk-reject" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors hidden" onclick="window.bulkRejectUsers()">
+                                    Reject Selected
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Users Table -->
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                              <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-xl font-semibold text-gray-800">User Management</h3>
+                              </div>
+                              <div id="users-table" class="p-6">
+                                <div class="text-center py-8">
+                                  <div class="animate-spin rounded-full h-8 w-8 border-4 border-purple-500 border-t-transparent mx-auto"></div>
+                                  <p class="mt-4 text-gray-500">Loading users...</p>
+                                </div>
+                              </div>
                             </div>
                         </div>
                     `;
@@ -1562,6 +1922,526 @@ function updateUserInfo() {
       }
     }
 
+    // Admin panel functions
+    function showAdminPanel() {
+      // Add admin panel to the sidebar
+      const userProfileSection = document.getElementById('user-profile-section');
+      if (userProfileSection && user.email === 'kaigwaakram123@gmail.com') {
+        userProfileSection.innerHTML = `
+          <div class="flex items-center space-x-2 mb-2">
+            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+            <span>Admin Panel</span>
+          </div>
+          <button id="view-pending-payments" class="w-full bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 transition-colors">
+            Pending Payments (${getPendingPaymentsCount()})
+          </button>
+          <button id="view-approved-payments" class="w-full bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded transition-colors">
+            Approved Users
+          </button>
+        `;
+      }
+    }
+
+    function showAdminAccessButton() {
+      // Show admin dashboard button in sidebar
+      const adminButton = document.getElementById('admin-dashboard-button');
+      if (adminButton) {
+        adminButton.classList.remove('hidden');
+      }
+
+      // Show admin access button on homepage
+      const adminAccessSection = document.getElementById('admin-access-section');
+      const adminAccessButton = document.getElementById('admin-access-button');
+      if (adminAccessSection && adminAccessButton) {
+        adminAccessSection.classList.remove('hidden');
+      }
+    }
+
+    // Admin Dashboard Functions - Global variables
+    let allUsers = [];
+    let filteredUsers = [];
+    let selectedUsers = new Set();
+
+    async function loadAdminDashboard() {
+      try {
+        console.log('Loading admin dashboard...');
+        const paymentsSnapshot = await getDocs(collection(db, 'user_payments'));
+        const users = [];
+        const stats = { total: 0, approved: 0, pending: 0, rejected: 0 };
+
+        paymentsSnapshot.forEach(doc => {
+          const data = doc.data();
+          users.push({
+            id: doc.id,
+            email: data.userEmail,
+            status: data.status,
+            amount: data.amount,
+            paymentMethod: data.paymentMethod,
+            paymentReference: data.paymentReference,
+            paymentDate: data.paymentDate,
+            submittedAt: data.submittedAt,
+            approvedAt: data.approvedAt,
+            rejectedAt: data.rejectedAt,
+            registeredAt: data.registeredAt,
+            approvedBy: data.approvedBy,
+            rejectedBy: data.rejectedBy
+          });
+          stats.total++;
+          if (data.status === 'approved') stats.approved++;
+          else if (data.status === 'pending') stats.pending++;
+          else if (data.status === 'rejected') stats.rejected++;
+        });
+
+        allUsers = users;
+        filteredUsers = users;
+
+        // Update stats
+        document.getElementById('total-users').textContent = stats.total;
+        document.getElementById('approved-users').textContent = stats.approved;
+        document.getElementById('pending-users').textContent = stats.pending;
+        document.getElementById('rejected-users').textContent = stats.rejected;
+
+        renderUsersTable();
+        // Setup event listeners after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          setupAdminDashboardEventListeners();
+        }, 100);
+
+      } catch (error) {
+        console.error('Error loading admin dashboard:', error);
+        document.getElementById('users-table').innerHTML = `
+          <div class="text-center py-8">
+            <p class="text-red-500">Error loading users: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderUsersTable() {
+      const tableContainer = document.getElementById('users-table');
+      if (filteredUsers.length === 0) {
+        tableContainer.innerHTML = `
+          <div class="text-center py-8">
+            <p class="text-gray-500">No users found.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const usersHtml = filteredUsers.map(user => {
+        const date = user.paymentDate ? new Date(user.paymentDate.toDate()).toLocaleDateString() : 'N/A';
+        const statusBadge = getStatusBadge(user.status);
+        const isChecked = selectedUsers.has(user.id) ? 'checked' : '';
+
+        return `
+          <div class="border-b border-gray-200 pb-4 mb-4 last:border-b-0">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-3">
+                <input type="checkbox" class="user-checkbox mt-1" data-user-id="${user.id}" ${isChecked}>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <p class="font-semibold text-gray-800">${user.email}</p>
+                    ${statusBadge}
+                  </div>
+                  <div class="text-sm text-gray-600 space-y-1">
+                    <p>Amount: UGX ${user.amount?.toLocaleString() || 'N/A'}</p>
+                    <p>Method: ${user.paymentMethod || 'N/A'}</p>
+                    <p>Reference: ${user.paymentReference || 'N/A'}</p>
+                    <p>Date: ${date}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                ${user.status === 'pending' ? `
+                  <button onclick="window.approveSingleUser('${user.id}')"
+                          class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                    Approve
+                  </button>
+                  <button onclick="window.rejectSingleUser('${user.id}')"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                    Reject
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      tableContainer.innerHTML = usersHtml;
+    }
+
+    function getStatusBadge(status) {
+      const badges = {
+        'approved': '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">APPROVED</span>',
+        'pending': '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">PENDING</span>',
+        'rejected': '<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">REJECTED</span>'
+      };
+      return badges[status] || '<span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">UNKNOWN</span>';
+    }
+
+    function setupAdminDashboardEventListeners() {
+      // Search functionality
+      const searchInput = document.getElementById('user-search');
+      const statusFilter = document.getElementById('status-filter');
+      const refreshButton = document.getElementById('refresh-users');
+      const selectAllCheckbox = document.getElementById('select-all-users');
+      const bulkApproveBtn = document.getElementById('bulk-approve');
+      const bulkRejectBtn = document.getElementById('bulk-reject');
+
+      if (searchInput) searchInput.addEventListener('input', filterUsers);
+      if (statusFilter) statusFilter.addEventListener('change', filterUsers);
+      if (refreshButton) refreshButton.addEventListener('click', () => loadAdminDashboard());
+
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+          const checkboxes = document.querySelectorAll('.user-checkbox');
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+            const userId = checkbox.dataset.userId;
+            if (this.checked) {
+              selectedUsers.add(userId);
+            } else {
+              selectedUsers.delete(userId);
+            }
+          });
+          updateBulkActions();
+        });
+      }
+
+      // Setup checkbox event listeners after table is rendered
+      setTimeout(() => {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+            const userId = this.dataset.userId;
+            if (this.checked) {
+              selectedUsers.add(userId);
+            } else {
+              selectedUsers.delete(userId);
+            }
+            updateBulkActions();
+          });
+        });
+      }, 200);
+    }
+
+    function filterUsers() {
+      const searchTerm = document.getElementById('user-search').value.toLowerCase();
+      const statusFilter = document.getElementById('status-filter').value;
+
+      filteredUsers = allUsers.filter(user => {
+        const matchesSearch = user.email.toLowerCase().includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      renderUsersTable();
+    }
+
+    function updateBulkActions() {
+      const selectedCount = document.getElementById('selected-count');
+      const bulkApproveBtn = document.getElementById('bulk-approve');
+      const bulkRejectBtn = document.getElementById('bulk-reject');
+
+      selectedCount.textContent = `${selectedUsers.size} selected`;
+
+      if (selectedUsers.size > 0) {
+        bulkApproveBtn.classList.remove('hidden');
+        bulkRejectBtn.classList.remove('hidden');
+      } else {
+        bulkApproveBtn.classList.add('hidden');
+        bulkRejectBtn.classList.add('hidden');
+      }
+    }
+
+    async function approveSingleUser(userId) {
+      if (confirm('Are you sure you want to approve this user?')) {
+        await approveUserPayment(userId);
+        await loadAdminDashboard(); // Refresh the dashboard
+      }
+    }
+
+    async function rejectSingleUser(userId) {
+      if (confirm('Are you sure you want to reject this user?')) {
+        await rejectUserPayment(userId);
+        await loadAdminDashboard(); // Refresh the dashboard
+      }
+    }
+
+    // Make functions globally available
+    window.bulkApproveUsers = bulkApproveUsers;
+    window.bulkRejectUsers = bulkRejectUsers;
+    window.approveSingleUser = approveSingleUser;
+    window.rejectSingleUser = rejectSingleUser;
+    window.loadAdminDashboard = loadAdminDashboard;
+
+    async function bulkApproveUsers() {
+      if (selectedUsers.size === 0) return;
+
+      if (confirm(`Are you sure you want to approve ${selectedUsers.size} selected users?`)) {
+        const promises = Array.from(selectedUsers).map(userId => approveUserPayment(userId));
+        await Promise.all(promises);
+        selectedUsers.clear();
+        updateBulkActions();
+        await loadAdminDashboard(); // Refresh the dashboard
+      }
+    }
+
+    async function bulkRejectUsers() {
+      if (selectedUsers.size === 0) return;
+
+      if (confirm(`Are you sure you want to reject ${selectedUsers.size} selected users?`)) {
+        const promises = Array.from(selectedUsers).map(userId => rejectUserPayment(userId));
+        await Promise.all(promises);
+        selectedUsers.clear();
+        updateBulkActions();
+        await loadAdminDashboard(); // Refresh the dashboard
+      }
+    }
+
+    function getPendingPaymentsCount() {
+      // This would be updated with real-time listener
+      return '0';
+    }
+
+    // Approve user payment
+    async function approveUserPayment(userId) {
+      try {
+        console.log('Approving payment for user:', userId);
+
+        // Update payment status
+        await setDoc(doc(db, 'user_payments', userId), {
+          status: 'approved',
+          approvedAt: new Date(),
+          approvedBy: user.email
+        }, { merge: true });
+        console.log('Payment status updated to approved');
+
+        // Add notification
+        await addDoc(collection(db, 'payment_notifications'), {
+          userId: userId,
+          type: 'payment_approved',
+          message: 'Your payment has been approved. You now have access to all courses.',
+          createdAt: new Date()
+        });
+        console.log('Approval notification created');
+
+        alert('Payment approved successfully!');
+        loadPendingPayments(); // Refresh the list
+      } catch (error) {
+        console.error('Error approving payment:', error);
+        alert('Error approving payment: ' + error.message);
+      }
+    }
+
+    // Load pending payments for admin
+    async function loadPendingPayments() {
+      try {
+        const paymentsSnapshot = await getDocs(query(
+          collection(db, 'user_payments'),
+          where('status', '==', 'pending')
+        ));
+
+        const pendingPayments = [];
+        paymentsSnapshot.forEach(doc => {
+          pendingPayments.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Update the pending payments count
+        const countElement = document.querySelector('#view-pending-payments');
+        if (countElement) {
+          countElement.textContent = `Pending Payments (${pendingPayments.length})`;
+        }
+
+        return pendingPayments;
+      } catch (error) {
+        console.error('Error loading pending payments:', error);
+        return [];
+      }
+    }
+
+    // Handle payment form submission
+    async function handlePaymentSubmission(event) {
+      event.preventDefault();
+
+      const reference = document.getElementById('payment-reference').value.trim();
+      const method = document.getElementById('payment-method').value;
+
+      if (!reference || !method) {
+        alert('Please fill in all payment details.');
+        return;
+      }
+
+      try {
+        await submitPaymentDetails(reference, method);
+        alert('Payment details submitted successfully! Waiting for admin approval.');
+
+        // Hide payment modal
+        hidePaymentModal();
+
+        // Show waiting message
+        mainContent.innerHTML = `
+          <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Submitted</h2>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+              <p class="text-gray-700">Your payment details have been submitted and are pending admin approval.</p>
+              <p class="text-sm text-gray-600 mt-2">You will be notified once approved.</p>
+            </div>
+            <button onclick="location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
+              Refresh Page
+            </button>
+          </div>
+        `;
+
+      } catch (error) {
+        console.error('Error submitting payment:', error);
+        alert('Error submitting payment: ' + error.message);
+      }
+    }
+
+    // Admin panel functions
+    async function showPendingPaymentsPanel() {
+      try {
+        const pendingPayments = await loadPendingPayments();
+
+        let contentHTML = `
+          <div class="p-8 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-lg w-full">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Pending Payments</h2>
+            <div class="mb-4">
+              <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                Back to Home
+              </button>
+            </div>
+        `;
+
+        if (pendingPayments.length === 0) {
+          contentHTML += `
+            <p class="text-center text-gray-500 py-8">No pending payments.</p>
+          `;
+        } else {
+          contentHTML += `
+            <div class="space-y-4">
+              ${pendingPayments.map(payment => `
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <p class="font-semibold text-gray-800">${payment.userEmail}</p>
+                      <p class="text-sm text-gray-600">Amount: UGX ${payment.amount.toLocaleString()}</p>
+                      <p class="text-sm text-gray-600">Method: ${payment.paymentMethod}</p>
+                      <p class="text-sm text-gray-600">Reference: ${payment.paymentReference}</p>
+                      <p class="text-sm text-gray-600">Date: ${new Date(payment.paymentDate.toDate()).toLocaleDateString()}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                      <button onclick="approveUserPayment('${payment.userId}')"
+                              class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        Approve
+                      </button>
+                      <button onclick="rejectUserPayment('${payment.userId}')"
+                              class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        contentHTML += `</div>`;
+        mainContent.innerHTML = contentHTML;
+
+      } catch (error) {
+        console.error('Error showing pending payments:', error);
+        alert('Error loading pending payments: ' + error.message);
+      }
+    }
+
+    async function showApprovedPaymentsPanel() {
+      try {
+        const approvedSnapshot = await getDocs(query(
+          collection(db, 'user_payments'),
+          where('status', '==', 'approved')
+        ));
+
+        const approvedPayments = [];
+        approvedSnapshot.forEach(doc => {
+          approvedPayments.push({ id: doc.id, ...doc.data() });
+        });
+
+        let contentHTML = `
+          <div class="p-8 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-lg w-full">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Approved Users</h2>
+            <div class="mb-4">
+              <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                Back to Home
+              </button>
+            </div>
+        `;
+
+        if (approvedPayments.length === 0) {
+          contentHTML += `
+            <p class="text-center text-gray-500 py-8">No approved users yet.</p>
+          `;
+        } else {
+          contentHTML += `
+            <div class="space-y-4">
+              ${approvedPayments.map(payment => `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="font-semibold text-gray-800">${payment.userEmail}</p>
+                      <p class="text-sm text-gray-600">Amount: UGX ${payment.amount.toLocaleString()}</p>
+                      <p class="text-sm text-gray-600">Approved: ${new Date(payment.approvedAt.toDate()).toLocaleDateString()}</p>
+                    </div>
+                    <div class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
+                      APPROVED
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        contentHTML += `</div>`;
+        mainContent.innerHTML = contentHTML;
+
+      } catch (error) {
+        console.error('Error showing approved payments:', error);
+        alert('Error loading approved payments: ' + error.message);
+      }
+    }
+
+    // Reject user payment
+    async function rejectUserPayment(userId) {
+      try {
+        // Update payment status
+        await setDoc(doc(db, 'user_payments', userId), {
+          status: 'rejected',
+          rejectedAt: new Date(),
+          rejectedBy: user.email
+        }, { merge: true });
+
+        // Add notification
+        await addDoc(collection(db, 'payment_notifications'), {
+          userId: userId,
+          type: 'payment_rejected',
+          message: 'Your payment has been rejected. Please contact admin for assistance.',
+          createdAt: new Date()
+        });
+
+        alert('Payment rejected.');
+        loadPendingPayments(); // Refresh the list
+      } catch (error) {
+        console.error('Error rejecting payment:', error);
+        alert('Error rejecting payment: ' + error.message);
+      }
+    }
+
     // Initialize App on load
     document.addEventListener('DOMContentLoaded', () => {
       try {
@@ -1577,7 +2457,54 @@ function updateUserInfo() {
             updateUserInfo();
             updateAuthUI(!user.isAnonymous, user);
 
-            fetchCourses();
+            // Set up real-time listener for payment status
+            if (!user.isAnonymous) {
+              const paymentDocRef = doc(db, 'user_payments', user.uid);
+              onSnapshot(paymentDocRef, (doc) => {
+                if (doc.exists()) {
+                  const paymentData = doc.data();
+                  if (paymentData.status === 'approved') {
+                    // Payment was approved, refresh the page to enable access
+                    console.log('Payment approved, refreshing page...');
+                    location.reload();
+                  }
+                }
+              });
+            }
+
+            // Check if user is admin
+            if (user.email === 'kaigwaakram123@gmail.com') {
+              showAdminPanel();
+              // Show admin dashboard button
+              const adminButton = document.getElementById('admin-dashboard-button');
+              if (adminButton) {
+                adminButton.classList.remove('hidden');
+              }
+              // Show admin access button on homepage
+              showAdminAccessButton();
+              fetchCourses(); // Admin has full access
+            } else if (user.isAnonymous) {
+              // Anonymous users have limited access
+              fetchCourses();
+            } else {
+              // Check payment status for regular users
+              const paymentStatus = await checkPaymentStatus(user.uid);
+
+              if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+                // Existing user with approved payment or no payment record (legacy user)
+                fetchCourses();
+              } else if (paymentStatus.isNewUser) {
+                // New user who needs to pay
+                setTimeout(() => {
+                  showPaymentModal();
+                }, 1000);
+              } else {
+                // User with pending payment
+                setTimeout(() => {
+                  showPaymentModal();
+                }, 1000);
+              }
+            }
 
           } else {
             updateUserInfo();
@@ -1627,10 +2554,24 @@ function updateUserInfo() {
             e.preventDefault();
             if (!user || user.isAnonymous) {
               showModal(loginModal);
-            } else {
-              goToPage('courses', false);
-              console.log('Courses button clicked');
-            }
+            } else if (user.email === 'kaigwaakram123@gmail.com') {
+               // Admin has full access
+               goToPage('courses', false);
+               console.log('Courses button clicked by admin');
+             } else {
+               // Check payment status for regular users
+               checkPaymentStatus(user.uid).then(paymentStatus => {
+                 if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+                   // Existing user with approved payment or no payment record (legacy user)
+                   goToPage('courses', false);
+                   console.log('Courses button clicked - existing user or payment approved');
+                 } else {
+                   // New user who needs to pay
+                   showPaymentModal();
+                   console.log('Courses button clicked - new user payment required');
+                 }
+               });
+             }
           } else if (e.target.id === 'about-button') {
             e.preventDefault();
             goToPage('about', false);
@@ -1736,6 +2677,8 @@ function updateUserInfo() {
               showModal(registerModal);
             } else if (e.target.id === 'logout-button') {
               if (confirm('Are you sure you want to logout?')) {
+                // Hide admin buttons before logout
+                hideAdminButtons();
                 auth.signOut();
               }
             } else if (e.target.id === 'seed-clt-button') {
@@ -1783,6 +2726,29 @@ function updateUserInfo() {
               }
             } else if (e.target.id === 'login-from-viewer') {
               showModal(loginModal);
+            } else if (e.target.id === 'close-payment-modal') {
+              hidePaymentModal();
+            } else if (e.target.id === 'contact-admin') {
+              window.open('https://wa.me/0756454646', '_blank');
+            } else if (e.target.id === 'logout-instead') {
+              if (confirm('Are you sure you want to logout instead of completing payment?')) {
+                auth.signOut();
+                hidePaymentModal();
+              }
+            } else if (paymentForm && paymentForm.contains(e.target) && e.target.type === 'submit') {
+              handlePaymentSubmission(e);
+            } else if (e.target.id === 'view-pending-payments') {
+              showPendingPaymentsPanel();
+            } else if (e.target.id === 'view-approved-payments') {
+              showApprovedPaymentsPanel();
+            } else if (e.target.id === 'admin-dashboard-button') {
+              goToPage('admin-dashboard', true);
+            } else if (e.target.id === 'admin-access-button') {
+              goToPage('admin-dashboard', false);
+            } else if (e.target.id === 'bulk-approve') {
+              bulkApproveUsers();
+            } else if (e.target.id === 'bulk-reject') {
+              bulkRejectUsers();
             }
           }
         });
