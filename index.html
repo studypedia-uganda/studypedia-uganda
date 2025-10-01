@@ -388,7 +388,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getFirestore, collection, getDocs, addDoc, deleteDoc, writeBatch, setLogLevel, onSnapshot, query, collectionGroup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, deleteDoc, writeBatch, setLogLevel, onSnapshot, query, collectionGroup, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     // --- Firebase Configuration ---
@@ -422,6 +422,15 @@
     // Payment system variables
     let paymentModalShown = false;
     let paymentSubmitted = false;
+
+    // Debug variables
+    let authStateChangeCount = 0;
+    let loginInProgress = false;
+
+    // FIX: Move reload flag outside auth state handler and use sessionStorage for persistence
+    // Check if we've already reloaded for this user in this session
+    const reloadKey = 'hasReloadedForApproval';
+    let hasReloadedForApproval = sessionStorage.getItem(reloadKey) === 'true';
 
     // UI elements
     const mainContent = document.getElementById('main-content');
@@ -485,30 +494,40 @@ async function registerUser(email, password) {
 
 async function loginUser(email, password) {
   try {
+    console.log('🔐 Attempting login for:', email);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log('User logged in:', userCredential.user);
+    console.log('✅ User logged in successfully:', userCredential.user.uid);
 
     // Check if user is new or existing
+    console.log('🔍 Checking payment status...');
     const paymentStatus = await checkPaymentStatus(userCredential.user.uid);
+    console.log('💳 Payment status:', paymentStatus);
 
     if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
       // Existing user with approved payment or no payment record (legacy user)
+      console.log('✅ User has access, showing welcome message');
       alert('Login successful! Welcome back.');
       hideModal(loginModal);
+      // Redirect to courses page after successful login
+      setTimeout(() => {
+        goToPage('courses');
+      }, 500);
     } else {
       // User with pending payment (new user who hasn't paid yet)
+      console.log('⏳ User needs payment, showing payment modal');
       alert('Login successful! Please complete the payment to access the platform.');
       hideModal(loginModal);
 
       // Show payment modal
       setTimeout(() => {
+        console.log('🪟 Showing payment modal...');
         showPaymentModal();
       }, 500);
     }
 
     return userCredential.user;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error:', error);
     alert('Login failed: ' + error.message);
   }
 }
@@ -603,12 +622,23 @@ function updateUserInfo() {
 
     // Payment modal functions
     function showPaymentModal() {
+      console.log('🪟 showPaymentModal() called, paymentModalShown:', paymentModalShown);
+
+      // Prevent showing modal multiple times
+      if (paymentModalShown) {
+        console.log('⚠️ Payment modal already shown, ignoring duplicate call');
+        return;
+      }
+
       paymentModalShown = true;
       showModal(paymentModal);
+      console.log('✅ Payment modal displayed');
     }
 
     function hidePaymentModal() {
+      console.log('🔒 hidePaymentModal() called');
       hideModal(paymentModal);
+      console.log('✅ Payment modal hidden');
     }
 
     // Check if user has paid and been approved
@@ -707,10 +737,12 @@ function updateUserInfo() {
     let bgImageIndex = 0;
 
     function cycleBgImages() {
-      setInterval(() => {
-        bgImageIndex = (bgImageIndex + 1) % bgImages.length;
-        bgImageDiv.style.backgroundImage = `url('${bgImages[bgImageIndex]}')`;
-      }, 20000); // Change image every 20 seconds
+      // Background image cycling disabled to prevent potential issues
+      console.log('Background image cycling disabled to prevent reload issues');
+      // setInterval(() => {
+      //   bgImageIndex = (bgImageIndex + 1) % bgImages.length;
+      //   bgImageDiv.style.backgroundImage = `url('${bgImages[bgImageIndex]}')`;
+      // }, 20000); // Change image every 20 seconds
     }
 
     // State Management and Rendering Functions
@@ -1122,7 +1154,8 @@ function updateUserInfo() {
             button.style.display = 'none';
           }
           alert('Sample data cleared successfully! Only your manually saved data remains. Refresh the page to see the updated state.');
-          location.reload(); // Refresh to update the UI
+          // location.reload(); // Refresh to update the UI (disabled to prevent reload loops)
+          console.log('Sample data cleared successfully! Refresh the page manually to see the updated state.');
         }
       } catch (error) {
         console.error('Error during cleanup:', error);
@@ -1502,11 +1535,15 @@ function updateUserInfo() {
       courseList.innerHTML = `<li class="text-gray-500">Loading...</li>`;
       const coursesRef = collection(db, 'RESOURCES_STUDYPEDIA');
       onSnapshot(coursesRef, (querySnapshot) => {
-        courses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderCourseList();
-        // Re-render main content if on courses page to handle async loading
-        if (currentPage === 'courses') {
-          renderContent();
+        try {
+          courses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          renderCourseList();
+          // Re-render main content if on courses page to handle async loading
+          if (currentPage === 'courses') {
+            renderContent();
+          }
+        } catch (error) {
+          console.error("Error in courses onSnapshot:", error);
         }
       }, (error) => {
         console.error("Error fetching courses:", error);
@@ -1542,9 +1579,13 @@ function updateUserInfo() {
       mainContent.innerHTML = renderLoading('Loading semesters...');
       const semestersRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters`);
       onSnapshot(semestersRef, (querySnapshot) => {
-        semesters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (currentPage === 'course-semesters') {
-          renderContent();
+        try {
+          semesters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (currentPage === 'course-semesters') {
+            renderContent();
+          }
+        } catch (error) {
+          console.error("Error in semesters onSnapshot:", error);
         }
       }, (error) => {
         console.error("Error fetching semesters:", error);
@@ -1561,9 +1602,13 @@ function updateUserInfo() {
       mainContent.innerHTML = renderLoading('Loading course units...');
       const courseUnitsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits`);
       onSnapshot(courseUnitsRef, (querySnapshot) => {
-        courseUnits = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (currentPage === 'semester-courseunits') {
-          renderContent();
+        try {
+          courseUnits = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (currentPage === 'semester-courseunits') {
+            renderContent();
+          }
+        } catch (error) {
+          console.error("Error in courseUnits onSnapshot:", error);
         }
       }, (error) => {
         console.error("Error fetching course units:", error);
@@ -1580,9 +1625,13 @@ function updateUserInfo() {
       mainContent.innerHTML = renderLoading('Loading documents...');
       const docsRef = collection(db, `RESOURCES_STUDYPEDIA/${selectedCourse}/semesters/${selectedSemester}/courseunits/${selectedCourseUnit}/documents`);
       onSnapshot(docsRef, (querySnapshot) => {
-        documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (currentPage === 'document-viewer') {
-          renderContent();
+        try {
+          documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (currentPage === 'document-viewer') {
+            renderContent();
+          }
+        } catch (error) {
+          console.error("Error in documents onSnapshot:", error);
         }
       }, (error) => {
         console.error("Error fetching documents:", error);
@@ -1671,8 +1720,8 @@ function updateUserInfo() {
           seedButton.style.display = 'none';
         }
 
-        // Refresh to update the UI with new data
-        location.reload();
+        // Refresh to update the UI with new data (disabled to prevent reload loops)
+        console.log('Would reload for CLT seeding, but disabled to prevent loops');
 
       } catch (error) {
         console.error('Error during Certificate Medical Lab Science document seeding:', error);
@@ -1913,8 +1962,8 @@ function updateUserInfo() {
           seedDiplomaButton.classList.add('hidden');
         }
 
-        // Refresh to show new data
-        location.reload();
+        // Refresh to show new data (disabled to prevent reload loops)
+        console.log('Would reload for diploma seeding, but disabled to prevent loops');
 
       } catch (error) {
         console.error('Error during diploma course seeding:', error);
@@ -2290,8 +2339,8 @@ function updateUserInfo() {
               <p class="text-gray-700">Your payment details have been submitted and are pending admin approval.</p>
               <p class="text-sm text-gray-600 mt-2">You will be notified once approved.</p>
             </div>
-            <button onclick="location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
-              Refresh Page
+            <button onclick="window.location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
+              Refresh Page (Manual Only)
             </button>
           </div>
         `;
@@ -2451,21 +2500,34 @@ function updateUserInfo() {
         setLogLevel('debug');
 
         onAuthStateChanged(auth, async (currentUser) => {
+          authStateChangeCount++;
+          console.log(`🔄 Auth state changed #${authStateChangeCount}:`, currentUser ? "User logged in" : "No user");
+
+          // Prevent multiple rapid auth state changes
+          if (loginInProgress && currentUser) {
+            console.log('⚠️ Login already in progress, ignoring duplicate auth state change');
+            return;
+          }
+
           user = currentUser;
           if (user) {
-            console.log("User authenticated:", user.uid);
+            loginInProgress = true;
+            console.log("✅ User authenticated:", user.uid);
             updateUserInfo();
             updateAuthUI(!user.isAnonymous, user);
 
-            // Set up real-time listener for payment status
+            // Set up real-time listener for payment status with proper reload prevention
             if (!user.isAnonymous) {
               const paymentDocRef = doc(db, 'user_payments', user.uid);
               onSnapshot(paymentDocRef, (doc) => {
                 if (doc.exists()) {
                   const paymentData = doc.data();
-                  if (paymentData.status === 'approved') {
-                    // Payment was approved, refresh the page to enable access
-                    console.log('Payment approved, refreshing page...');
+                  // FIX: Check both sessionStorage flag and payment status to prevent reload loops
+                  if (paymentData.status === 'approved' && !hasReloadedForApproval) {
+                    console.log('Payment approved, setting reload flag and reloading once...');
+                    // Set the flag in sessionStorage BEFORE reloading
+                    sessionStorage.setItem(reloadKey, 'true');
+                    hasReloadedForApproval = true;
                     location.reload();
                   }
                 }
@@ -2485,35 +2547,45 @@ function updateUserInfo() {
               fetchCourses(); // Admin has full access
             } else if (user.isAnonymous) {
               // Anonymous users have limited access
+              console.log('👤 Anonymous user detected');
               fetchCourses();
             } else {
               // Check payment status for regular users
+              console.log('💳 Checking payment status for regular user:', user.email);
               const paymentStatus = await checkPaymentStatus(user.uid);
+              console.log('💳 Payment status result:', paymentStatus);
 
               if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
                 // Existing user with approved payment or no payment record (legacy user)
+                console.log('✅ User has access, fetching courses');
+                loginInProgress = false;
                 fetchCourses();
               } else if (paymentStatus.isNewUser) {
                 // New user who needs to pay
+                console.log('🆕 New user detected, showing payment modal in 1s');
                 setTimeout(() => {
                   showPaymentModal();
+                  loginInProgress = false;
                 }, 1000);
               } else {
                 // User with pending payment
+                console.log('⏳ User has pending payment, showing payment modal in 1s');
                 setTimeout(() => {
                   showPaymentModal();
+                  loginInProgress = false;
                 }, 1000);
               }
             }
 
           } else {
+            loginInProgress = false;
             updateUserInfo();
             updateAuthUI(false, null);
             try {
-              console.log("No user found. Signing in anonymously...");
+              console.log("👤 No user found. Signing in anonymously...");
               await signInAnonymously(auth);
             } catch (error) {
-              console.error("Firebase auth error:", error);
+              console.error("❌ Firebase auth error:", error);
             }
           }
         });
