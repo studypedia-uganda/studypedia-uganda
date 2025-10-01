@@ -16,152 +16,7 @@
       font-family: 'Inter', sans-serif;
       background-color: #f3f4f6;
     }
-
-    .active-menu {
-      background-color: #dbeafe;
-      color: #1d4ed8;
-      font-weight: 500;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .animate-fade-in {
-      animation: fadeIn 0.8s ease-out forwards;
-    }
-
-    .delay-100 {
-      animation-delay: 0.1s;
-    }
-
-    .delay-200 {
-      animation-delay: 0.2s;
-    }
-
-    .delay-300 {
-      animation-delay: 0.3s;
-    }
-
-    .delay-400 {
-      animation-delay: 0.4s;
-    }
-
-    .delay-500 {
-      animation-delay: 0.5s;
-    }
-
-    .transition-transform {
-      transition-property: transform;
-    }
-
-    .duration-300 {
-      transition-duration: 300ms;
-    }
-
-    .ease-in-out {
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .transition-opacity {
-      transition-property: opacity;
-    }
-
-    .duration-1000 {
-      transition-duration: 1000ms;
-    }
-
-    .transition-colors {
-      transition-property: background-color, border-color, color, fill, stroke;
-    }
-
-    /* Sidebar scroll fix */
-    #sidebar {
-      pointer-events: auto;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      /* Smooth scrolling on iOS */
-    }
-
-    #sidebar::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #sidebar::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
-    #sidebar::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 3px;
-    }
-
-    #sidebar::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8;
-    }
-
-    /* Enhanced Back Button Styles */
-    #back-button {
-      /* Make button larger and more prominent */
-      min-width: 3.5rem;
-      min-height: 3.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    #back-button:hover {
-      transform: scale(1.15);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    #back-button:active {
-      transform: scale(1.05);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    /* Add ripple effect on click */
-    #back-button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(59, 130, 246, 0.5);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    #back-button:active::after {
-      width: 300px;
-      height: 300px;
-    }
-
-    /* Make button more visible on all backgrounds */
-    #back-button {
-      backdrop-filter: blur(4px);
-      background-color: rgba(255, 255, 255, 0.85);
-      border: 2px solid rgba(229, 231, 235, 0.8);
-    }
-
-    #back-button:hover {
-      background-color: rgba(243, 244, 246, 0.95);
-      border-color: rgba(209, 213, 219, 0.9);
-    }
   </style>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9651439714273887"
-     crossorigin="anonymous"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -367,7 +222,7 @@
                 <option value="Airtel Money">Airtel Money</option>
               </select>
             </div>
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors">Submit Payment Details</button>
+            <button type="submit" id="payment-submit-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors" onclick="this.textContent='Submitting...'">Submit Payment Details</button>
           </form>
           <p class="mt-4 text-center text-sm text-gray-600">
             <button id="contact-admin" class="text-blue-500 hover:underline">Contact Admin</button> |
@@ -422,6 +277,7 @@
     // Payment system variables
     let paymentModalShown = false;
     let paymentSubmitted = false;
+    let isSubmittingPayment = false;
 
     // Debug variables
     let authStateChangeCount = 0;
@@ -461,6 +317,21 @@
     const registerForm = document.getElementById('register-form');
     const paymentForm = document.getElementById('payment-form');
     const seedButton = document.getElementById('seed-clt-button');
+// Global access verification function
+async function verifyCourseAccess() {
+  if (!user || user.isAnonymous || user.email === 'kaigwaakram123@gmail.com') {
+    return true; // Anonymous users and admin have access
+  }
+
+  try {
+    const paymentStatus = await checkPaymentStatus(user.uid);
+    return paymentStatus.hasPaid || paymentStatus.status === 'none';
+  } catch (error) {
+    console.error('Error verifying course access:', error);
+    return false;
+  }
+}
+
 // Auth functions
 async function registerUser(email, password) {
   try {
@@ -505,22 +376,34 @@ async function loginUser(email, password) {
 
     if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
       // Existing user with approved payment or no payment record (legacy user)
-      console.log('✅ User has access, showing welcome message');
+      console.log('✅ Existing user has access, redirecting to homepage');
+
+      // Update UI immediately
+      updateAuthUI(true, userCredential.user);
+      updateUserInfo();
+
       alert('Login successful! Welcome back.');
       hideModal(loginModal);
-      // Redirect to courses page after successful login
+
+      // Redirect to homepage for existing users
       setTimeout(() => {
-        goToPage('courses');
+        goToPage('home');
+        console.log('🔄 Redirected existing user to homepage');
       }, 500);
     } else {
       // User with pending payment (new user who hasn't paid yet)
-      console.log('⏳ User needs payment, showing payment modal');
+      console.log('⏳ New user needs payment approval, showing payment modal');
+
+      // Update UI immediately for new users too
+      updateAuthUI(true, userCredential.user);
+      updateUserInfo();
+
       alert('Login successful! Please complete the payment to access the platform.');
       hideModal(loginModal);
 
-      // Show payment modal
+      // Show payment modal for new users
       setTimeout(() => {
-        console.log('🪟 Showing payment modal...');
+        console.log('🪟 Showing payment modal for new user...');
         showPaymentModal();
       }, 500);
     }
@@ -545,8 +428,10 @@ async function logoutUser() {
 
 function updateAuthUI(isLoggedIn, user) {
   if (isLoggedIn && user) {
+    // Hide login/register buttons immediately
     loginButton.classList.add('hidden');
     registerButton.classList.add('hidden');
+    // Show logout button
     logoutButton.classList.remove('hidden');
     // Keep seed buttons hidden - deactivated
     seedButton.classList.add('hidden');
@@ -557,15 +442,21 @@ function updateAuthUI(isLoggedIn, user) {
     if (user.email === 'kaigwaakram123@gmail.com') {
       showAdminAccessButton();
     }
+
+    console.log('✅ Auth UI updated - login/register hidden, logout shown');
   } else {
+    // Show login/register buttons
     loginButton.classList.remove('hidden');
     registerButton.classList.remove('hidden');
+    // Hide logout button
     logoutButton.classList.add('hidden');
     seedButton.classList.add('hidden');
     document.getElementById('seed-diploma-button').classList.add('hidden');
 
     // Hide admin buttons when logged out
     hideAdminButtons();
+
+    console.log('✅ Auth UI updated - login/register shown, logout hidden');
   }
 }
 
@@ -638,6 +529,8 @@ function updateUserInfo() {
     function hidePaymentModal() {
       console.log('🔒 hidePaymentModal() called');
       hideModal(paymentModal);
+      // Reset submission flag when modal is closed
+      isSubmittingPayment = false;
       console.log('✅ Payment modal hidden');
     }
 
@@ -674,17 +567,33 @@ function updateUserInfo() {
     // Submit payment details
     async function submitPaymentDetails(reference, method) {
       try {
-        console.log('🔄 Starting payment submission...');
-        console.log('Current user:', user);
-        console.log('User ID:', user?.uid);
-        console.log('User email:', user?.email);
+        // Prevent multiple simultaneous submissions
+        if (isSubmittingPayment) {
+          console.log('⚠️ Payment submission already in progress, ignoring duplicate call');
+          return;
+        }
 
-        if (!user || user.isAnonymous) {
+        isSubmittingPayment = true;
+        console.log('🔄 Starting payment submission...');
+
+        // Get current authenticated user directly from Firebase Auth
+        const currentUser = auth.currentUser;
+        console.log('Current Firebase Auth user:', currentUser);
+        console.log('User ID:', currentUser?.uid);
+        console.log('User email:', currentUser?.email);
+        console.log('User isAnonymous:', currentUser?.isAnonymous);
+
+        // Enhanced user authentication check using current Firebase Auth user
+        if (!currentUser) {
           throw new Error('User not authenticated. Please log in again.');
         }
 
-        if (!user.uid) {
-          throw new Error('User ID is missing. Please log in again.');
+        if (currentUser.isAnonymous) {
+          throw new Error('User not authenticated. Please log in again.');
+        }
+
+        if (!currentUser.uid || !currentUser.email) {
+          throw new Error('User ID or email is missing. Please log in again.');
         }
 
         if (!reference || reference.trim().length < 3) {
@@ -696,8 +605,8 @@ function updateUserInfo() {
         }
 
         const paymentData = {
-          userId: user.uid,
-          userEmail: user.email,
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
           paymentReference: reference,
           paymentMethod: method,
           amount: 5000,
@@ -706,6 +615,8 @@ function updateUserInfo() {
           submittedAt: new Date(),
           isNewUser: true
         };
+
+        console.log('✅ Payment data prepared:', paymentData);
 
         console.log('📝 Payment data to be saved:', paymentData);
 
@@ -723,12 +634,24 @@ function updateUserInfo() {
         });
         console.log('✅ Admin notification created');
 
+        // Reset button text on success
+        const submitBtn = document.getElementById('payment-submit-btn');
+        if (submitBtn) submitBtn.textContent = 'Submit Payment Details';
+
         return true;
       } catch (error) {
         console.error('❌ Error submitting payment:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
+
+        // Reset button text on error
+        const submitBtn = document.getElementById('payment-submit-btn');
+        if (submitBtn) submitBtn.textContent = 'Submit Payment Details';
+
         throw error;
+      } finally {
+        // Reset submission flag
+        isSubmittingPayment = false;
       }
     }
 
@@ -752,7 +675,32 @@ function updateUserInfo() {
       menuOverlay.classList.toggle('hidden', !isMenuOpen);
       if (isMenuOpen) {
         document.body.style.overflow = 'hidden'; // Lock background scroll
-        fetchCourses();  // Load courses when menu opens
+
+        // BLOCK unapproved users from accessing courses in menu
+        if (user && user.email === 'kaigwaakram123@gmail.com') {
+          fetchCourses(); // Admin has full access
+        } else if (user && !user.isAnonymous) {
+          // Check payment status for regular users - BLOCK unapproved users
+          checkPaymentStatus(user.uid).then(paymentStatus => {
+            if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+              fetchCourses(); // User has approved payment or legacy access
+            } else {
+              // User has pending payment - BLOCK menu access to courses
+              courseList.innerHTML = `
+                <li class="text-red-600 font-semibold p-4 bg-red-50 rounded-lg border border-red-200">
+                  ⛔ Course access requires admin approval.<br>
+                  <span class="text-sm">Please wait for your payment to be approved.</span>
+                </li>
+              `;
+            }
+          }).catch(error => {
+            console.error('Error checking payment status in menu:', error);
+            courseList.innerHTML = `<li class="text-red-500">Error loading courses</li>`;
+          });
+        } else {
+          // Anonymous users can browse course listings only
+          fetchCourses();
+        }
       } else {
         document.body.style.overflow = ''; // Restore scroll
       }
@@ -769,6 +717,36 @@ function updateUserInfo() {
     }
 
     function goToPage(page, keepOpen = false) {
+      // GLOBAL ACCESS CHECK: If unapproved user tries to access courses, block immediately
+      if (page === 'courses' && user && !user.isAnonymous && user.email !== 'kaigwaakram123@gmail.com') {
+        checkPaymentStatus(user.uid).then(paymentStatus => {
+          if (!paymentStatus.hasPaid && paymentStatus.status !== 'none') {
+            // Block unapproved user from courses page
+            mainContent.innerHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing courses.</p>
+                  <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. Access will be granted once approved.</p>
+                </div>
+                <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                  View Payment Details
+                </button>
+                <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                  Return to Homepage
+                </button>
+              </div>
+            `;
+            console.log('🚫 Global access check blocked unapproved user from courses');
+            return; // Don't proceed with navigation
+          }
+        }).catch(error => {
+          console.error('Error in global access check:', error);
+          goToPage('home'); // Redirect to home on error
+          return;
+        });
+      }
+
       currentPage = page;
       if (!keepOpen) {
         // Explicitly close menu on navigation unless keeping open
@@ -777,9 +755,55 @@ function updateUserInfo() {
         menuOverlay.classList.add('hidden');
       }
       backButton.classList.toggle('hidden', page === 'home' || page === 'courses');
+
       if (page === 'courses') {
-        fetchCourses();
+        // Check if user has permission to access courses
+        if (user && user.email === 'kaigwaakram123@gmail.com') {
+          fetchCourses(); // Admin has full access
+        } else if (user && !user.isAnonymous) {
+          // Check payment status for regular users - BLOCK unapproved users completely
+          checkPaymentStatus(user.uid).then(paymentStatus => {
+            if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+              fetchCourses(); // User has approved payment or legacy access
+            } else {
+              // User has pending payment - BLOCK access completely, don't show courses page
+              mainContent.innerHTML = `
+                <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                  <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                  <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing courses.</p>
+                    <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. You will be able to access all courses once approved.</p>
+                  </div>
+                  <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                    View Payment Details
+                  </button>
+                  <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                    Return to Homepage
+                  </button>
+                </div>
+              `;
+              console.log('🚫 Unapproved user blocked from courses page');
+              return; // Don't render courses page content
+            }
+          }).catch(error => {
+            console.error('Error checking payment status:', error);
+            mainContent.innerHTML = `
+              <div class="p-8 bg-red-100 text-red-800 rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-4">Access Verification Error</h2>
+                <p>Unable to verify your access permissions. Please contact admin for assistance.</p>
+                <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors mt-4">
+                  Return to Homepage
+                </button>
+              </div>
+            `;
+            return; // Don't render courses page content
+          });
+        } else {
+          // Anonymous users can browse course listings only
+          fetchCourses();
+        }
       }
+
       if (page === 'admin-dashboard') {
         loadAdminDashboard();
       }
@@ -788,6 +812,25 @@ function updateUserInfo() {
       // Ensure admin buttons remain visible for admin users when navigating
       if (user && user.email === 'kaigwaakram123@gmail.com' && page === 'home') {
         showAdminAccessButton();
+      }
+
+      // Show welcome message for logged-in users on homepage
+      if (page === 'home' && user && !user.isAnonymous) {
+        const welcomeMessage = document.getElementById('welcome-message');
+        if (welcomeMessage) {
+          welcomeMessage.classList.remove('hidden');
+        }
+      }
+
+      // Continuous protection: If unapproved user is on courses page, redirect immediately
+      if (page === 'courses' && user && !user.isAnonymous && user.email !== 'kaigwaakram123@gmail.com') {
+        setTimeout(async () => {
+          const hasAccess = await verifyCourseAccess();
+          if (!hasAccess) {
+            console.log('🚫 Continuous protection: Redirecting unapproved user from courses page');
+            goToPage('home');
+          }
+        }, 100); // Small delay to allow other checks to complete
       }
     }
 
@@ -958,7 +1001,7 @@ function updateUserInfo() {
         goToPage('course-semesters');
       } else if (currentPage === 'course-semesters') {
         selectedCourse = null;
-        goToPage('home');
+        goToPage('courses'); // This will be blocked by access control if user is unapproved
       } else if (currentPage === 'courses') {
         goToPage('home');
       } else if (currentPage === 'about' || currentPage === 'privacy' || currentPage === 'admin-dashboard') {
@@ -1173,6 +1216,35 @@ function updateUserInfo() {
     }
 
     function renderContent() {
+      // Additional safety check: If on courses page but not authorized, block access
+      if (currentPage === 'courses' && user && !user.isAnonymous && user.email !== 'kaigwaakram123@gmail.com') {
+        checkPaymentStatus(user.uid).then(paymentStatus => {
+          if (!paymentStatus.hasPaid && paymentStatus.status !== 'none') {
+            mainContent.innerHTML = `
+              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing courses.</p>
+                  <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. Access will be granted once approved.</p>
+                </div>
+                <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                  View Payment Details
+                </button>
+                <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                  Return to Homepage
+                </button>
+              </div>
+            `;
+            console.log('🚫 Render check blocked unapproved user from courses page');
+            return; // Don't render courses content
+          }
+        }).catch(error => {
+          console.error('Error in render access check:', error);
+          goToPage('home'); // Redirect on error
+          return;
+        });
+      }
+
       let contentHTML = '';
       switch (currentPage) {
         case 'home':
@@ -1196,6 +1268,13 @@ function updateUserInfo() {
                               <button id="about-button" class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-purple-600 hover:via-pink-600 hover:to-red-600 transform hover:scale-110 transition-all duration-500 ease-out">About Us</button>
                               <button id="privacy-button" class="bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-full shadow-xl hover:shadow-2xl hover:from-green-600 hover:via-teal-600 hover:to-cyan-600 transform hover:scale-110 transition-all duration-500 ease-out">Privacy Policy</button>
                             </div>
+
+                            <!-- Welcome message for logged-in users -->
+                            <div id="welcome-message" class="mt-8 text-center hidden">
+                              <div class="bg-green-50 border border-green-200 rounded-lg p-4 inline-block">
+                                <p class="text-green-800 font-semibold">Welcome back! Click "Browse Courses" to access your study materials.</p>
+                              </div>
+                            </div>
                             
                             
                         
@@ -1218,44 +1297,34 @@ function updateUserInfo() {
                     `;
           break;
         case 'courses':
-          if (!user || user.isAnonymous) {
-            contentHTML = `
-              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto text-center">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Available Courses</h2>
-                <p class="text-gray-600 mb-6">Login required to access courses and study materials.</p>
-                <button id="login-from-courses" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg transition-colors">Login to Browse Courses</button>
+          contentHTML = `
+            <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
+              <!-- AdSense Rectangle Ad Space Above Courses -->
+              <div id="courses-ad-top" class="mb-6 text-center">
+                <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
               </div>
-            `;
-          } else {
-            contentHTML = `
-              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-4xl mx-auto">
-                <!-- AdSense Rectangle Ad Space Above Courses -->
-                <div id="courses-ad-top" class="mb-6 text-center">
-                  <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
-                <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
-                ${courses.length > 0 ? `
-                  <div class="space-y-4">
-                    ${courses.map((course) => `
-                      <div class="course-item-main bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-md overflow-hidden cursor-pointer border border-blue-200 hover:border-blue-300 transition-all duration-300 ease-in-out transform hover:scale-105" data-course-id="${course.id}">
-                        <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gradient-to-r hover:from-blue-200 hover:to-indigo-200 transition-all duration-300 ease-in-out cursor-pointer ${selectedCourse === course.id ? 'bg-gradient-to-r from-blue-100 to-indigo-100 ring-2 ring-blue-300' : ''}" data-course-id="${course.id}" style="user-select: none;">
-                          ${course.name || 'Unknown Course'}
-                        </div>
-                        <div class="semesters-list-main bg-white hidden px-4 pb-4 space-y-2"></div>
+              <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Available Courses</h2>
+              <p class="text-gray-600 mb-6 text-center">Expand a course to view its semesters and explore courseunits and documents.</p>
+              ${courses.length > 0 ? `
+                <div class="space-y-4">
+                  ${courses.map((course) => `
+                    <div class="course-item-main bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-md overflow-hidden cursor-pointer border border-blue-200 hover:border-blue-300 transition-all duration-300 ease-in-out transform hover:scale-105" data-course-id="${course.id}">
+                      <div class="select-course-main w-full text-left text-gray-800 py-6 px-4 font-semibold hover:bg-gradient-to-r hover:from-blue-200 hover:to-indigo-200 transition-all duration-300 ease-in-out cursor-pointer ${selectedCourse === course.id ? 'bg-gradient-to-r from-blue-100 to-indigo-100 ring-2 ring-blue-300' : ''}" data-course-id="${course.id}" style="user-select: none;">
+                        ${course.name || 'Unknown Course'}
                       </div>
-                    `).join('')}
-                  </div>
-                ` : `<div class="text-center py-8">
-                  ${renderLoading('Loading courses from database...')}
-                </div>`}
-               <!-- AdSense Rectangle Ad Space Below Courses -->
-               <div id="courses-ad-bottom" class="mt-6 text-center">
-                  <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
+                      <div class="semesters-list-main bg-white hidden px-4 pb-4 space-y-2"></div>
+                    </div>
+                  `).join('')}
                 </div>
+              ` : `<div class="text-center py-8">
+                ${renderLoading('Loading courses from database...')}
+              </div>`}
+              <!-- AdSense Rectangle Ad Space Below Courses -->
+              <div id="courses-ad-bottom" class="mt-6 text-center">
+                <div class="mx-auto w-full max-w-md h-32 bg-gray-200 rounded-lg"></div>
               </div>
-            `;
-          }
+            </div>
+          `;
           break;
         case 'course-semesters':
           const selectedCourseData = courses.find(c => c.id === selectedCourse);
@@ -1294,16 +1363,7 @@ function updateUserInfo() {
           break;
         case 'document-viewer':
           const selectedCourseUnitData = courseUnits.find(u => u.id === selectedCourseUnit);
-          if (!user || user.isAnonymous) {
-            contentHTML = `
-              <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full text-center">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseUnitData?.name || 'Unknown Course Unit'}</h2>
-                <p class="text-gray-600 mb-6">Login required to access documents for ${courses.find(c => c.id === selectedCourse)?.name || 'Unknown Course'} - ${semesters.find(s => s.id === selectedSemester)?.name || 'Unknown Semester'}.</p>
-                <button id="login-from-viewer" class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg transition-colors">Login to View Documents</button>
-              </div>
-            `;
-          } else {
-            contentHTML = `
+          contentHTML = `
               <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">${selectedCourseUnitData?.name || 'Unknown Course Unit'}</h2>
                 <p class="text-gray-600 mb-6">Showing documents for ${courses.find(c => c.id === selectedCourse)?.name || 'Unknown Course'} - ${semesters.find(s => s.id === selectedSemester)?.name || 'Unknown Semester'} - ${selectedCourseUnitData?.name || 'Unknown Course Unit'}</p>
@@ -1343,7 +1403,6 @@ function updateUserInfo() {
                 ` : `<p class="text-center text-gray-500 py-8">No documents yet for this course unit in Certificate Medical Lab Science. Use the 'Seed CLT' button (visible when logged in) to add sample documents. Ensure each document in Firebase has 'title' (string) and 'filePath' (URL or Storage path) fields for read online and download buttons to work.</p>`}
               </div>
             `;
-          }
           break;
         case 'about':
           contentHTML = `
@@ -2326,7 +2385,7 @@ function updateUserInfo() {
 
       try {
         await submitPaymentDetails(reference, method);
-        alert('Payment details submitted successfully! Waiting for admin approval.');
+        alert('Payment details submitted successfully! Waiting for admin approval. You can continue browsing courses while waiting.');
 
         // Hide payment modal
         hidePaymentModal();
@@ -2334,13 +2393,13 @@ function updateUserInfo() {
         // Show waiting message
         mainContent.innerHTML = `
           <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Submitted</h2>
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-              <p class="text-gray-700">Your payment details have been submitted and are pending admin approval.</p>
-              <p class="text-sm text-gray-600 mt-2">You will be notified once approved.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Submitted Successfully!</h2>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <p class="text-gray-700">Your payment details have been submitted to admin and are waiting for approval.</p>
+              <p class="text-sm text-gray-600 mt-2">You will be notified once approved. Thank you!</p>
             </div>
-            <button onclick="window.location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
-              Refresh Page (Manual Only)
+            <button onclick="goToPage('home')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
+              Back to Homepage
             </button>
           </div>
         `;
@@ -2493,11 +2552,14 @@ function updateUserInfo() {
 
     // Initialize App on load
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Starting Studypedia Uganda application...');
       try {
+        console.log('🔧 Initializing Firebase...');
         const app = initializeApp(firebaseConfig);
         db = getFirestore(app);
         auth = getAuth(app);
         setLogLevel('debug');
+        console.log('✅ Firebase initialized successfully');
 
         onAuthStateChanged(auth, async (currentUser) => {
           authStateChangeCount++;
@@ -2590,8 +2652,25 @@ function updateUserInfo() {
           }
         });
 
+        // Initialize with basic content first
         renderContent();
-        cycleBgImages();
+        console.log('📱 Initial content rendered');
+
+        // Try to initialize Firebase
+        try {
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+          setLogLevel('debug');
+          console.log('✅ Firebase initialized successfully');
+
+          // Initialize Firebase-dependent features
+          cycleBgImages();
+          console.log('🎨 Background image cycling started');
+        } catch (firebaseError) {
+          console.error('❌ Firebase initialization failed:', firebaseError);
+          console.log('📝 Continuing with basic functionality without Firebase');
+        }
 
         // Enhanced back button event listeners
         const backButton = document.getElementById('back-button');
@@ -2624,26 +2703,44 @@ function updateUserInfo() {
         document.addEventListener('click', async (e) => {
           if (e.target.id === 'courses-button') {
             e.preventDefault();
-            if (!user || user.isAnonymous) {
-              showModal(loginModal);
-            } else if (user.email === 'kaigwaakram123@gmail.com') {
-               // Admin has full access
-               goToPage('courses', false);
-               console.log('Courses button clicked by admin');
-             } else {
-               // Check payment status for regular users
-               checkPaymentStatus(user.uid).then(paymentStatus => {
-                 if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
-                   // Existing user with approved payment or no payment record (legacy user)
-                   goToPage('courses', false);
-                   console.log('Courses button clicked - existing user or payment approved');
-                 } else {
-                   // New user who needs to pay
-                   showPaymentModal();
-                   console.log('Courses button clicked - new user payment required');
-                 }
-               });
-             }
+            // Check user permissions before allowing course access
+            if (user && user.email === 'kaigwaakram123@gmail.com') {
+              goToPage('courses', false); // Admin has full access
+              console.log('Courses button clicked - admin access granted');
+            } else if (user && !user.isAnonymous) {
+              // Check payment status for regular users - BLOCK unapproved users
+              checkPaymentStatus(user.uid).then(paymentStatus => {
+                if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+                  goToPage('courses', false); // User has approved payment or legacy access
+                  console.log('Courses button clicked - approved user access granted');
+                } else {
+                  // User has pending payment - BLOCK access completely
+                  mainContent.innerHTML = `
+                    <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                      <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing courses.</p>
+                        <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. Access will be granted once approved.</p>
+                      </div>
+                      <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                        View Payment Details
+                      </button>
+                      <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                        Return to Homepage
+                      </button>
+                    </div>
+                  `;
+                  console.log('🚫 Courses button blocked for unapproved user');
+                }
+              }).catch(error => {
+                console.error('Error checking payment status:', error);
+                alert('Error verifying access permissions. Please contact admin.');
+              });
+            } else {
+              // Anonymous users can browse course listings only
+              goToPage('courses', false);
+              console.log('Courses button clicked - anonymous user access granted');
+            }
           } else if (e.target.id === 'about-button') {
             e.preventDefault();
             goToPage('about', false);
@@ -2671,13 +2768,83 @@ function updateUserInfo() {
           } else {
             const courseBtn = e.target.closest('.select-course');
             if (courseBtn) {
-              handleCourseSelection(courseBtn.dataset.courseId);
+              e.preventDefault();
+              // Check if user has permission to access course content
+              if (user && user.email === 'kaigwaakram123@gmail.com') {
+                handleCourseSelection(courseBtn.dataset.courseId); // Admin has full access
+              } else if (user && !user.isAnonymous) {
+                // Check payment status for regular users - BLOCK unapproved users
+                checkPaymentStatus(user.uid).then(paymentStatus => {
+                  if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+                    handleCourseSelection(courseBtn.dataset.courseId); // User has approved payment or legacy access
+                  } else {
+                    // User has pending payment - BLOCK access completely
+                    mainContent.innerHTML = `
+                      <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                          <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing course content.</p>
+                          <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. Access will be granted once approved.</p>
+                        </div>
+                        <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                          View Payment Details
+                        </button>
+                        <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                          Return to Homepage
+                        </button>
+                      </div>
+                    `;
+                    console.log('🚫 Course selection blocked for unapproved user');
+                  }
+                }).catch(error => {
+                  console.error('Error checking payment status:', error);
+                  alert('Error verifying access permissions. Please contact admin.');
+                });
+              } else {
+                // Anonymous users can browse course listings but not access content
+                handleCourseSelection(courseBtn.dataset.courseId);
+              }
               return;
             }
             const mainCourseItem = e.target.closest('.course-item-main');
             if (mainCourseItem && !e.target.closest('.semesters-list-main')) {
+              e.preventDefault();
               const courseId = mainCourseItem.dataset.courseId;
-              handleCourseSelection(courseId);
+              // Check if user has permission to access course content
+              if (user && user.email === 'kaigwaakram123@gmail.com') {
+                handleCourseSelection(courseId); // Admin has full access
+              } else if (user && !user.isAnonymous) {
+                // Check payment status for regular users - BLOCK unapproved users
+                checkPaymentStatus(user.uid).then(paymentStatus => {
+                  if (paymentStatus.hasPaid || paymentStatus.status === 'none') {
+                    handleCourseSelection(courseId); // User has approved payment or legacy access
+                  } else {
+                    // User has pending payment - BLOCK access completely
+                    mainContent.innerHTML = `
+                      <div class="p-8 bg-white bg-opacity-80 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md mx-auto text-center">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">⛔ Access Denied</h2>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                          <p class="text-gray-700 font-semibold">You must wait for admin approval before accessing course content.</p>
+                          <p class="text-sm text-gray-600 mt-2">Your payment is being reviewed. Access will be granted once approved.</p>
+                        </div>
+                        <button onclick="showPaymentModal()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors mr-2">
+                          View Payment Details
+                        </button>
+                        <button onclick="goToPage('home')" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors">
+                          Return to Homepage
+                        </button>
+                      </div>
+                    `;
+                    console.log('🚫 Main course selection blocked for unapproved user');
+                  }
+                }).catch(error => {
+                  console.error('Error checking payment status:', error);
+                  alert('Error verifying access permissions. Please contact admin.');
+                });
+              } else {
+                // Anonymous users can browse course listings but not access content
+                handleCourseSelection(courseId);
+              }
               return;
             }
             const semesterBtn = e.target.closest('.select-semester');
@@ -2796,8 +2963,6 @@ function updateUserInfo() {
               } else {
                 alert('Please fill in all fields.');
               }
-            } else if (e.target.id === 'login-from-viewer') {
-              showModal(loginModal);
             } else if (e.target.id === 'close-payment-modal') {
               hidePaymentModal();
             } else if (e.target.id === 'contact-admin') {
@@ -2826,8 +2991,8 @@ function updateUserInfo() {
         });
 
       } catch (e) {
-        console.error("Firebase initialization failed:", e);
-        mainContent.innerHTML = `<div class="p-8 bg-red-100 text-red-800 rounded-xl shadow-lg w-full"><h2 class="font-bold text-xl mb-2">Initialization Failed</h2><p>Could not initialize Firebase. Please check your configuration and network connection.</p></div>`;
+        console.error("❌ Firebase initialization failed:", e);
+        mainContent.innerHTML = `<div class="p-8 bg-red-100 text-red-800 rounded-xl shadow-lg w-full"><h2 class="font-bold text-xl mb-2">Initialization Failed</h2><p>Could not initialize Firebase. Please check your configuration and network connection.</p><p>Error: ${e.message}</p></div>`;
       }
     });
   </script>
