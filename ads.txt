@@ -1,1 +1,8 @@
+# ads.txt file for Studypedia Uganda
+# This file is used by advertisers to verify your website's ad inventory
+
+# Google AdSense
 google.com, pub-9651439714273887, DIRECT, f08c47fec0942fa0
+
+# Contact: kaigwaakram123@gmail.com
+# Website: Studypedia Uganda
